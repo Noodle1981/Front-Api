@@ -9,23 +9,18 @@
 
         {{-- Welcome Section --}}
         <div
-            class="bg-white/10 backdrop-blur-md rounded-xl p-8 border border-white/20 shadow-xl text-center md:text-left">
-            <h3 class="text-2xl font-bold text-white mb-2">¡Hola, {{ Auth::user()->name }}!</h3>
-            <p class="text-white/80">Bienvenido al Portal de Clientes de Grupo Xamanen.</p>
+            class="bg-white/90 backdrop-blur-sm rounded-xl p-8 border border-white/20 shadow-xl text-center md:text-left text-gray-900">
+            <h3 class="text-2xl font-bold text-brand-dark mb-2">¡Hola, {{ Auth::user()->name }}!</h3>
+            <p class="text-gray-700">Bienvenido al Portal de Clientes de Grupo Xamanen.</p>
         </div>
 
         {{-- KPIs Quick View --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {{-- KPI Card with Brand Color --}}
             <x-kpi-card title="Mis Clientes" :value="$clientCount" icon="fas fa-building"
-                class="bg-primary-dark text-white shadow-xl" />
+                class="bg-brand-dark text-white shadow-xl" />
 
             {{-- Placeholder for future KPIs or removed if not needed --}}
-            {{--
-            <x-kpi-card title="Servicios Activos" :value="'0'" icon="fas fa-cogs"
-                class="bg-primary-dark text-white shadow-xl" />
-            <x-kpi-card title="Documentos" :value="'0'" icon="fas fa-file-alt"
-                class="bg-primary-dark text-white shadow-xl" />
-            --}}
         </div>
 
     </div>

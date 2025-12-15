@@ -20,22 +20,22 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="mb-6 flex gap-4">
             <a href="{{ route('clients.index', ['filter' => 'activos']) }}"
-                class="px-4 py-2 rounded-lg font-bold text-white bg-primary-dark hover:bg-primary transition @if($filter === 'activos') ring-2 ring-primary-light @endif">Clientes
+                class="px-4 py-2 rounded-lg font-bold text-white bg-brand-dark hover:bg-gray-800 transition @if($filter === 'activos') ring-2 ring-brand-accent @endif">Clientes
                 Activos</a>
             <a href="{{ route('clients.index', ['filter' => 'inactivos']) }}"
-                class="px-4 py-2 rounded-lg font-bold text-white bg-orange-xamanen hover:bg-orange-600 transition @if($filter === 'inactivos') ring-2 ring-orange-xamanen @endif">Clientes
+                class="px-4 py-2 rounded-lg font-bold text-white bg-gray-500 hover:bg-gray-600 transition @if($filter === 'inactivos') ring-2 ring-brand-accent @endif">Clientes
                 Inactivos</a>
         </div>
-        <x-card class="!p-0 bg-white border border-primary-light shadow-lg">
+        <x-card class="!p-0 bg-white border border-gray-200 shadow-lg">
             <div class="overflow-x-auto">
                 <table class="w-full text-base">
-                    <thead class="border-b border-primary-light bg-surface">
+                    <thead class="border-b border-gray-200 bg-gray-50">
                         <tr>
-                            <th class="p-4 text-left font-bold text-primary-dark uppercase tracking-wider">Nombre</th>
-                            <th class="p-4 text-left font-bold text-primary-dark uppercase tracking-wider">Compañía</th>
-                            <th class="p-4 text-left font-bold text-primary-dark uppercase tracking-wider">Email</th>
-                            <th class="p-4 text-left font-bold text-primary-dark uppercase tracking-wider">Teléfono</th>
-                            <th class="p-4 text-left font-bold text-primary-dark uppercase tracking-wider">Estado
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Nombre</th>
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Compañía</th>
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Email</th>
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Teléfono</th>
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Estado
                                 Cliente</th>
                             <th class="relative p-4"></th>
                         </tr>
@@ -84,9 +84,9 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-primary-dark py-16">
-                                    <i class="fas fa-users-slash text-4xl mb-3"></i>
-                                    <p>No se encontraron clientes.</p>
+                                <td colspan="6" class="text-center text-gray-500 py-16">
+                                    <i class="fas fa-users-slash text-4xl mb-3 text-brand-dark"></i>
+                                    <p class="text-lg">No se encontraron clientes.</p>
                                 </td>
                             </tr>
                         @endforelse
