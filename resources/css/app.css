@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '@fullcalendar/core/main.css';
+
+
+body {
+    /*background-image: linear-gradient(to top right, #D9780F, #ffffff, #D9780F);*/
+    /*background-image:url(/public/img/fondo.jpg);*/
+}

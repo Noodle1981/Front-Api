@@ -1,0 +1,99 @@
+¿Qué es un Lead?
+Un lead es un potencial cliente o contacto que ha mostrado algún interés en tu producto o servicio pero aún no se ha convertido en cliente. En tu sistema, un lead tiene:
+
+Atributos principales:
+
+Nombre
+Compañía
+Email
+Teléfono
+Origen (source)
+Estado
+Notas
+Usuario asignado
+Estados de un Lead
+Tu sistema maneja los siguientes estados:
+
+nuevo - Recién creado
+contactado - Ya se ha establecido comunicación
+calificado - Evaluado y considerado como prospecto viable
+perdido - No se logró convertir
+convertido - Se transformó exitosamente en cliente
+Mejores Prácticas Implementadas
+Seguimiento Estructurado
+
+# Sistema de estados bien definido
+Registro de notas y actividades
+Asignación a usuarios específicos
+Proceso de Conversión
+
+# Solo leads calificados pueden convertirse en clientes
+Conversión automática a Cliente, Contacto y Oportunidad (Deal)
+Transacciones DB para garantizar integridad
+Seguridad
+
+#Validación de propiedad del lead
+Sanitización de datos de entrada
+Protección contra accesos no autorizados
+Sugerencias de Mejora
+Automatización de Seguimiento
+Puntaje de Leads (Lead Scoring)
+Integración con Email Marketing
+
+# Agregar capacidad de envío de emails automáticos
+Seguimiento de aperturas y clics
+Templates personalizados según estado
+Panel de Analytics
+
+# Tasa de conversión por fuente
+Tiempo promedio en cada estado
+Rendimiento por usuario
+Mejoras en la Interfaz
+
+Filtros avanzados
+Vista Kanban de leads
+Timeline de interacciones
+Código de Ejemplo para Mejoras
+Recomendaciones Prioritarias
+Implementar Sistema de Recordatorios
+
+Notificaciones automáticas para seguimiento #COMPLETADO
+Tu CRM ya cubre los requisitos básicos para prospectar y gestionar clientes para vender tu plataforma de firmas digitales y checklist H&S:
+
+*Lo que ya tienes:*
+- Gestión de clientes, contactos y establecimientos.
+- Pipeline de ventas (deals) con etapas personalizables.
+- Registro de actividades/tareas asociadas a cada deal.
+- Leads y conversión a clientes.
+- Seguimiento de tareas y actividades (llamadas, reuniones, notas).
+- Reportes y dashboard para visualizar el avance.
+- Roles y separación de usuario/admin.
+
+*¿Qué podrías agregar para prospectar mejor?*
+1. *Campos de interés/segmentación:*  
+   - Rubro, tamaño de empresa, cantidad de técnicos, uso actual de checklist/firmas, nivel de digitalización.
+   - Motivo de interés, fuente del lead (web, evento, referido, etc.).
+
+2. *Historial de interacciones:*  
+   - Timeline de todas las actividades, emails, llamadas, reuniones, demos realizadas.
+
+3. *Documentos adjuntos:*  
+   - Permitir subir cotizaciones, propuestas, contratos, demos enviados.
+
+4. *Estado de oportunidad:*  
+   - Motivo de cierre/ganancia/pérdida, razones de no compra, feedback del cliente.
+
+5. *Notas internas y tags:*  
+   - Etiquetas para filtrar clientes (ej: “interesado en checklist”, “solo firmas”, “demo agendada”).
+
+6. *Filtros y búsqueda avanzada:*  
+   - Filtrar clientes por etapa, rubro, tamaño, interés, etc.
+
+7. *Integración con email/calendario:*  
+   - Para agendar y registrar reuniones/demos directamente.
+
+8. *Alertas y recordatorios:*  
+   - Notificaciones para seguimiento, tareas pendientes, fechas clave.
+
+*¿Qué NO es urgente?*
+- Automatizaciones (sequences), integración con la plataforma de firmas, workflows complejos.
