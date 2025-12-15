@@ -18,28 +18,17 @@ export default {
                 headings: ['Poppins', 'sans-serif'], // Ejemplo de fuente personalizada
             },
             colors: {
-                // *** ¡Aquí he añadido tu color naranja! ***
-                'orange-xamanen': '#FF8E28', // Puedes usar bg-orange-xamanen, text-orange-xamanen, etc.
+                // Nuevo esquema de colores
+                'brand-dark': '#0C263B',      // Navbar y Footer
+                'brand-accent': '#FE9192',    // Enlaces activos, elementos destacados
+                'btn-start': '#F7838F',       // Inicio gradiente botón
+                'btn-end': '#FCB5AA',         // Fin gradiente botón
+                
+                // Mantenemos blanco y negro estándar de Tailwind (white, black)
 
-                // #FFAC4E Tu paleta de colores de marca (la mantenemos por si la usas en otras partes)
-                    'primary': {
-                        'light': '#00E3E9', // Principal
-                        'DEFAULT': '#00E3E9',
-                        'variant': '#166264', // Variante
-                    },
-                'secondary': '#4B5563',
-
-                // Esquema de colores para el modo claro (si se usa en otras partes)
-                    'background': '#272121', // Secundario fondo
-                    'surface': '#221E1F',
-                'text-main': '#15243aff',
-                'text-muted': '#6B7280',
-
-                // Esquema de colores para el modo oscuro (si se usa en otras partes)
-                'dark-background': '#021745ff', // Un gris muy oscuro
-                'dark-surface': '#ef680eff',    // Un gris un poco más claro para tarjetas
-                'dark-text-main': '#F9FAFB',
-                'dark-text-muted': '#9CA3AF',
+                // Compatibilidad con código existente (si es necesario maperalo a los nuevos)
+                'primary': '#0C263B', 
+                'secondary': '#FE9192',
             },
         },
     },

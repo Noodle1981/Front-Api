@@ -14,13 +14,28 @@
 </head>
 
 <body class="font-sans antialiased text-white">
-    <div class="min-h-screen w-full bg-background relative overflow-hidden">
-        <div id="particles-js" class="absolute inset-0"></div>
-        <div class="relative z-10 flex flex-col min-h-screen justify-center items-center">
-            <main class="flex-grow flex items-center justify-center text-center px-4 relative w-full">
+    <div class="min-h-screen w-full bg-brand-dark relative overflow-hidden flex flex-col justify-center items-center">
+
+        {{-- Background Image --}}
+        <div class="absolute inset-0 z-0 bg-cover bg-center"
+            style="background-image: url('{{ asset('img/marketing-bg8.png') }}');">
+        </div>
+
+        <div id="particles-js" class="absolute inset-0 z-0 opacity-30"></div>
+
+        <div class="relative z-10 flex flex-col min-h-screen justify-center items-center w-full">
+            <main class="flex-grow flex flex-col items-center justify-center text-center px-4 relative w-full">
+
+                {{-- Logo --}}
+                <div class="mb-8">
+                    <a href="/">
+                        <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-20 w-auto drop-shadow-lg">
+                    </a>
+                </div>
+
                 <div
-                    class="max-w-md w-full mx-auto bg-white/10 backdrop-blur-sm rounded-xl shadow-lg border-2 border-white/20 p-8">
-                    <h2 class="text-3xl font-extrabold mb-6 text-white">Iniciar Sesión</h2>
+                    class="max-w-md w-full mx-auto bg-white/5 backdrop-blur-md rounded-2xl shadow-2xl border border-white/10 p-8">
+                    <h2 class="text-3xl font-extrabold mb-6 text-white tracking-tight">Iniciar Sesión</h2>
                     <!-- Session Status -->
                     <x-auth-session-status class="mb-4" :status="session('status')" />
                     <form method="POST" action="{{ route('login') }}" class="space-y-6 text-left">

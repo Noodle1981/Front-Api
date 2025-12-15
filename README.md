@@ -13,7 +13,11 @@ Este proyecto es un **Portal de Clientes** desarrollado en Laravel, diseñado pa
     *   Listado con filtros (Activos/Inactivos).
     *   Detalle de cliente con información fiscal y de contacto.
     *   Integración con WhatsApp para contacto directo.
-*   **Diseño Moderno**: Interfaz limpia y responsiva con Tailwind CSS y Alpine.js.
+*   **Diseño Moderno & Branding**:
+    *   **Sidebar Layout**: Navegación vertical tipo Dashboard profesional.
+    *   **Identidad Visual**: Paleta de colores corporativa (Azul Profundo `#0C263B` + Acento Coral `#FE9192`).
+    *   **Estética Premium**: Uso de Glassmorphism, fondos texturizados y animaciones sutiles.
+    *   **Interfaz Responsiva**: Adaptada a dispositivos móviles y escritorio con Tailwind CSS.
 
 ## 🛠️ Stack Tecnológico
 
