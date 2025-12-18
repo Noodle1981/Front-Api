@@ -45,11 +45,34 @@
             <!-- Sistema Section (Expanded) -->
             <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mt-4 mb-1">Sistema</div>
 
-            <x-nav-link :href="route('admin.settings.email')" :active="request()->routeIs('admin.settings.email')"
-                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                <i class="fas fa-envelope-open-text w-6 text-center mr-3"></i>
-                <span class="font-medium">Email</span>
-            </x-nav-link>
+            {{-- Email Settings (Expandable) --}}
+            <div x-data="{ open: false }" class="space-y-1">
+                <button @click="open = !open" 
+                    class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors duration-200 text-gray-200 hover:text-white hover:bg-white/5">
+                    <div class="flex items-center">
+                        <i class="fas fa-envelope w-6 text-center mr-3"></i>
+                        <span class="font-medium">Email</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs transform transition-transform" :class="{'rotate-180': open}"></i>
+                </button>
+                <div x-show="open" class="pl-4 space-y-1">
+                    <x-nav-link :href="route('admin.email.settings')" :active="request()->routeIs('admin.email.settings')"
+                        class="w-full flex items-center px-4 py-2 rounded-lg transition-colors duration-200 text-sm">
+                        <i class="fas fa-cog w-5 text-center mr-2"></i>
+                        <span>Configuración</span>
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.email.history')" :active="request()->routeIs('admin.email.history')"
+                        class="w-full flex items-center px-4 py-2 rounded-lg transition-colors duration-200 text-sm">
+                        <i class="fas fa-history w-5 text-center mr-2"></i>
+                        <span>Historial</span>
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.email.stats')" :active="request()->routeIs('admin.email.stats')"
+                        class="w-full flex items-center px-4 py-2 rounded-lg transition-colors duration-200 text-sm">
+                        <i class="fas fa-chart-bar w-5 text-center mr-2"></i>
+                        <span>Estadísticas</span>
+                    </x-nav-link>
+                </div>
+            </div>
 
             <x-nav-link :href="route('admin.maintenance')" :active="request()->routeIs('admin.maintenance')"
                 class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">

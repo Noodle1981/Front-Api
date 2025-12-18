@@ -394,6 +394,67 @@
             </form>
             </x-card>
 
+                {{-- SECCIÓN DE MOVIMIENTOS (Transactions) --}}
+                <div class="mt-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-headings text-xl text-light-text flex items-center">
+                            <i class="fas fa-money-bill-wave text-aurora-green mr-2"></i> Movimientos
+                        </h3>
+                        <button class="bg-brand-dark/50 hover:bg-brand-dark text-white text-sm px-3 py-1 rounded border border-white/10 transition">
+                            <i class="fas fa-file-excel mr-1 text-green-400"></i> Exportar Excel
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3">Fecha</th>
+                                    <th class="px-6 py-3">Origen</th>
+                                    <th class="px-6 py-3">Descripción</th>
+                                    <th class="px-6 py-3">Monto</th>
+                                    <th class="px-6 py-3">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse($client->transactions()->latest('date_at')->take(50)->get() as $tx)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 font-mono">
+                                            {{ $tx->date_at->format('d/m/Y H:i') }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-0.5 rounded border border-gray-200">
+                                                {{ $tx->apiService->name ?? 'N/A' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-900 font-medium">
+                                            {{ $tx->description }}
+                                        </td>
+                                        <td class="px-6 py-4 font-bold {{ $tx->type === 'income' ? 'text-green-600' : 'text-red-600' }}">
+                                            {{ $tx->type === 'income' ? '+' : '-' }} ${{ number_format($tx->amount, 2) }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @if($tx->status === 'verified')
+                                                <span class="text-green-500"><i class="fas fa-check-circle"></i> Verificado</span>
+                                            @elseif($tx->status === 'rejected')
+                                                <span class="text-red-500"><i class="fas fa-times-circle"></i> Rechazado</span>
+                                            @else
+                                                <span class="text-gray-400"><i class="fas fa-clock"></i> Pendiente</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                            No hay movimientos registrados aún.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
         </div>
 
     </div>

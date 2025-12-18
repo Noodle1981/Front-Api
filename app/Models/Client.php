@@ -10,6 +10,7 @@ use App\Models\Concerns\BelongsToUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Client extends Model
@@ -42,6 +43,7 @@ class Client extends Model
         'external_reference_id',
         'user_id',
         'active',
+        'deactivation_reason',
     ];
 
     /**
@@ -91,9 +93,19 @@ class Client extends Model
         return !is_null($this->parent_id);
     }
 
-    public function credentials(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function credentials(): HasMany
     {
         return $this->hasMany(ClientCredential::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function apiLogs(): HasMany
+    {
+        return $this->hasMany(ApiLog::class);
     }
 
     /**

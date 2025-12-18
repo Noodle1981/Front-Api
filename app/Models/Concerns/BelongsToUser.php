@@ -12,10 +12,12 @@ trait BelongsToUser
      */
     public function scopeForCurrentUser($query)
     {
-        if (!auth()->user()->isAdmin()) {
-            return $query->where('user_id', auth()->id());
+        // Si es Admin o Analista (Inspector), ve todo.
+        if (auth()->user()->isAdmin() || auth()->user()->hasRole('Analista')) {
+            return $query;
         }
-        return $query;
+        // Si es Usuario normal, solo lo suyo
+        return $query->where('user_id', auth()->id());
     }
 
     /**

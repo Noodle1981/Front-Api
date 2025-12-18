@@ -14,7 +14,23 @@ class ClientController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Client::forCurrentUser();
+        $user = auth()->user();
+        $isGlobal = $user->hasRole(['Super Admin', 'Manager', 'Analista']);
+        
+        // User Context Filter
+        $userFilter = $request->input('user_filter');
+        $selectedUser = null;
+        if ($userFilter && $isGlobal) {
+            $selectedUser = \App\Models\User::find($userFilter);
+        }
+        
+        // Base query with context
+        if ($selectedUser) {
+            $query = Client::where('user_id', $selectedUser->id);
+        } else {
+            $query = Client::forCurrentUser();
+        }
+        
         $filter = $request->get('filter', 'activos');
 
         if ($filter === 'inactivos') {
@@ -23,14 +39,26 @@ class ClientController extends Controller
             $query = $query->where('active', true);
         }
 
-        // Para estadísticas
+        // Estadísticas completas
+        $baseStatsQuery = $selectedUser ? Client::where('user_id', $selectedUser->id) : Client::forCurrentUser();
+        
         $stats = [
-            'total_clients' => Client::forCurrentUser()->count(),
-            'active_clients' => Client::forCurrentUser()->where('active', true)->count(),
+            'total_clients' => $baseStatsQuery->count(),
+            'active_clients' => $baseStatsQuery->where('active', true)->count(),
+            'inactive_clients' => $baseStatsQuery->where('active', false)->count(),
+            'headquarters' => $baseStatsQuery->whereNull('parent_id')->count(),
+            'branches' => $baseStatsQuery->whereNotNull('parent_id')->count(),
+            'with_apis' => $baseStatsQuery->whereHas('credentials', function($q) {
+                $q->where('is_active', true);
+            })->count(),
         ];
 
-        $clients = $query->latest()->paginate(10);
-        return view('clients.index', compact('clients', 'stats', 'filter'));
+        $clients = $query->latest()->paginate(10)->appends($request->except('page'));
+        
+        // User context selector data
+        $contextUsers = $isGlobal ? \App\Models\User::role('User')->orderBy('name')->get(['id', 'name']) : collect();
+        
+        return view('clients.index', compact('clients', 'stats', 'filter', 'contextUsers', 'selectedUser'));
     }
 
     public function create()
@@ -112,15 +140,28 @@ class ClientController extends Controller
         ]);
     }
 
-    public function deactivate(Client $client)
+    public function deactivate(Request $request, Client $client)
     {
-        $client->update(['active' => false]);
+        $data = [
+            'active' => false,
+            'deactivation_reason' => $request->has('reason') ? $request->input('reason') : 'Otros motivos',
+        ];
+        
+        if ($request->has('reason')) {
+            $note = "\n[" . now()->format('Y-m-d') . "] Suspendido: " . $request->input('reason');
+            $client->internal_notes .= $note;
+        }
+
+        $client->update($data);
         return redirect()->route('clients.index')->with('success', 'Cliente desactivado correctamente.');
     }
 
     public function activate(Client $client)
     {
-        $client->update(['active' => true]);
+        $client->update([
+            'active' => true,
+            'deactivation_reason' => null
+        ]);
         return redirect()->route('clients.index')->with('success', 'Cliente reactivado correctamente.');
     }
 }

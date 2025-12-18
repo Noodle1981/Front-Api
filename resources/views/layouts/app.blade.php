@@ -34,7 +34,7 @@
 
 <body class="font-sans antialiased bg-gray-50 text-gray-900">
 
-    <div class="flex min-h-screen bg-gray-100">
+    <div class="flex h-screen bg-gray-100 overflow-hidden">
         <!-- Sidebar -->
         <aside class="w-64 bg-brand-dark flex-shrink-0 hidden md:block border-r border-white/10">
             @if(auth()->check() && auth()->user()->isAdmin())

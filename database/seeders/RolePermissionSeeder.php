@@ -65,9 +65,9 @@ class RolePermissionSeeder extends Seeder
             'view clients',
             'create clients',
             'edit clients',
+            'reassign clients', // Permiso Agregado para Inspector
             // NO puede borrar ('delete clients')
             // NO puede restaurar ('restore clients')
-            // NO puede reasignar ('reassign clients')
             'view api catalog',
             'manage credentials',
         ]);

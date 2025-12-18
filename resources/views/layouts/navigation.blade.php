@@ -12,19 +12,45 @@
 
         <!-- Navigation Links -->
         <div class="flex flex-col space-y-2">
-            <!-- Dashboard -->
-            <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
-                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                <i class="fas fa-chart-line w-6 text-center mr-3"></i>
-                <span class="font-medium">Dashboard</span>
-            </x-nav-link>
+            @role('Analista')
+                {{-- Rutas de INSPECTOR (Analista) --}}
+                <x-nav-link :href="route('analyst.dashboard')" :active="request()->routeIs('analyst.dashboard')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-user-shield w-6 text-center mr-3"></i>
+                    <span class="font-medium">Panel Inspector</span>
+                </x-nav-link>
 
-            <!-- Clientes -->
-            <x-nav-link :href="route('clients.index')" :active="request()->routeIs('clients.*')"
-                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                <i class="fas fa-building w-6 text-center mr-3"></i>
-                <span class="font-medium">Clientes</span>
-            </x-nav-link>
+                <x-nav-link :href="route('analyst.clients.index')" :active="request()->routeIs('analyst.clients.*')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-building w-6 text-center mr-3"></i>
+                    <span class="font-medium">Clientes</span>
+                </x-nav-link>
+
+                <x-nav-link :href="route('analyst.api-dashboard')" :active="request()->routeIs('analyst.api-dashboard')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-tower-broadcast w-6 text-center mr-3"></i>
+                    <span class="font-medium">Monitor APIs</span>
+                </x-nav-link>
+            @else
+                {{-- Rutas de OPERADOR (User) --}}
+                <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-chart-line w-6 text-center mr-3"></i>
+                    <span class="font-medium">Dashboard</span>
+                </x-nav-link>
+                
+                <x-nav-link :href="route('clients.index')" :active="request()->routeIs('clients.*')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-building w-6 text-center mr-3"></i>
+                    <span class="font-medium">Clientes</span>
+                </x-nav-link>
+
+                <x-nav-link :href="route('api.dashboard')" :active="request()->routeIs('api.dashboard')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-tower-broadcast w-6 text-center mr-3"></i>
+                    <span class="font-medium">Monitor APIs</span>
+                </x-nav-link>
+            @endrole
 
             <!-- Admin Access (Super Admin Only) -->
             @role('Super Admin')
@@ -50,6 +76,14 @@
                     <a href="{{ route('admin.api-services.index') }}"
                         class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
                         Catálogo APIs
+                    </a>
+                    <a href="{{ route('admin.email.settings') }}"
+                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
+                        <i class="fas fa-envelope mr-2"></i> Email Settings
+                    </a>
+                    <a href="{{ route('admin.email.history') }}"
+                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
+                        <i class="fas fa-history mr-2"></i> Historial Emails
                     </a>
                 </div>
             </div>

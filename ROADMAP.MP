@@ -374,3 +374,10 @@ Botón de Acción: Incluye un botón visual "Exportar Excel" arriba de la tabla 
 Botón Ver Detalle: Que permita ver el contenido del campo raw_data (JSON) en un modal o detalle expandible.
 Nota de Estilo:
 Usa componentes de Tailwind CSS limpios. El diseño debe ser profesional (estilo SaaS corporativo). Usa Alpine.js para interacciones simples (como abrir el modal de detalles del JSON).
+
+## Etapa 8: Estado -> COMPLETADO ✅
+- [x] Migraciones (`api_logs`, `transactions`).
+- [x] Modelos y Relaciones (`ApiLog`, `Transaction`).
+- [x] Dashboard Técnico (`/admin/api-dashboard`) con gráficas y filtros.
+- [x] Vista de Movimientos en Cliente.
+- [x] Seeder de Datos de Prueba (`ApiLogTransactionSeeder`).

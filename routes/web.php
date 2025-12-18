@@ -38,12 +38,31 @@ Route::middleware(['auth', 'user', 'role:Super Admin|Manager|Analista|User'])->g
     Route::post('/clients/{client}/activate', [ClientController::class, 'activate'])->name('clients.activate');
 
     // Rutas Credenciales
-    Route::post('/clients/{client}/credentials', [ClientCredentialController::class, 'store'])->name('clients.credentials.store');
-    Route::put('/credentials/{credential}', [ClientCredentialController::class, 'update'])->name('credentials.update');
-    Route::delete('/credentials/{credential}', [ClientCredentialController::class, 'destroy'])->name('credentials.destroy');
+    Route::post('/clients/{client}/credentials', [App\Http\Controllers\ClientCredentialController::class, 'store'])->name('clients.credentials.store');
+    Route::put('/credentials/{credential}', [App\Http\Controllers\ClientCredentialController::class, 'update'])->name('credentials.update');
+    Route::delete('/credentials/{credential}', [App\Http\Controllers\ClientCredentialController::class, 'destroy'])->name('credentials.destroy');
+
+    // Dashboard de APIs (Monitor) - Accesible para todos los roles (Legacy/User)
+    Route::get('/api-dashboard', [App\Http\Controllers\Admin\ApiDashboardController::class, 'index'])->name('api.dashboard');
 });
 
-Route::middleware(['auth', 'role:Super Admin'])->prefix('admin')->name('admin.')->group(function () {
+// --- RUTAS PARA ANALISTAS (Inspectores) ---
+Route::middleware(['auth', 'role:Analista'])->prefix('analistas')->name('analyst.')->group(function () {
+    // Dashboard Inspector
+    Route::get('/dashboard', [App\Http\Controllers\AnalystDashboardController::class, 'index'])->name('dashboard');
+    
+    // API Monitor (Analyst View)
+    Route::get('/api-dashboard', [App\Http\Controllers\Admin\ApiDashboardController::class, 'index'])->name('api-dashboard');
+
+    // Clientes (Inspector View - Reusing Controller but strictly for Analysts)
+    Route::resource('clients', ClientController::class);
+    
+    // Transferir Clientes
+    Route::get('/clients/{client}/transfer', [App\Http\Controllers\ClientTransferController::class, 'edit'])->name('clients.transfer');
+    Route::put('/clients/{client}/transfer', [App\Http\Controllers\ClientTransferController::class, 'update'])->name('clients.transfer.update');
+});
+
+Route::middleware(['auth', 'role:Super Admin|Manager'])->prefix('admin')->name('admin.')->group(function () {
     // Panel de control del administrador
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
@@ -59,6 +78,12 @@ Route::middleware(['auth', 'role:Super Admin'])->prefix('admin')->name('admin.')
     Route::post('/maintenance/clear-views', [App\Http\Controllers\Admin\MaintenanceController::class, 'clearViews'])->name('maintenance.clear-views');
     Route::post('/maintenance/clean-logs', [App\Http\Controllers\Admin\MaintenanceController::class, 'cleanLogs'])->name('maintenance.clean-logs');
     Route::post('/maintenance/clean-sessions', [App\Http\Controllers\Admin\MaintenanceController::class, 'cleanSessions'])->name('maintenance.clean-sessions');
+    
+    // Email Settings
+    Route::get('/email-settings', [App\Http\Controllers\Admin\EmailSettingsController::class, 'index'])->name('email.settings');
+    Route::post('/email-settings/test', [App\Http\Controllers\Admin\EmailSettingsController::class, 'testEmail'])->name('email.test');
+    Route::get('/email-history', [App\Http\Controllers\Admin\EmailSettingsController::class, 'history'])->name('email.history');
+    Route::get('/email-stats', [App\Http\Controllers\Admin\EmailSettingsController::class, 'stats'])->name('email.stats');
 
     // Configuraciones del sistema
     Route::get('/settings/email', [App\Http\Controllers\Admin\SettingsController::class, 'emailConfig'])->name('settings.email');
