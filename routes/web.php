@@ -19,7 +19,7 @@ Route::get('/dashboard', function () {
     return app(DashboardController::class)->index();
 })->middleware(['auth', 'verified', 'user'])->name('dashboard');
 
-Route::middleware(['auth', 'user', 'role:Super Admin|Manager|Analista'])->group(function () {
+Route::middleware(['auth', 'user', 'role:Super Admin|Manager|Analista|User'])->group(function () {
     // Rutas de Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -38,8 +38,9 @@ Route::middleware(['auth', 'user', 'role:Super Admin|Manager|Analista'])->group(
     Route::post('/clients/{client}/activate', [ClientController::class, 'activate'])->name('clients.activate');
 
     // Rutas Credenciales
-    Route::post('/clients/{client}/credentials', [App\Http\Controllers\ClientCredentialController::class, 'store'])->name('clients.credentials.store');
-    Route::delete('/credentials/{credential}', [App\Http\Controllers\ClientCredentialController::class, 'destroy'])->name('credentials.destroy');
+    Route::post('/clients/{client}/credentials', [ClientCredentialController::class, 'store'])->name('clients.credentials.store');
+    Route::put('/credentials/{credential}', [ClientCredentialController::class, 'update'])->name('credentials.update');
+    Route::delete('/credentials/{credential}', [ClientCredentialController::class, 'destroy'])->name('credentials.destroy');
 });
 
 Route::middleware(['auth', 'role:Super Admin'])->prefix('admin')->name('admin.')->group(function () {

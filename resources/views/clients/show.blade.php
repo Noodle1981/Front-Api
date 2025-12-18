@@ -68,34 +68,34 @@
                     <x-slot name="header">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-building text-xl text-aurora-cyan"></i>
-                            <h3 class="font-headings text-xl text-light-text">Información Fiscal</h3>
+                            <h3 class="font-headings text-xl text-gray-900">Información Fiscal</h3>
                         </div>
                     </x-slot>
-                    <div class="space-y-3 text-light-text-muted">
+                    <div class="space-y-3 text-gray-600">
                         <p><strong>Razón Social:</strong> <span
-                                class="text-light-text">{{ $client->company ?? 'N/A' }}</span></p>
-                        <p><strong>CUIT:</strong> <span class="text-light-text">{{ $client->cuit ?? 'N/A' }}</span></p>
+                                class="text-gray-900">{{ $client->company ?? 'N/A' }}</span></p>
+                        <p><strong>CUIT:</strong> <span class="text-gray-900">{{ $client->cuit ?? 'N/A' }}</span></p>
                         @if($client->fantasy_name)
                             <p><strong>Nombre Fantasía:</strong> <span
-                                    class="text-light-text">{{ $client->fantasy_name }}</span></p>
+                                    class="text-gray-900">{{ $client->fantasy_name }}</span></p>
                         @endif
                         <p><strong>Condición Fiscal:</strong> <span
-                                class="text-light-text">{{ $client->tax_condition ?? 'N/A' }}</span></p>
+                                class="text-gray-900">{{ $client->tax_condition ?? 'N/A' }}</span></p>
 
                         <!-- Nuevos Campos Stage 6 -->
-                        <p><strong>Rubro:</strong> <span class="text-light-text">{{ $client->industry ?? '-' }}</span>
+                        <p><strong>Rubro:</strong> <span class="text-gray-900">{{ $client->industry ?? '-' }}</span>
                         </p>
                         <p><strong>Empleados:</strong> <span
-                                class="text-light-text">{{ $client->employees_count ?? '-' }}</span></p>
+                                class="text-gray-900">{{ $client->employees_count ?? '-' }}</span></p>
 
-                        <div class="border-t border-white/10 pt-2 mt-2">
+                        <div class="border-t border-gray-200 pt-2 mt-2">
                             <p class="font-bold text-aurora-cyan mb-1">Dirección:</p>
-                            <span class="text-light-text block">{{ $client->address ?? '-' }}</span>
-                            <span class="text-light-text block">
+                            <span class="text-gray-900 block">{{ $client->address ?? '-' }}</span>
+                            <span class="text-gray-900 block">
                                 {{ $client->city }}{{ $client->city && $client->state ? ',' : '' }} {{ $client->state }}
                             </span>
                             @if($client->zip_code)
-                                <span class="text-light-text block">CP: {{ $client->zip_code }}</span>
+                                <span class="text-gray-900 block">CP: {{ $client->zip_code }}</span>
                             @endif
                         </div>
                     </div>
@@ -106,15 +106,15 @@
                     <x-slot name="header">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-info-circle text-xl text-aurora-cyan"></i>
-                            <h3 class="font-headings text-xl text-light-text">Información de Contacto</h3>
+                            <h3 class="font-headings text-xl text-gray-900">Información de Contacto</h3>
                         </div>
                     </x-slot>
-                    <div class="space-y-3 text-light-text-muted">
-                        <p><strong>Email:</strong> <span class="text-light-text">{{ $client->email ?? 'N/A' }}</span>
+                    <div class="space-y-3 text-gray-600">
+                        <p><strong>Email:</strong> <span class="text-gray-900">{{ $client->email ?? 'N/A' }}</span>
                         </p>
                         <div class="flex justify-between items-center">
                             <p><strong>Teléfono:</strong> <span
-                                    class="text-light-text">{{ $client->phone ?? 'N/A' }}</span></p>
+                                    class="text-gray-900">{{ $client->phone ?? 'N/A' }}</span></p>
 
                             @if ($client->phone)
                                 <a href="https://wa.me/{{ $client->phone }}" target="_blank"
@@ -125,9 +125,9 @@
                             @endif
                         </div>
                         @if($client->internal_notes)
-                            <div class="pt-3 border-t border-white/10">
+                            <div class="pt-3 border-t border-gray-200">
                                 <p><strong>Notas Internas:</strong></p>
-                                <p class="text-light-text whitespace-pre-wrap">{{ $client->internal_notes }}</p>
+                                <p class="text-gray-900 whitespace-pre-wrap">{{ $client->internal_notes }}</p>
                             </div>
                         @endif
                     </div>
@@ -154,27 +154,128 @@
                     @else
                         <div class="grid grid-cols-1 gap-4">
                             @foreach($client->credentials as $credential)
-                                <div
-                                    class="bg-gray-800/50 p-4 rounded-lg border border-white/10 flex justify-between items-center">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="w-10 h-10 rounded-full bg-brand-dark/50 flex items-center justify-center text-aurora-cyan border border-aurora-cyan/30">
-                                            <i class="fas fa-server"></i>
+                                <div x-data="{
+                                    isEditing: false,
+                                    autoMode: '{{ $credential->execution_frequency ? 'custom' : 'manual' }}',
+                                    init() {
+                                        // Parsear CRON si existe
+                                        let freq = '{{ $credential->execution_frequency }}'; 
+                                        if(freq) {
+                                            // Format: min hour * * days
+                                            let parts = freq.split(' ');
+                                            if(parts.length >= 5) {
+                                                let min = parts[0].padStart(2, '0');
+                                                let hour = parts[1].padStart(2, '0');
+                                                this.$nextTick(() => {
+                                                    document.getElementById('sched_time_{{ $credential->id }}').value = `${hour}:${min}`;
+                                                    
+                                                    // Chequear dias
+                                                    let days = parts[4].split(',');
+                                                    days.forEach(d => {
+                                                        let chk = document.getElementById(`day_{{ $credential->id }}_${d}`);
+                                                        if(chk) chk.checked = true;
+                                                    });
+                                                });
+                                            }
+                                        }
+                                    }
+                                }" class="p-4 rounded-lg border border-white/10" style="background-color: #0C263B;">
+                                    
+                                    {{-- MODO VISTA --}}
+                                    <div x-show="!isEditing" class="flex justify-between items-center">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-brand-dark/50 flex items-center justify-center text-aurora-cyan border border-aurora-cyan/30">
+                                                <i class="fas fa-server"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-white">{{ $credential->apiService->name }}</h4>
+                                                <div class="flex gap-2">
+                                                    <span class="text-xs text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">Activo</span>
+                                                    @if($credential->execution_frequency)
+                                                        <span class="text-xs text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-full">Automático</span>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 class="font-bold text-white">{{ $credential->apiService->name }}</h4>
-                                            <span
-                                                class="text-xs text-green-400 bg-green-400/10 px-2 py-0.5 rounded-full">Activo</span>
+                                        <div class="flex items-center gap-2">
+                                            <button @click="isEditing = true" type="button" 
+                                                class="text-aurora-cyan hover:text-cyan-300 text-sm flex items-center gap-1 transition-colors px-3 py-1 rounded hover:bg-aurora-cyan/10">
+                                                <i class="fas fa-pencil-alt"></i> Editar
+                                            </button>
+                                            
+                                            <form action="{{ route('credentials.destroy', $credential) }}" method="POST"
+                                                onsubmit="return confirm('¿Eliminar esta integración?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button
+                                                    class="text-red-400 hover:text-red-300 text-sm flex items-center gap-1 transition-colors px-3 py-1 rounded hover:bg-red-400/10">
+                                                    <i class="fas fa-trash"></i> Eliminar
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
-                                    <form action="{{ route('credentials.destroy', $credential) }}" method="POST"
-                                        onsubmit="return confirm('¿Eliminar esta integración?');">
+
+                                    {{-- MODO EDICIÓN --}}
+                                    <form x-show="isEditing" action="{{ route('credentials.update', $credential) }}" method="POST" class="space-y-4 mt-2 border-t border-white/10 pt-4">
                                         @csrf
-                                        @method('DELETE')
-                                        <button
-                                            class="text-red-400 hover:text-red-300 text-sm flex items-center gap-1 transition-colors px-3 py-1 rounded hover:bg-red-400/10">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
+                                        @method('PUT')
+                                        
+                                        <h5 class="text-white font-bold mb-2">Editar Credenciales - {{ $credential->apiService->name }}</h5>
+
+                                        @foreach($credential->apiService->required_fields as $field)
+                                            <div>
+                                                <label class="block font-medium text-xs text-gray-400 mb-1 capitalize">{{ str_replace('_', ' ', $field) }}</label>
+                                                {{-- Nota: No podemos mostrar el valor desencriptado en el value por seguridad, solo si queremos permitir editarlo.
+                                                     Para este caso, asumimos que el usuario re-ingresa si quiere cambiar, o mantenemos el input vacío con placeholder.
+                                                     Pero Laravel Model Casting podría devolver el array desencriptado si se accede. --}}
+                                                <input type="text" name="credentials[{{ $field }}]" value="{{ $credential->credentials[$field] ?? '' }}"
+                                                    class="w-full bg-gray-900 border border-gray-700 rounded text-white p-2 text-sm focus:border-aurora-cyan focus:ring-1 focus:ring-aurora-cyan outline-none">
+                                            </div>
+                                        @endforeach
+
+                                        {{-- Automatización (Copia de la lógica de creación) --}}
+                                        <div class="border-t border-white/10 pt-4 mt-2">
+                                            <div class="flex items-center space-x-4 mb-4">
+                                                <label class="inline-flex items-center">
+                                                    <input type="radio" x-model="autoMode" name="automation_type" value="manual"
+                                                        class="form-radio text-aurora-cyan focus:ring-aurora-cyan bg-gray-900 border-gray-700">
+                                                    <span class="ml-2 text-gray-300">Manual</span>
+                                                </label>
+                                                <label class="inline-flex items-center">
+                                                    <input type="radio" x-model="autoMode" name="automation_type" value="custom"
+                                                        class="form-radio text-aurora-cyan focus:ring-aurora-cyan bg-gray-900 border-gray-700">
+                                                    <span class="ml-2 text-gray-300">Automático</span>
+                                                </label>
+                                            </div>
+
+                                            <div x-show="autoMode === 'custom'" class="bg-gray-900 p-3 rounded border border-gray-700 space-y-3">
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-400 mb-2">Días de Ejecución</label>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach(['Lun' => 1, 'Mar' => 2, 'Mié' => 3, 'Jue' => 4, 'Vie' => 5, 'Sáb' => 6, 'Dom' => 0] as $label => $val)
+                                                            <label class="inline-flex items-center bg-gray-800 px-2 py-1 rounded border border-gray-600 cursor-pointer hover:border-aurora-cyan">
+                                                                <input type="checkbox" id="day_{{ $credential->id }}_{{ $val }}" name="scheduled_days[]" value="{{ $val }}"
+                                                                    class="form-checkbox text-aurora-cyan focus:ring-aurora-cyan bg-gray-700 border-gray-500 rounded">
+                                                                <span class="ml-2 text-xs text-gray-300">{{ $label }}</span>
+                                                            </label>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-400 mb-2">Horario</label>
+                                                    <input type="time" id="sched_time_{{ $credential->id }}" name="scheduled_time"
+                                                        class="bg-gray-800 border border-gray-600 text-white rounded p-1 text-sm">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex justify-end gap-2 pt-2">
+                                            <button @click="isEditing = false" type="button" class="px-3 py-1 text-gray-400 hover:text-white transition">Cancelar</button>
+                                            <button type="submit" class="px-4 py-1.5 bg-aurora-cyan text-gray-900 font-bold rounded hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/20">
+                                                Guardar Cambios
+                                            </button>
+                                        </div>
                                     </form>
                                 </div>
                             @endforeach
@@ -193,7 +294,7 @@
                     <x-slot name="header">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-plus-circle text-xl text-aurora-pink"></i>
-                            <h3 class="font-headings text-xl text-light-text">Nueva Integración</h3>
+                            <h3 class="font-headings text-xl text-gray-900">Nueva Integración</h3>
                         </div>
                     </x-slot>
 
@@ -212,9 +313,9 @@
                         </div>
 
                         {{-- Campos dinámicos --}}
-                        <div x-show="selectedService" x-transition class="border-t border-white/10 pt-4 mt-4 space-y-4">
+                        <div x-show="selectedService" x-transition class="border-t border-gray-200 pt-4 mt-4 space-y-4">
                             <div
-                                class="bg-blue-900/20 border border-blue-500/20 p-3 rounded text-sm text-blue-200 mb-4">
+                                class="bg-blue-50 border border-blue-200 p-3 rounded text-sm text-blue-800 mb-4">
                                 <i class="fas fa-info-circle mr-1"></i>
                                 Ingresa las credenciales para <span class="font-bold"
                                     x-text="currentService ? currentService.name : ''"></span>.
@@ -223,29 +324,56 @@
                             <template x-for="field in currentService.required_fields" :key="field">
                                 <div>
                                     <label :for="'cred_' + field"
-                                        class="block font-medium text-sm text-gray-300 mb-1 capitalize"
+                                        class="block font-medium text-sm text-gray-700 mb-1 capitalize"
                                         x-text="field.replace(/_/g, ' ')"></label>
                                     <input type="text" :name="'credentials[' + field + ']'" :id="'cred_' + field"
-                                        class="w-full bg-gray-800 border border-gray-600 rounded text-white p-2 focus:border-aurora-cyan focus:ring-1 focus:ring-aurora-cyan outline-none"
+                                        class="w-full bg-white border border-gray-300 rounded text-gray-900 p-2 focus:border-aurora-cyan focus:ring-1 focus:ring-aurora-cyan outline-none"
                                         required placeholder="...">
                                 </div>
                             </template>
                         </div>
                         </template>
 
-                        <div class="space-y-4 pt-4 border-t border-white/10">
-                            <h4 class="font-bold text-white mb-2">Automatización</h4>
+                        <div class="space-y-4 pt-4 border-t border-gray-200">
+                            <h4 class="font-bold text-gray-900 mb-2">Automatización</h4>
                             <div>
-                                <x-input-label for="execution_frequency" value="Frecuencia de Ejecución" />
-                                <select name="execution_frequency" id="execution_frequency"
-                                    class="mt-1 block w-full bg-gray-900 border border-gray-700 text-white rounded-lg focus:ring-aurora-cyan focus:border-aurora-cyan p-2.5">
-                                    <option value="">Manual (Sin automatización)</option>
-                                    <option value="daily_0800">Diario - 08:00 AM</option>
-                                    <option value="daily_0900">Diario - 09:00 AM</option>
-                                    <option value="daily_1200">Diario - 12:00 PM</option>
-                                    <option value="weekly_mon_0900">Semanal (Lunes 09:00)</option>
-                                    <option value="monthly_1st_0900">Mensual (Día 1 09:00)</option>
-                                </select>
+                            <div x-data="{ autoMode: 'manual' }">
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" x-model="autoMode" name="automation_type" value="manual"
+                                            class="form-radio text-aurora-cyan focus:ring-aurora-cyan bg-gray-900 border-gray-700">
+                                        <span class="ml-2 text-gray-900">Manual</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" x-model="autoMode" name="automation_type" value="custom"
+                                            class="form-radio text-aurora-cyan focus:ring-aurora-cyan bg-gray-900 border-gray-700">
+                                        <span class="ml-2 text-gray-900">Automático</span>
+                                    </label>
+                                </div>
+
+                                <div x-show="autoMode === 'custom'" x-transition class="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
+                                    
+                                    {{-- Selección de Días --}}
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Días de Ejecución</label>
+                                        <div class="flex flex-wrap gap-2">
+                                            @foreach(['Lun' => 1, 'Mar' => 2, 'Mié' => 3, 'Jue' => 4, 'Vie' => 5, 'Sáb' => 6, 'Dom' => 0] as $label => $val)
+                                                <label class="inline-flex items-center bg-white px-3 py-1 rounded border border-gray-300 cursor-pointer hover:border-aurora-cyan">
+                                                    <input type="checkbox" name="scheduled_days[]" value="{{ $val }}"
+                                                        class="form-checkbox text-aurora-cyan focus:ring-aurora-cyan bg-gray-100 border-gray-300 rounded">
+                                                    <span class="ml-2 text-sm text-gray-700">{{ $label }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    {{-- Selección de Hora --}}
+                                    <div>
+                                        <label for="scheduled_time" class="block text-sm font-medium text-gray-700 mb-2">Horario</label>
+                                        <input type="time" name="scheduled_time" id="scheduled_time"
+                                            class="bg-white border border-gray-300 text-gray-900 rounded-lg focus:ring-aurora-cyan focus:border-aurora-cyan p-2">
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <x-input-label for="alert_email" value="Email de Alertas (Opcional)" />

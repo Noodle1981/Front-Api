@@ -71,8 +71,8 @@
                                 <td class="p-4 text-right text-base font-medium">
                                     <div class="flex items-center justify-end space-x-4">
                                         <a href="{{ route('clients.show', $client) }}"
-                                            class="text-gray-600 hover:text-pink-500 transition" title="Ver Detalles">
-                                            <i class="fas fa-search"></i>
+                                            class="text-gray-600 hover:text-pink-500 transition" title="Gestionar Integraciones / Ver Detalles">
+                                            <i class="fas fa-plug"></i>
                                         </a>
                                         <a href="{{ route('clients.edit', $client) }}"
                                             class="text-gray-600 hover:text-pink-500 transition" title="Editar Cliente">

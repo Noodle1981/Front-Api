@@ -326,4 +326,51 @@ Con esta estructura:
 2.  Si el Analista se equivoca cargando un token, solo rompe la conexión de **ESE** cliente, no de todo el sistema.
 3.  Solo el **Admin** puede tocar la estructura JSON que define cómo funciona la API.
 
-¿Te parece segura esta distribución?
+Etapa 8  
+
+
+Contexto del Proyecto:
+Estoy desarrollando un "Hub de Integraciones Contables" (Accounting Middleware) usando Laravel 12, Blade, Tailwind CSS y Alpine.js. Ya tengo implementado el sistema de Usuarios y Clientes (clients).
+Objetivo:
+Necesito implementar el "Módulo de Gestión de APIs y Datos". Esto tiene dos partes fundamentales:
+Centro de Control de APIs: Un dashboard para monitorear el estado de las conexiones (logs, errores, health check).
+Almacenamiento de Datos (Transactions): Una estructura para guardar la información financiera que el backend descarga de las APIs (Mercado Pago, AFIP, Bancos) y mostrarla al usuario, evitando usar Excel como almacenamiento (el Excel será solo para exportar).
+Por favor, genera las Migraciones, Modelos y Vistas (Blade) siguiendo estas especificaciones:
+1. Base de Datos (Migraciones)
+Necesito 2 tablas nuevas. Usa foreignId y restricciones adecuadas.
+Tabla A: api_logs (Bitácora de Eventos)
+Esta tabla registrará qué pasó cuando el backend intentó conectarse.
+client_id: Relación con el cliente.
+api_service_id: Relación con el servicio (ej: Mercado Pago).
+status: Enum ('success', 'warning', 'error', 'pending').
+event_type: String (Ej: "Sincronización Facturas", "Token Refresh").
+details: Text/JSON (Para guardar el mensaje de error técnico si falla).
+happened_at: Timestamp.
+Tabla B: transactions (Datos Financieros Unificados)
+Aquí se guardarán los datos reales descargados. No quiero guardar archivos, quiero guardar filas de datos.
+client_id: Relación con el cliente.
+api_service_id: De dónde vino el dato.
+date_at: DateTime (Fecha real del movimiento).
+amount: Decimal (15, 2).
+currency: String (default 'ARS').
+type: Enum ('income', 'expense').
+description: String (Ej: "Cobro MP #1234").
+status: Enum ('pending', 'verified', 'rejected') (Para control del contador).
+raw_data: JSON (Campo crítico para guardar la data cruda específica de cada API que no encaje en las columnas estándar).
+2. Modelos y Relaciones
+Genera los modelos ApiLog y Transaction con sus relaciones:
+Un Client tiene muchos ApiLogs y muchas Transactions.
+Asegúrate de incluir casts para los campos JSON y fechas.
+3. Vistas (Blade + Tailwind)
+Vista A: "Centro de APIs" (Dashboard Técnico)
+Crea una vista que funcione como "Torre de Control". Debe tener 3 secciones visuales:
+Tarjetas de Estado (Health Check): Arriba. Muestra contadores (Total Errores hoy, Sincronizaciones Exitosas, Clientes Conectados).
+Bitácora en Vivo (Live Feed): Al centro/izquierda. Una tabla mostrando los últimos ApiLogs. Si el status es 'error', la fila o badge debe ser roja. Si es 'success', verde.
+Catálogo de Servicios: A la derecha. Una lista de las APIs disponibles indicando si son de tipo "Automático" (🤖) o "Manual" (📂).
+Vista B: "Listado de Movimientos" (En el perfil del Cliente)
+Dentro del detalle de un cliente, crea una sección/tab para ver las transactions.
+Tabla Datatable con: Fecha, Origen (API), Descripción, Monto (colorear verde si es income, rojo si es expense), Estado.
+Botón de Acción: Incluye un botón visual "Exportar Excel" arriba de la tabla (solo el botón, la lógica la haré luego).
+Botón Ver Detalle: Que permita ver el contenido del campo raw_data (JSON) en un modal o detalle expandible.
+Nota de Estilo:
+Usa componentes de Tailwind CSS limpios. El diseño debe ser profesional (estilo SaaS corporativo). Usa Alpine.js para interacciones simples (como abrir el modal de detalles del JSON).
