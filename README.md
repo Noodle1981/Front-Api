@@ -239,9 +239,11 @@ php artisan config:clear
 
 Después de ejecutar `CompleteDemoSeeder`:
 
-| Email | Password | Rol | Clientes |
-|-------|----------|-----|----------|
-| `admin@example.com` | `password` | Super Admin | - |
+| Email | Password | Rol | Datos de Demo |
+|-------|----------|-----|---------------|
+| `user@example.com` | `password` | User (Contador) | 5 Sedes, 4 Sucursales, Gráficos completos (Ideal Presentaciones) |
+| `analista@example.com` | `password` | Analista (Inspector) | Vista global de todos los contadores |
+| `admin@example.com` | `password` | Super Admin | Acceso total al sistema |
 | `maria.gonzalez@demo.com` | `password123` | User | 2 sedes, 2 sucursales |
 | `carlos.rodriguez@demo.com` | `password123` | User | 2 sedes, 1 sucursal |
 | `ana.martinez@demo.com` | `password123` | User | 1 sede, 2 sucursales |
