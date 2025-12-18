@@ -35,6 +35,13 @@
                 <span class="font-medium">Usuarios</span>
             </x-nav-link>
 
+            <!-- Servicios API -->
+            <x-nav-link :href="route('admin.api-services.index')" :active="request()->routeIs('admin.api-services.*')"
+                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                <i class="fas fa-plug w-6 text-center mr-3"></i>
+                <span class="font-medium">Servicios API</span>
+            </x-nav-link>
+
             <!-- Sistema Section (Expanded) -->
             <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mt-4 mb-1">Sistema</div>
 

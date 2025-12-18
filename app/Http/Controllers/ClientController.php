@@ -16,23 +16,28 @@ class ClientController extends Controller
     {
         $query = Client::forCurrentUser();
         $filter = $request->get('filter', 'activos');
+
         if ($filter === 'inactivos') {
-            $query = $query->where('client_status', 'inactivo');
+            $query = $query->where('active', false);
         } else {
-            $query = $query->where('client_status', '!=', 'inactivo');
+            $query = $query->where('active', true);
         }
-        // Para estadísticas, usar queries independientes para evitar duplicación y errores de brackets
+
+        // Para estadísticas
         $stats = [
             'total_clients' => Client::forCurrentUser()->count(),
-            'active_clients' => Client::forCurrentUser()->where('client_status', '!=', 'inactivo')->count(),
+            'active_clients' => Client::forCurrentUser()->where('active', true)->count(),
         ];
+
         $clients = $query->latest()->paginate(10);
         return view('clients.index', compact('clients', 'stats', 'filter'));
     }
 
     public function create()
     {
-        return view('clients.create');
+        // Traer posibles sedes (clientes que NO son sucursal)
+        $parents = Client::forCurrentUser()->whereNull('parent_id')->orderBy('company', 'asc')->get();
+        return view('clients.create', compact('parents'));
     }
 
 
@@ -51,18 +56,25 @@ class ClientController extends Controller
             abort(404);
         }
 
-        // 2. Carga eficiente de TODAS las relaciones en una sola llamada.
-        // deal, activities removed
+        $client->load(['credentials.apiService', 'parent', 'children']);
+        $apiServices = \App\Models\ApiService::all();
 
-        // 3. Pasamos el cliente
-        return view('clients.show', compact('client'));
+        return view('clients.show', compact('client', 'apiServices'));
     }
 
     public function edit(Client $client)
     {
         if (Auth::user()->id !== $client->user_id)
             abort(404);
-        return view('clients.edit', compact('client'));
+
+        // Traer posibles sedes (clientes que NO son sucursal y NO son el mismo)
+        $parents = Client::forCurrentUser()
+            ->whereNull('parent_id')
+            ->where('id', '!=', $client->id)
+            ->orderBy('company', 'asc')
+            ->get();
+
+        return view('clients.edit', compact('client', 'parents'));
     }
 
     public function update(ClientRequest $request, Client $client)
@@ -76,8 +88,15 @@ class ClientController extends Controller
 
     public function destroy(Client $client)
     {
-        if (Auth::user()->id !== $client->user_id)
+        if (Auth::user()->id !== $client->user_id) {
             abort(404);
+        }
+
+        // Verificar permiso de borrado (Spatie)
+        if (!Auth::user()->can('delete clients')) {
+            abort(403, 'No tienes permiso para eliminar clientes.');
+        }
+
         $client->delete();
         return redirect()->route('clients.index')->with('success', '¡Cliente eliminado con éxito!');
     }
@@ -95,13 +114,13 @@ class ClientController extends Controller
 
     public function deactivate(Client $client)
     {
-        $client->update(['client_status' => 'inactivo']);
+        $client->update(['active' => false]);
         return redirect()->route('clients.index')->with('success', 'Cliente desactivado correctamente.');
     }
 
     public function activate(Client $client)
     {
-        $client->update(['client_status' => 'activo']);
+        $client->update(['active' => true]);
         return redirect()->route('clients.index')->with('success', 'Cliente reactivado correctamente.');
     }
 }

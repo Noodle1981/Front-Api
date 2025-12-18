@@ -31,31 +31,51 @@
                 <table class="w-full text-base">
                     <thead class="border-b border-gray-200 bg-gray-50">
                         <tr>
-                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Nombre</th>
-                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Compañía</th>
-                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Email</th>
-                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Teléfono</th>
-                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Estado
-                                Cliente</th>
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Razón Social y
+                                CUIT</th>
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Condición
+                                Fiscal</th>
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Contacto</th>
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Estado</th>
                             <th class="relative p-4"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-primary-light">
                         @forelse ($clients as $client)
                             <tr class="hover:bg-primary-light/20 transition-colors duration-200">
-                                <td class="p-4 font-bold text-black">{{ $client->name }}</td>
-                                <td class="p-4 text-black">{{ $client->company }}</td>
-                                <td class="p-4 text-black">{{ $client->email }}</td>
-                                <td class="p-4 text-black">{{ $client->phone ?? 'N/A' }}</td>
-                                <td class="p-4 text-black">{{ ucfirst($client->client_status) }}</td>
+                                <td class="p-4">
+                                    <div class="font-bold text-black">{{ $client->company }}</div>
+                                    <div class="text-sm text-gray-500">{{ $client->cuit }}</div>
+                                    @if($client->fantasy_name)
+                                        <div class="text-xs text-gray-400 mt-1">{{ $client->fantasy_name }}</div>
+                                    @endif
+                                </td>
+                                <td class="p-4 text-black">{{ $client->tax_condition ?? 'N/A' }}</td>
+                                <td class="p-4">
+                                    <div class="text-black">{{ $client->email }}</div>
+                                    <div class="text-sm text-gray-500">{{ $client->phone ?? 'N/A' }}</div>
+                                </td>
+                                <td class="p-4 text-black">
+                                    @if($client->active)
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Activo
+                                        </span>
+                                    @else
+                                        <span
+                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            Inactivo
+                                        </span>
+                                    @endif
+                                </td>
                                 <td class="p-4 text-right text-base font-medium">
                                     <div class="flex items-center justify-end space-x-4">
                                         <a href="{{ route('clients.show', $client) }}"
-                                            class="text-primary-dark hover:text-primary transition" title="Ver Detalles">
+                                            class="text-gray-600 hover:text-pink-500 transition" title="Ver Detalles">
                                             <i class="fas fa-search"></i>
                                         </a>
                                         <a href="{{ route('clients.edit', $client) }}"
-                                            class="text-primary-dark hover:text-primary transition" title="Editar Cliente">
+                                            class="text-gray-600 hover:text-pink-500 transition" title="Editar Cliente">
                                             <i class="fas fa-pen"></i>
                                         </a>
                                         @if($filter === 'inactivos')
@@ -72,13 +92,25 @@
                                                 class="inline"
                                                 onsubmit="return confirm('¿Estás seguro? El cliente será marcado como inactivo y no se mostrará en el listado principal.');">
                                                 @csrf
-                                                <button type="submit"
-                                                    class="text-primary-dark hover:text-orange-xamanen transition"
+                                                <button type="submit" class="text-gray-600 hover:text-red-500 transition"
                                                     title="Desactivar Cliente">
                                                     <i class="fas fa-user-slash"></i>
                                                 </button>
                                             </form>
                                         @endif
+
+                                        @can('delete clients')
+                                            <form action="{{ route('clients.destroy', $client) }}" method="POST"
+                                                class="inline ml-2"
+                                                onsubmit="return confirm('¿Eliminar cliente permanentemente? (Soft Delete)');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-sm text-red-400 hover:text-red-600 transition"
+                                                    title="Eliminar (Solo Admin)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

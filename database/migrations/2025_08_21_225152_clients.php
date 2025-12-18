@@ -4,46 +4,62 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique()->comment('Identificador público para sistemas externos');
 
-            // --- Campos Clave de Sincronización con Plataforma H&S ---
-            $table->string('cuit')->unique()->comment('Identificador único legal. USADO PARA BUSCAR/VINCULAR con la plataforma H&S.');
-            $table->string('name')->comment('Nombre de fantasía. SINCRONIZADO con el campo "nombre" en H&S.');
-            $table->string('company')->nullable()->comment('Razón Social. SINCRONIZADO con el campo "razon_social" en H&S.');
-            
-            // --- ID Externo para Vínculo Permanente ---
-            $table->unsignedBigInteger('hs_platform_empresa_id')->nullable()->unique()->comment('ID de la tabla "empresas" en la plataforma H&S. Clave para la integración.');
+            // --- NUEVO: Lógica Sede vs Anexo ---
+            // Si está vacío (NULL) es la CASA CENTRAL. Si tiene un ID, es un ANEXO de esa central.
+            $table->foreignId('parent_id')
+                ->nullable()
+                ->constrained('clients')
+                ->onDelete('cascade')
+                ->comment('Jerarquía: NULL = Sede, ID = Anexo/Sucursal');
 
-            // --- Campos Exclusivos del CRM (Información Comercial y Fiscal) ---
-            $table->string('website')->nullable()->comment('Sitio web del cliente. (Exclusivo del CRM)');
-            $table->string('email')->nullable()->comment('Email de contacto principal/comercial. (Exclusivo del CRM)');
-            $table->string('phone')->nullable()->comment('Teléfono de contacto principal/comercial. (Exclusivo del CRM)');
-            
-            // Domicilio Fiscal (Exclusivo del CRM)
-            $table->string('fiscal_address_street')->nullable();
-            $table->string('fiscal_address_zip_code')->nullable();
-            $table->string('fiscal_address_city')->nullable();
-            $table->string('fiscal_address_state')->nullable();
-            $table->string('fiscal_address_country')->nullable();
+            $table->string('branch_name')->nullable()->comment('Nombre de la sucursal si es anexo (Ej: Local Centro)');
 
-            // --- Campos Comunes, pero gestionados principalmente en CRM ---
-            // Estos podrían enviarse a H&S en la creación inicial si son necesarios allí.
-            $table->string('economic_activity')->nullable()->comment('Actividad económica principal.');
-            $table->string('art_provider')->nullable()->comment('Aseguradora de Riesgos del Trabajo (ART).');
-            $table->date('art_registration_date')->nullable()->comment('Fecha de alta en la ART.');
-            $table->string('hs_manager_name')->nullable()->comment('Nombre del responsable general de H&S.');
-            $table->string('hs_manager_contact')->nullable()->comment('Contacto del responsable general de H&S.');
-            
-            // --- Campos de Gestión Interna del CRM ---
-            $table->text('notes')->nullable()->comment('Notas comerciales y de seguimiento. (Exclusivo del CRM)');
-            $table->boolean('active')->default(true);
-            $table->foreignId('user_id')->constrained('users')->onDelete('restrict')->comment('Vendedor/agente asignado en el CRM.');
+            // --- Identificación Fiscal ---
+            // CAMBIO IMPORTANTE: Quitamos 'unique()' para permitir cargar sucursales con mismo CUIT
+            $table->string('cuit', 11)->index()->comment('CUIT (sin guiones). No es único para permitir sucursales.');
+
+            $table->string('company')->comment('Razón Social (Nombre legal en facturas)');
+            $table->string('fantasy_name')->nullable()->comment('Nombre de fantasía / Marca comercial');
+
+            // --- Clasificación Contable y Datos de Negocio ---
+            $table->string('tax_condition')->nullable()->comment('Condición frente al IVA');
+
+            // --- NUEVO: Lo que pediste recién ---
+            $table->string('industry')->nullable()->comment('Rubro (Ej: Gastronomía, Salud)');
+            $table->integer('employees_count')->nullable()->unsigned()->comment('Cantidad de empleados');
+
+            // --- Contacto Principal ---
+            $table->string('email')->nullable()->comment('Email para notificaciones');
+            $table->string('phone')->nullable();
+            $table->string('website')->nullable();
+
+            // --- Domicilio Fiscal ---
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('zip_code')->nullable();
+
+            // --- Gestión Interna ---
+            $table->text('internal_notes')->nullable();
+            $table->unsignedBigInteger('external_reference_id')->nullable()->index();
+
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->onDelete('set null')
+                ->comment('Contador asignado');
+
+            $table->boolean('active')->default(true); // Mantengo 'active' como en tu código original
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

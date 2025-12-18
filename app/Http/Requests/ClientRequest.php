@@ -14,23 +14,22 @@ class ClientRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255',
-            'company' => 'nullable|string|max:255',
-            'cuit' => 'nullable|string|max:15',
+            'fantasy_name' => 'nullable|string|max:255',
+            'company' => 'required|string|max:255',
+            'cuit' => 'required|string|size:11',
+            'tax_condition' => 'nullable|string|max:255',
+            'industry' => 'nullable|string|max:255',
+            'employees_count' => 'nullable|integer|min:0',
+            'parent_id' => 'nullable|exists:clients,id',
+            'branch_name' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
-            'fiscal_address_street' => 'nullable|string|max:255',
-            'fiscal_address_zip_code' => 'nullable|string|max:10',
-            'fiscal_address_city' => 'nullable|string|max:100',
-            'fiscal_address_state' => 'nullable|string|max:100',
-            'fiscal_address_country' => 'nullable|string|max:100',
-            'economic_activity' => 'nullable|string|max:255',
-            'art_provider' => 'nullable|string|max:255',
-            'art_registration_date' => 'nullable|date',
-            'hs_manager_name' => 'nullable|string|max:255',
-            'hs_manager_contact' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
+            'address' => 'nullable|string|max:255',
+            'zip_code' => 'nullable|string|max:20',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'internal_notes' => 'nullable|string',
             'active' => 'boolean',
         ];
     }
@@ -38,7 +37,9 @@ class ClientRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => 'El nombre es obligatorio',
+            'company.required' => 'La Razón Social es obligatoria',
+            'cuit.required' => 'El CUIT es obligatorio',
+            'cuit.size' => 'El CUIT debe tener 11 caracteres',
             'email.email' => 'El email debe ser una dirección válida',
             'website.url' => 'El sitio web debe ser una URL válida',
             'user_id.exists' => 'El usuario asignado no existe',

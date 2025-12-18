@@ -10,6 +10,8 @@ use App\Models\Concerns\BelongsToUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
+use Illuminate\Support\Str;
+
 class Client extends Model
 {
     use HasFactory, NormalizesPhone, SoftDeletes, BelongsToUser;
@@ -20,27 +22,26 @@ class Client extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'company',
+        'uuid',
         'cuit',
-        'website',
+        'company', // Razón Social
+        'fantasy_name',
+        'tax_condition',
+        'industry',
+        'employees_count',
+        'parent_id',
+        'branch_name',
         'email',
         'phone',
-        'fiscal_address_street',
-        'fiscal_address_zip_code',
-        'fiscal_address_city',
-        'fiscal_address_state',
-        'fiscal_address_country',
-        'economic_activity',
-        'art_provider',
-        'art_registration_date',
-        'hs_manager_name',
-        'hs_manager_contact',
-        'notes',
-        'active',
+        'website',
+        'address',
+        'city',
+        'state',
+        'zip_code',
+        'internal_notes',
+        'external_reference_id',
         'user_id',
-        'hs_platform_empresa_id', // <-- Importante para la integración
-        'client_status', // <-- Permitir cambio de estado
+        'active',
     ];
 
     /**
@@ -70,9 +71,29 @@ class Client extends Model
 
     // ----- RELACIONES -----
 
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Client::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Client::class, 'parent_id');
+    }
+
+    public function isAnexo()
+    {
+        return !is_null($this->parent_id);
+    }
+
+    public function credentials(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ClientCredential::class);
     }
 
     /**
@@ -80,6 +101,10 @@ class Client extends Model
      */
     protected static function booted()
     {
-        // ... logic removed
+        static::creating(function ($client) {
+            if (empty($client->uuid)) {
+                $client->uuid = (string) Str::uuid();
+            }
+        });
     }
 }

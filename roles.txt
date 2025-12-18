@@ -1,0 +1,80 @@
+Esta es una decisión de arquitectura crítica. Para que el sistema sea seguro y no se rompa, debemos separar claramente **quién configura las reglas del juego** (Definiciones de API) de **quién juega** (Carga de datos).
+
+Te propongo una estructura de **3 Roles** para mantener el orden.
+
+### La Filosofía: "Definición" vs "Uso"
+El punto clave para responder tu duda sobre las APIs es entender la diferencia entre:
+1.  **Definir la API (Catálogo):** Decir "El sistema soporta Mercado Pago y necesita `client_id` y `secret`". -> **Esto rompe el sistema si se hace mal.**
+2.  **Usar la API (Credenciales):** Decir "El Cliente Juan Pérez tiene el secret `abc-123`". -> **Esto es trabajo diario.**
+
+---
+
+### Distribución de Roles Propuesta
+
+#### 1. Rol: `SUPER ADMIN` (IT / Tech Lead)
+Es el "Dios" del sistema. Probablemente seas tú o el jefe de tecnología.
+*   **Gestión de Usuarios:** Crea, edita y elimina a los empleados (Contadores).
+*   **Gestión de APIs (Catálogo - `ApiService`):**
+    *   Es el **ÚNICO** que puede crear/editar/borrar en la tabla `api_services`.
+    *   Define qué campos JSON se piden (ej: define que para "AFIP" se pide certificado y clave).
+    *   *Por qué:* Si un usuario normal borra "Mercado Pago" del catálogo, se rompen las integraciones de 500 clientes.
+*   **Acceso Global:** Puede ver y editar cualquier cliente si hay una emergencia.
+
+#### 2. Rol: `MANAGER` (Gerente del Estudio / Supervisor)
+Es el jefe de los contadores. No toca código ni configuraciones técnicas.
+*   **Gestión de Clientes:**
+    *   Puede Reasignar clientes (mover un cliente del Contador A al Contador B).
+    *   Puede ver Reportes (cuántos clientes hay, quién cargó qué).
+    *   Puede Restaurar clientes eliminados (SoftDeletes).
+*   **Usuarios:** Puede ver la lista de empleados, pero no crear nuevos (opcional).
+
+#### 3. Rol: `ANALISTA` (Contador / Usuario Estándar)
+Es el usuario que trabaja día a día cargando datos.
+*   **Gestión de Clientes:**
+    *   **Create/Read/Update:** Crea clientes, carga sus datos (CUIT, Empleados, etc.).
+    *   **Delete:** No debería poder borrar permanentemente. Solo "Desactivar" o SoftDelete.
+*   **Gestión de APIs (Credenciales - `ClientCredential`):**
+    *   **Read (Catálogo):** Solo puede *ver* la lista de APIs disponibles ("Ah, puedo conectar MP o AFIP"). **No puede crear nuevas APIs.**
+    *   **Create/Update (Credenciales):** Es quien hace la conexión. Entra al perfil de "Ferretería Juan", selecciona "Mercado Pago" y pega los tokens que le pasó el cliente.
+
+---
+
+### Resumen de Permisos (Matriz CRUD)
+
+| Recurso / Acción | Super Admin | Manager | Analista (User) |
+| :--- | :---: | :---: | :---: |
+| **Usuarios** (Crear login) | ✅ FULL | 👁️ Ver | ❌ |
+| **Catálogo APIs** (Definir estructura) | ✅ FULL | 👁️ Ver | 👁️ Ver (Solo lista) |
+| **Clientes** (Datos, CUIT) | ✅ FULL | ✅ FULL | ✅ (Sin Borrado Final) |
+| **Credenciales** (Cargar Tokens del cliente) | ✅ FULL | 👁️ Ver | ✅ Cargar y Editar |
+
+### ¿Cómo implementar esto en código?
+
+Dado que estás usando Laravel 12, te recomiendo encarecidamente usar el paquete **`spatie/laravel-permission`**. Es el estándar de la industria.
+
+**Ejemplo de cómo se vería la protección en tus Rutas o Controladores:**
+
+```php
+// Rutas protegidas para configuración del sistema
+Route::middleware(['role:super-admin'])->group(function () {
+    Route::resource('users', UserController::class);
+    Route::resource('api-services', ApiServiceController::class); // <-- NADIE MÁS ENTRA ACÁ
+});
+
+// Rutas operativas (el día a día)
+Route::middleware(['role:analista|manager|super-admin'])->group(function () {
+    Route::resource('clients', ClientController::class);
+    
+    // El analista puede guardar credenciales, pero NO crear servicios nuevos
+    Route::post('clients/{client}/credentials', [ClientCredentialController::class, 'store']);
+});
+```
+
+### Respuesta a tu miedo: "¿Para que no vayan a romper nada?"
+
+Con esta estructura:
+1.  El **Analista** nunca entra al menú "Configuración de APIs". Solo ve un dropdown en la ficha del cliente que dice "Conectar Servicio".
+2.  Si el Analista se equivoca cargando un token, solo rompe la conexión de **ESE** cliente, no de todo el sistema.
+3.  Solo el **Admin** puede tocar la estructura JSON que define cómo funciona la API.
+
+¿Te parece segura esta distribución?

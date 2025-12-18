@@ -26,30 +26,34 @@
                 <span class="font-medium">Clientes</span>
             </x-nav-link>
 
-            <!-- Admin Access (if applicable) -->
-            @if(auth()->user()->is_admin)
-                <div x-data="{ open: false }" class="mt-4">
-                    <button @click="open = !open"
-                        class="w-full flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors duration-200 justify-between">
-                        <div class="flex items-center">
-                            <i class="fas fa-shield-alt w-6 text-center mr-3"></i>
-                            <span class="font-medium">Admin</span>
-                        </div>
-                        <i class="fas fa-chevron-down text-xs transform transition-transform"
-                            :class="{'rotate-180': open}"></i>
-                    </button>
-                    <div x-show="open" class="mt-2 pl-4 space-y-1">
-                        <a href="{{ route('admin.dashboard') }}"
-                            class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
-                            Dashboard Global
-                        </a>
-                        <a href="{{ route('admin.users.index') }}"
-                            class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
-                            Usuarios
-                        </a>
+            <!-- Admin Access (Super Admin Only) -->
+            @role('Super Admin')
+            <div x-data="{ open: false }" class="mt-4">
+                <button @click="open = !open"
+                    class="w-full flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors duration-200 justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-shield-alt w-6 text-center mr-3"></i>
+                        <span class="font-medium">Admin</span>
                     </div>
+                    <i class="fas fa-chevron-down text-xs transform transition-transform"
+                        :class="{'rotate-180': open}"></i>
+                </button>
+                <div x-show="open" class="mt-2 pl-4 space-y-1">
+                    <a href="{{ route('admin.dashboard') }}"
+                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
+                        Dashboard Global
+                    </a>
+                    <a href="{{ route('admin.users.index') }}"
+                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
+                        Usuarios
+                    </a>
+                    <a href="{{ route('admin.api-services.index') }}"
+                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
+                        Catálogo APIs
+                    </a>
                 </div>
-            @endif
+            </div>
+            @endrole
         </div>
     </div>
 

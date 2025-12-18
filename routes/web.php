@@ -13,13 +13,13 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     // Redirigir a administradores a su panel
-    if (auth()->check() && auth()->user()->isAdmin()) {
+    if (auth()->check() && auth()->user()->hasRole('Super Admin')) {
         return redirect()->route('admin.dashboard');
     }
     return app(DashboardController::class)->index();
 })->middleware(['auth', 'verified', 'user'])->name('dashboard');
 
-Route::middleware(['auth', 'user'])->group(function () {
+Route::middleware(['auth', 'user', 'role:Super Admin|Manager|Analista'])->group(function () {
     // Rutas de Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -36,9 +36,13 @@ Route::middleware(['auth', 'user'])->group(function () {
     // Rutas desactivar y reactivar clientes
     Route::post('/clients/{client}/deactivate', [ClientController::class, 'deactivate'])->name('clients.deactivate');
     Route::post('/clients/{client}/activate', [ClientController::class, 'activate'])->name('clients.activate');
+
+    // Rutas Credenciales
+    Route::post('/clients/{client}/credentials', [App\Http\Controllers\ClientCredentialController::class, 'store'])->name('clients.credentials.store');
+    Route::delete('/credentials/{credential}', [App\Http\Controllers\ClientCredentialController::class, 'destroy'])->name('credentials.destroy');
 });
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:Super Admin'])->prefix('admin')->name('admin.')->group(function () {
     // Panel de control del administrador
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
@@ -58,6 +62,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Configuraciones del sistema
     Route::get('/settings/email', [App\Http\Controllers\Admin\SettingsController::class, 'emailConfig'])->name('settings.email');
     Route::post('/settings/email', [App\Http\Controllers\Admin\SettingsController::class, 'updateEmailConfig'])->name('settings.email.update');
+
+    // Gestión de Servicios API
+    Route::resource('api-services', App\Http\Controllers\Admin\ApiServiceController::class);
 });
 
 require __DIR__ . '/auth.php';

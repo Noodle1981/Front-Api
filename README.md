@@ -1,96 +1,86 @@
-# Client Portal
+# Admin SaaS - Sistema de Gestión de Clientes y APIs
 
-Este proyecto es un **Portal de Clientes** desarrollado en Laravel, diseñado para gestionar clientes y usuarios con roles diferenciados (Administrador y Usuario).
+¡Bienvenido al sistema de administración SaaS! Este proyecto ha sido modernizado y estructurado para ofrecer una gestión robusta de clientes, roles jerárquicos y automatización de integraciones.
 
 ## 🚀 Características Principales
 
-*   **Autenticación y Seguridad**: Sistema de login y registro basado en Laravel Breeze y Sanctum.
-*   **Gestión de Roles**:
-    *   **Administrador**: Gestión completa de usuarios, configuración del sistema (correo) y estadísticas globales.
-    *   **Usuario**: Gestión de su cartera de clientes (CRUD).
-*   **Gestión de Clientes**:
-    *   Alta, baja y modificación de clientes.
-    *   Listado con filtros (Activos/Inactivos).
-    *   Detalle de cliente con información fiscal y de contacto.
-    *   Integración con WhatsApp para contacto directo.
-*   **Diseño Moderno & Branding**:
-    *   **Sidebar Layout**: Navegación vertical tipo Dashboard profesional.
-    *   **Identidad Visual**: Paleta de colores corporativa (Azul Profundo `#0C263B` + Acento Coral `#FE9192`).
-    *   **Estética Premium**: Uso de Glassmorphism, fondos texturizados y animaciones sutiles.
-    *   **Interfaz Responsiva**: Adaptada a dispositivos móviles y escritorio con Tailwind CSS.
+### 1. Gestión de Clientes (CRUD Avanzado)
+*   **Jerarquías**: Soporte para Sedes Centrales y Anexos/Sucursales.
+*   **Datos de Negocio**: Clasificación por Rubro y Cantidad de Empleados.
+*   **Estados**: Activación/Desactivación lógica (Soft Delete para Managers).
 
-## 🛠️ Stack Tecnológico
+### 2. Seguridad y Roles (RBAC) 🛡️
+Implementado con `spatie/laravel-permission`.
+*   **Super Admin**: Acceso total + Panel de Administración (`/admin`).
+*   **Manager**: Gestión completa de clientes y eliminaciones.
+*   **Analista**: Operativo (Crear/Editar) pero sin permisos destructivos ni de admin.
 
-*   **Backend**: Laravel 12.x, PHP 8.2+
-*   **Frontend**: Blade, Tailwind CSS 3.x, Alpine.js, Vite
-*   **Base de Datos**: SQLite (Por defecto) / MySQL / PostgreSQL
-*   **Testing**: Pest PHP
+### 3. Catálogo de APIs y Credenciales 🔑
+*   **Admin**: Define qué servicios están disponibles (ej: Mercado Pago, AFIP) y qué campos requieren (API Key, Secret, etc.).
+*   **Cliente**: Se le asignan credenciales encriptadas para cada servicio.
+*   **Automatización**: Configuración de frecuencia de ejecución (Diaria/Semanal) y alertas por email personalizadas por conexión.
 
-## ⚙️ Instalación y Configuración
+### 4. Interfaz Moderna (Aurora Theme) 🎨
+*   Diseño "Glassmorphism" con Tailwind CSS.
+*   Modo Oscuro/Futurista por defecto.
+*   Componentes reactivos con Alpine.js.
 
-Sigue estos pasos para desplegar el proyecto en tu entorno local:
+---
 
-1.  **Clona el repositorio**:
+## 🛠️ Instalación y Configuración
+
+1.  **Requisitos**: PHP 8.2+, Composer, Node.js, MySQL.
+
+2.  **Clonar y Dependencias**:
     ```bash
-    git clone <URL_DEL_REPOSITORIO>
-    cd nombre-del-proyecto
-    ```
-
-2.  **Instala las dependencias de PHP**:
-    ```bash
+    git clone <repo_url>
+    cd front-main
     composer install
+    npm install && npm run build
     ```
 
-3.  **Instala las dependencias de Node.js**:
-    ```bash
-    npm install
-    ```
-
-4.  **Configura el entorno**:
+3.  **Configuración de Entorno**:
     ```bash
     cp .env.example .env
     php artisan key:generate
+    # Configurar base de datos en .env
     ```
 
-5.  **Prepara la base de datos (SQLite)**:
+4.  **Base de Datos y Seeds**:
+    IMPORTANTE: Este comando crea los roles y el usuario Super Admin inicial.
     ```bash
-    # En Windows (Powershell)
-    New-Item -Path database/database.sqlite -ItemType File
-    
-    # En Linux/Mac
-    touch database/database.sqlite
+    php artisan migrate --seed
     ```
+    *Usuario por defecto*: `admin@example.com` / `password`
 
-6.  **Ejecuta las migraciones y seeders**:
+5.  **Instalar API (Opcional si no se ha hecho)**:
     ```bash
-    php artisan migrate:fresh --seed
+    php artisan install:api
     ```
 
-7.  **Compila los assets**:
-    ```bash
-    npm run build
-    ```
+## 🤖 Webhooks y Automatización
 
-8.  **Ejecuta el servidor**:
-    ```bash
-    npm run dev
-    # O en otra terminal
-    php artisan serve
-    ```
+### Webhook Receiver
+El sistema escucha notificaciones en:
+`POST /api/webhooks/{service_slug}`
+*(Ej: /api/webhooks/mercado-pago)*
 
-## 🔑 Credenciales de Acceso (Demo)
+### Cron Jobs (Automatización Saliente)
+Para que las frecuencias configuradas (Diario 08:00, etc.) funcionen, configurar el cron del servidor:
+```bash
+* * * * * cd /path-to-project && php artisan schedule:run >> /dev/null 2>&1
+```
 
-El seeder crea por defecto dos usuarios para pruebas:
+---
 
-| Rol | Email | Contraseña |
-| :--- | :--- | :--- |
-| **Administrador** | `admin@example.com` | `password` |
-| **Usuario** | `user@example.com` | `password` |
+## 🧪 Testing
 
-## 🧪 Tests
-
-El proyecto cuenta con una suite de tests automatizados para asegurar la integridad del sistema.
-
+Para verificar la seguridad de roles:
 ```bash
 php artisan test
 ```
+
+---
+
+## 📝 Créditos
+Desarrollado con Laravel 11, Tailwind CSS y Alpine.js.

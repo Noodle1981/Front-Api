@@ -17,10 +17,5 @@
         "postcss": "^8.5.6",
         "tailwindcss": "^3.4.17",
         "vite": "^7.0.4"
-    },
-    "dependencies": {
-        "@fullcalendar/core": "^6.1.19",
-        "@fullcalendar/daygrid": "^6.1.19",
-        "apexcharts": "^5.3.4"
     }
 }

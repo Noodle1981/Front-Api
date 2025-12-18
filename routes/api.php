@@ -26,8 +26,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
-     Route::post('/leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
-    
+    Route::post('/leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
+
     // Ruta para obtener los datos del usuario autenticado
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -43,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Rutas para actividades
     Route::apiResource('activities', ActivityController::class)->only(['store']); // Solo necesitamos 'store' por ahora
-   
+
     Route::get('/deals-won', [DealController::class, 'getWonDeals'])->name('deals.won');
     Route::get('/deals-lost', [DealController::class, 'getLostDeals'])->name('deals.lost');
 });

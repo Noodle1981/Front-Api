@@ -14,13 +14,12 @@
             <p class="text-gray-700">Bienvenido al Portal de Clientes de Grupo Xamanen.</p>
         </div>
 
+
         {{-- KPIs Quick View --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             {{-- KPI Card with Brand Color --}}
             <x-kpi-card title="Mis Clientes" :value="$clientCount" icon="fas fa-building"
                 class="bg-brand-dark text-white shadow-xl" />
-
-            {{-- Placeholder for future KPIs or removed if not needed --}}
         </div>
 
     </div>

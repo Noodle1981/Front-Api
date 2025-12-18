@@ -29,6 +29,14 @@ export default {
                 // Compatibilidad con código existente (si es necesario maperalo a los nuevos)
                 'primary': '#0C263B', 
                 'secondary': '#FE9192',
+
+                // Aurora Theme Colors
+                'aurora-cyan': '#06b6d4', // Cyan 500
+                'aurora-pink': '#ec4899', // Pink 500
+                'aurora-purple': '#a855f7', // Purple 500
+                'light-text': '#f3f4f6', // Gray 100
+                'light-text-muted': '#9ca3af', // Gray 400
+                'dark-void': '#0f172a', // Slate 900
             },
         },
     },
