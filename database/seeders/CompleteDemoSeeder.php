@@ -1,0 +1,420 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Client;
+use App\Models\ClientCredential;
+use App\Models\ApiService;
+use App\Models\ApiLog;
+use App\Models\Transaction;
+use App\Models\EmailLog;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+
+class CompleteDemoSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $this->command->info('🚀 Generando Datos Completos de Demo...');
+
+        // Obtener servicios API existentes
+        $afip = ApiService::where('name', 'AFIP')->first();
+        $mercadoPago = ApiService::where('name', 'Mercado Pago')->first();
+
+        // Datos realistas de contadores
+        $contadores = [
+            [
+                'name' => 'María González',
+                'email' => 'maria.gonzalez@demo.com',
+                'clients_data' => [
+                    [
+                        'type' => 'headquarters',
+                        'cuit' => '30-71234567-8',
+                        'company' => 'Distribuidora San Martín S.A.',
+                        'fantasy_name' => 'Distribuidora San Martín',
+                        'tax_condition' => 'Responsable Inscripto',
+                        'industry' => 'Comercio Mayorista',
+                        'employees_count' => 45,
+                        'email' => 'admin@sanmartin.com.ar',
+                        'phone' => '+54 11 4567-8900',
+                        'website' => 'www.sanmartin.com.ar',
+                        'address' => 'Av. Corrientes 1234',
+                        'city' => 'Buenos Aires',
+                        'state' => 'CABA',
+                        'zip_code' => '1043',
+                        'branches' => [
+                            [
+                                'branch_name' => 'Sucursal Palermo',
+                                'cuit' => '30-71234567-8',
+                                'address' => 'Av. Santa Fe 3456',
+                                'city' => 'Buenos Aires',
+                                'state' => 'CABA',
+                                'zip_code' => '1425',
+                                'phone' => '+54 11 4567-8901',
+                            ],
+                            [
+                                'branch_name' => 'Sucursal Belgrano',
+                                'cuit' => '30-71234567-8',
+                                'address' => 'Av. Cabildo 2345',
+                                'city' => 'Buenos Aires',
+                                'state' => 'CABA',
+                                'zip_code' => '1428',
+                                'phone' => '+54 11 4567-8902',
+                            ],
+                        ],
+                    ],
+                    [
+                        'type' => 'headquarters',
+                        'cuit' => '33-65432198-9',
+                        'company' => 'Textil del Norte S.R.L.',
+                        'fantasy_name' => 'Textil Norte',
+                        'tax_condition' => 'Responsable Inscripto',
+                        'industry' => 'Industria Textil',
+                        'employees_count' => 28,
+                        'email' => 'contacto@textilnorte.com',
+                        'phone' => '+54 381 456-7890',
+                        'website' => 'www.textilnorte.com',
+                        'address' => 'Ruta 9 Km 1234',
+                        'city' => 'San Miguel de Tucumán',
+                        'state' => 'Tucumán',
+                        'zip_code' => '4000',
+                    ],
+                ],
+            ],
+            [
+                'name' => 'Carlos Rodríguez',
+                'email' => 'carlos.rodriguez@demo.com',
+                'clients_data' => [
+                    [
+                        'type' => 'headquarters',
+                        'cuit' => '30-98765432-1',
+                        'company' => 'Alimentos Frescos del Sur S.A.',
+                        'fantasy_name' => 'Frescos del Sur',
+                        'tax_condition' => 'Responsable Inscripto',
+                        'industry' => 'Alimentación',
+                        'employees_count' => 120,
+                        'email' => 'info@frescossur.com.ar',
+                        'phone' => '+54 261 789-0123',
+                        'website' => 'www.frescossur.com.ar',
+                        'address' => 'Parque Industrial Lote 45',
+                        'city' => 'Mendoza',
+                        'state' => 'Mendoza',
+                        'zip_code' => '5500',
+                        'branches' => [
+                            [
+                                'branch_name' => 'Depósito Godoy Cruz',
+                                'cuit' => '30-98765432-1',
+                                'address' => 'Av. San Martín 789',
+                                'city' => 'Godoy Cruz',
+                                'state' => 'Mendoza',
+                                'zip_code' => '5501',
+                                'phone' => '+54 261 789-0124',
+                            ],
+                        ],
+                    ],
+                    [
+                        'type' => 'headquarters',
+                        'cuit' => '27-34567890-2',
+                        'company' => 'Servicios Contables López',
+                        'fantasy_name' => 'Estudio López',
+                        'tax_condition' => 'Monotributo',
+                        'industry' => 'Servicios Profesionales',
+                        'employees_count' => 5,
+                        'email' => 'estudio@lopezcontadores.com',
+                        'phone' => '+54 261 456-7890',
+                        'address' => 'San Martín 456 Piso 3',
+                        'city' => 'Mendoza',
+                        'state' => 'Mendoza',
+                        'zip_code' => '5500',
+                    ],
+                ],
+            ],
+            [
+                'name' => 'Ana Martínez',
+                'email' => 'ana.martinez@demo.com',
+                'clients_data' => [
+                    [
+                        'type' => 'headquarters',
+                        'cuit' => '30-55667788-9',
+                        'company' => 'Construcciones del Litoral S.A.',
+                        'fantasy_name' => 'Construcciones Litoral',
+                        'tax_condition' => 'Responsable Inscripto',
+                        'industry' => 'Construcción',
+                        'employees_count' => 85,
+                        'email' => 'obras@litoral.com.ar',
+                        'phone' => '+54 342 567-8901',
+                        'website' => 'www.construccioneslitoral.com.ar',
+                        'address' => 'Bv. Pellegrini 2345',
+                        'city' => 'Santa Fe',
+                        'state' => 'Santa Fe',
+                        'zip_code' => '3000',
+                        'branches' => [
+                            [
+                                'branch_name' => 'Oficina Rosario',
+                                'cuit' => '30-55667788-9',
+                                'address' => 'Av. Belgrano 1234',
+                                'city' => 'Rosario',
+                                'state' => 'Santa Fe',
+                                'zip_code' => '2000',
+                                'phone' => '+54 341 567-8902',
+                            ],
+                            [
+                                'branch_name' => 'Depósito Paraná',
+                                'cuit' => '30-55667788-9',
+                                'address' => 'Ruta 11 Km 456',
+                                'city' => 'Paraná',
+                                'state' => 'Entre Ríos',
+                                'zip_code' => '3100',
+                                'phone' => '+54 343 567-8903',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'name' => 'Roberto Fernández',
+                'email' => 'roberto.fernandez@demo.com',
+                'clients_data' => [
+                    [
+                        'type' => 'headquarters',
+                        'cuit' => '30-44556677-3',
+                        'company' => 'Tecnología Avanzada S.A.',
+                        'fantasy_name' => 'TechAvanzada',
+                        'tax_condition' => 'Responsable Inscripto',
+                        'industry' => 'Tecnología',
+                        'employees_count' => 35,
+                        'email' => 'contacto@techavanzada.com',
+                        'phone' => '+54 11 5678-9012',
+                        'website' => 'www.techavanzada.com',
+                        'address' => 'Av. del Libertador 5678',
+                        'city' => 'Buenos Aires',
+                        'state' => 'CABA',
+                        'zip_code' => '1426',
+                    ],
+                    [
+                        'type' => 'headquarters',
+                        'cuit' => '33-22334455-6',
+                        'company' => 'Farmacia Central S.R.L.',
+                        'fantasy_name' => 'Farmacia Central',
+                        'tax_condition' => 'Responsable Inscripto',
+                        'industry' => 'Salud',
+                        'employees_count' => 12,
+                        'email' => 'ventas@farmaciacentral.com',
+                        'phone' => '+54 11 4321-5678',
+                        'address' => 'Av. Rivadavia 9876',
+                        'city' => 'Buenos Aires',
+                        'state' => 'CABA',
+                        'zip_code' => '1406',
+                    ],
+                ],
+            ],
+            [
+                'name' => 'Laura Sánchez',
+                'email' => 'laura.sanchez@demo.com',
+                'clients_data' => [
+                    [
+                        'type' => 'headquarters',
+                        'cuit' => '30-11223344-5',
+                        'company' => 'Logística Integral del Oeste S.A.',
+                        'fantasy_name' => 'LogiOeste',
+                        'tax_condition' => 'Responsable Inscripto',
+                        'industry' => 'Logística y Transporte',
+                        'employees_count' => 95,
+                        'email' => 'operaciones@logioeste.com.ar',
+                        'phone' => '+54 11 6789-0123',
+                        'website' => 'www.logioeste.com.ar',
+                        'address' => 'Ruta 3 Km 45',
+                        'city' => 'La Matanza',
+                        'state' => 'Buenos Aires',
+                        'zip_code' => '1755',
+                        'branches' => [
+                            [
+                                'branch_name' => 'Base Morón',
+                                'cuit' => '30-11223344-5',
+                                'address' => 'Av. Gaona 3456',
+                                'city' => 'Morón',
+                                'state' => 'Buenos Aires',
+                                'zip_code' => '1708',
+                                'phone' => '+54 11 6789-0124',
+                            ],
+                        ],
+                    ],
+                    [
+                        'type' => 'headquarters',
+                        'cuit' => '27-88776655-4',
+                        'company' => 'Consultoría Empresarial Moderna',
+                        'fantasy_name' => 'CEM Consultores',
+                        'tax_condition' => 'Monotributo',
+                        'industry' => 'Consultoría',
+                        'employees_count' => 3,
+                        'email' => 'info@cemconsultores.com',
+                        'phone' => '+54 11 4567-1234',
+                        'address' => 'Av. Córdoba 1234 Of. 5',
+                        'city' => 'Buenos Aires',
+                        'state' => 'CABA',
+                        'zip_code' => '1055',
+                    ],
+                ],
+            ],
+        ];
+
+        foreach ($contadores as $contadorData) {
+            // Crear usuario contador
+            $user = User::create([
+                'name' => $contadorData['name'],
+                'email' => $contadorData['email'],
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+            ]);
+            $user->assignRole('User');
+
+            $this->command->info("✅ Usuario creado: {$user->email}");
+
+            // Crear clientes y sucursales
+            foreach ($contadorData['clients_data'] as $clientData) {
+                // Crear sede principal
+                $headquarters = Client::create([
+                    'user_id' => $user->id,
+                    'cuit' => $clientData['cuit'],
+                    'company' => $clientData['company'],
+                    'fantasy_name' => $clientData['fantasy_name'],
+                    'tax_condition' => $clientData['tax_condition'],
+                    'industry' => $clientData['industry'],
+                    'employees_count' => $clientData['employees_count'],
+                    'email' => $clientData['email'],
+                    'phone' => $clientData['phone'],
+                    'website' => $clientData['website'] ?? null,
+                    'address' => $clientData['address'],
+                    'city' => $clientData['city'],
+                    'state' => $clientData['state'],
+                    'zip_code' => $clientData['zip_code'],
+                    'active' => true,
+                ]);
+
+                $this->command->info("  📍 Sede creada: {$headquarters->company}");
+
+                // Crear credenciales API para la sede
+                if ($afip) {
+                    ClientCredential::create([
+                        'client_id' => $headquarters->id,
+                        'api_service_id' => $afip->id,
+                        'credentials' => [
+                            'cuit' => $clientData['cuit'],
+                            'certificate' => 'demo_cert_' . $headquarters->id,
+                            'private_key' => 'demo_key_' . $headquarters->id,
+                        ],
+                        'is_active' => true,
+                        'execution_frequency' => 'daily',
+                        'alert_email' => $clientData['email'],
+                    ]);
+                }
+
+                if ($mercadoPago && rand(0, 1)) {
+                    ClientCredential::create([
+                        'client_id' => $headquarters->id,
+                        'api_service_id' => $mercadoPago->id,
+                        'credentials' => [
+                            'access_token' => 'APP_USR_' . uniqid(),
+                            'public_key' => 'APP_' . uniqid(),
+                        ],
+                        'is_active' => rand(0, 1),
+                        'execution_frequency' => rand(0, 1) ? 'daily' : 'weekly',
+                        'alert_email' => null,
+                    ]);
+                }
+
+                // Crear sucursales si existen
+                if (isset($clientData['branches'])) {
+                    foreach ($clientData['branches'] as $branchData) {
+                        $branch = Client::create([
+                            'user_id' => $user->id,
+                            'parent_id' => $headquarters->id,
+                            'branch_name' => $branchData['branch_name'],
+                            'cuit' => $branchData['cuit'],
+                            'company' => $headquarters->company,
+                            'fantasy_name' => $headquarters->fantasy_name,
+                            'tax_condition' => $headquarters->tax_condition,
+                            'industry' => $headquarters->industry,
+                            'employees_count' => rand(5, 20),
+                            'email' => strtolower(str_replace(' ', '', $branchData['branch_name'])) . '@' . explode('@', $clientData['email'])[1],
+                            'phone' => $branchData['phone'],
+                            'address' => $branchData['address'],
+                            'city' => $branchData['city'],
+                            'state' => $branchData['state'],
+                            'zip_code' => $branchData['zip_code'],
+                            'active' => true,
+                        ]);
+
+                        $this->command->info("    🏢 Sucursal creada: {$branch->branch_name}");
+                    }
+                }
+
+                // Generar logs y transacciones para los últimos 30 días
+                $this->generateLogsAndTransactions($headquarters, $afip, $mercadoPago);
+            }
+        }
+
+        $this->command->info("\n🎉 ¡Datos Completos de Demo Generados Exitosamente!");
+        $this->command->info("📊 Total de usuarios: " . User::role('User')->count());
+        $this->command->info("🏢 Total de clientes (sedes): " . Client::whereNull('parent_id')->count());
+        $this->command->info("🏪 Total de sucursales: " . Client::whereNotNull('parent_id')->count());
+        $this->command->info("🔑 Total de credenciales: " . ClientCredential::count());
+    }
+
+    /**
+     * Generar logs y transacciones de prueba
+     */
+    private function generateLogsAndTransactions($client, $afip, $mercadoPago)
+    {
+        $credentials = $client->credentials;
+
+        foreach ($credentials as $credential) {
+            // Generar logs de los últimos 30 días
+            for ($i = 0; $i < 30; $i++) {
+                $date = Carbon::now()->subDays($i);
+                $logsPerDay = rand(1, 5);
+
+                for ($j = 0; $j < $logsPerDay; $j++) {
+                    $isSuccess = rand(1, 100) > 15; // 85% éxito, 15% error
+                    
+                    $eventTypes = [
+                        'AFIP' => ['Consulta Comprobantes', 'Autorización CAE', 'Consulta Padrón', 'Token Refresh'],
+                        'Mercado Pago' => ['Crear Pago', 'Consultar Pago', 'Webhook Recibido', 'Reembolso'],
+                    ];
+                    
+                    $serviceName = $credential->apiService->name;
+                    $eventType = $eventTypes[$serviceName][array_rand($eventTypes[$serviceName])];
+
+                    $log = ApiLog::create([
+                        'client_id' => $client->id,
+                        'api_service_id' => $credential->api_service_id,
+                        'status' => $isSuccess ? 'success' : (rand(0, 1) ? 'error' : 'warning'),
+                        'event_type' => $eventType,
+                        'details' => $isSuccess ? null : 'Error de conexión: Timeout después de 30 segundos',
+                        'happened_at' => $date->copy()->addHours(rand(8, 18))->addMinutes(rand(0, 59)),
+                    ]);
+
+                    // Crear transacción si fue exitoso
+                    if ($isSuccess && rand(1, 100) > 30) {
+                        Transaction::create([
+                            'client_id' => $client->id,
+                            'api_service_id' => $credential->api_service_id,
+                            'type' => $credential->apiService->name === 'AFIP' ? 'invoice' : 'payment',
+                            'amount' => rand(1000, 50000),
+                            'currency' => 'ARS',
+                            'status' => 'completed',
+                            'description' => 'Transacción de demo generada automáticamente',
+                            'raw_data' => ['demo' => true, 'external_id' => 'TXN_' . uniqid()],
+                            'date_at' => $log->happened_at,
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,86 +1,345 @@
-# Admin SaaS - Sistema de Gestión de Clientes y APIs
+# Front-API - Sistema de Gestión de Clientes y APIs
 
-¡Bienvenido al sistema de administración SaaS! Este proyecto ha sido modernizado y estructurado para ofrecer una gestión robusta de clientes, roles jerárquicos y automatización de integraciones.
+Sistema completo de administración SaaS para gestión de clientes, integraciones API, monitoreo de transacciones y alertas automatizadas.
 
 ## 🚀 Características Principales
 
 ### 1. Gestión de Clientes (CRUD Avanzado)
-*   **Jerarquías**: Soporte para Sedes Centrales y Anexos/Sucursales.
-*   **Datos de Negocio**: Clasificación por Rubro y Cantidad de Empleados.
-*   **Estados**: Activación/Desactivación lógica (Soft Delete para Managers).
+- **Jerarquías**: Soporte para Sedes Centrales y Sucursales con relación `parent_id`
+- **Datos Completos**: CUIT, Razón Social, Nombre de Fantasía, Condición Fiscal, Rubro, Empleados
+- **Información de Contacto**: Email, Teléfono, Sitio Web, Dirección completa (Ciudad, Provincia, CP)
+- **Estados**: Activación/Desactivación con razones (Falta de Pago, Otros)
+- **Transferencia**: Los Analistas pueden transferir clientes entre contadores
+- **Notas Internas**: Campo para observaciones del equipo
 
 ### 2. Seguridad y Roles (RBAC) 🛡️
-Implementado con `spatie/laravel-permission`.
-*   **Super Admin**: Acceso total + Panel de Administración (`/admin`).
-*   **Manager**: Gestión completa de clientes y eliminaciones.
-*   **Analista**: Operativo (Crear/Editar) pero sin permisos destructivos ni de admin.
+Implementado con `spatie/laravel-permission`:
+- **Super Admin**: Acceso total + Panel de Administración
+- **Manager**: Gestión completa de clientes y usuarios
+- **Analista**: Vista global de todos los contadores, puede transferir clientes, acceso a dashboards analíticos
+- **User (Contador)**: Gestión de sus propios clientes y credenciales API
 
 ### 3. Catálogo de APIs y Credenciales 🔑
-*   **Admin**: Define qué servicios están disponibles (ej: Mercado Pago, AFIP) y qué campos requieren (API Key, Secret, etc.).
-*   **Cliente**: Se le asignan credenciales encriptadas para cada servicio.
-*   **Automatización**: Configuración de frecuencia de ejecución (Diaria/Semanal) y alertas por email personalizadas por conexión.
+- **Servicios Disponibles**: AFIP, Mercado Pago, y más
+- **Credenciales Encriptadas**: Almacenamiento seguro con `AsEncryptedArrayObject`
+- **Configuración por Cliente**: Cada cliente puede tener múltiples APIs configuradas
+- **Automatización**: Frecuencia de ejecución (Diaria/Semanal)
+- **Alertas Personalizadas**: Email específico por credencial o email del usuario
 
-### 4. Interfaz Moderna (Aurora Theme) 🎨
-*   Diseño "Glassmorphism" con Tailwind CSS.
-*   Modo Oscuro/Futurista por defecto.
-*   Componentes reactivos con Alpine.js.
+### 4. Dashboards Analíticos 📊
+
+#### Dashboard de Analista (`/analistas/dashboard`)
+- **KPIs por Usuario**: Error rate, % automatización, última actividad, carga de trabajo
+- **Sistema de Alertas**: Críticas (>10% errores), Warnings (inactividad >7 días), Info (<30% automatización)
+- **Rankings**: Top 3 más eficientes y más automatizados
+- **Gráfico de Tendencia**: Errores de los últimos 7 días con Chart.js
+- **Acciones Rápidas**: Links directos a dashboard API y clientes filtrados por usuario
+
+#### Dashboard API (`/analistas/api-dashboard`)
+- **Live Feed Paginado**: Últimas 15 ejecuciones con usuario/contador
+- **Filtros Avanzados**: Por cliente, usuario, servicio, estado
+- **Estadísticas de Automatización**: APIs automatizadas vs manuales
+- **Selector de Contexto**: Filtrar toda la vista por un contador específico
+
+#### Vista de Clientes (`/analistas/clients`)
+- **Estadísticas Completas**: Total, Activos, Inactivos, Sedes, Sucursales, Con APIs
+- **Filtro por Usuario**: Ver clientes de un contador específico
+- **Columna Responsable**: Muestra el contador asignado
+- **Razones de Desactivación**: Badge con motivo (Falta de Pago, Otros)
+
+### 5. Sistema de Alertas por Email 📧
+
+#### Configuración (`/admin/email-settings`)
+- **Información SMTP**: Muestra configuración actual del servidor
+- **Email de Prueba**: Verificar que el SMTP funciona correctamente
+- **Plantillas HTML**: Diseños profesionales con gradientes
+
+#### Historial (`/admin/email-history`)
+- **Registro Completo**: Todos los emails enviados con estado
+- **Filtros**: Por tipo (Prueba, Error API, Sistema), estado (Enviado, Fallido), fechas
+- **Paginación**: 20 registros por página
+- **Detalles de Error**: Tooltip con mensaje de error en fallidos
+
+#### Estadísticas (`/admin/email-stats`)
+- **Métricas**: Total enviados, exitosos, fallidos, tasa de éxito
+- **Gráfico de Tendencia**: Emails por día (últimos 30 días)
+- **Distribución por Tipo**: Gráfico de dona con tipos de email
+
+### 6. Monitoreo de APIs y Transacciones 📈
+- **API Logs**: Registro de todas las ejecuciones (endpoint, método, status, tiempo de respuesta)
+- **Transacciones**: Registro de operaciones exitosas (tipo, monto, moneda, estado)
+- **Histórico**: 30 días de datos para análisis de tendencias
+
+### 7. Interfaz Moderna (Glassmorphism Design) 🎨
+- **Glassmorphism**: Efecto de vidrio con `backdrop-blur-md` y transparencias
+- **Gradientes**: Cards con gradientes sutiles y bordes luminosos
+- **Hover Effects**: Transiciones suaves en todas las tarjetas
+- **Responsive**: Diseño adaptable a móvil, tablet y desktop
+- **Dark Theme**: Tema oscuro profesional con acentos de color
 
 ---
 
 ## 🛠️ Instalación y Configuración
 
-1.  **Requisitos**: PHP 8.2+, Composer, Node.js, MySQL.
+### Requisitos
+- PHP 8.2+
+- Composer
+- Node.js 18+
+- MySQL 8.0+
+- Git
 
-2.  **Clonar y Dependencias**:
-    ```bash
-    git clone <repo_url>
-    cd front-main
-    composer install
-    npm install && npm run build
-    ```
+### Instalación
 
-3.  **Configuración de Entorno**:
-    ```bash
-    cp .env.example .env
-    php artisan key:generate
-    # Configurar base de datos en .env
-    ```
-
-4.  **Base de Datos y Seeds**:
-    IMPORTANTE: Este comando crea los roles y el usuario Super Admin inicial.
-    ```bash
-    php artisan migrate --seed
-    ```
-    *Usuario por defecto*: `admin@example.com` / `password`
-
-5.  **Instalar API (Opcional si no se ha hecho)**:
-    ```bash
-    php artisan install:api
-    ```
-
-## 🤖 Webhooks y Automatización
-
-### Webhook Receiver
-El sistema escucha notificaciones en:
-`POST /api/webhooks/{service_slug}`
-*(Ej: /api/webhooks/mercado-pago)*
-
-### Cron Jobs (Automatización Saliente)
-Para que las frecuencias configuradas (Diario 08:00, etc.) funcionen, configurar el cron del servidor:
+1. **Clonar el repositorio**:
 ```bash
-* * * * * cd /path-to-project && php artisan schedule:run >> /dev/null 2>&1
+git clone https://github.com/Noodle1981/Front-Api.git
+cd Front-Api
 ```
+
+2. **Instalar dependencias**:
+```bash
+composer install
+npm install
+```
+
+3. **Configurar entorno**:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+4. **Configurar base de datos en `.env`**:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=front_api
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+5. **Ejecutar migraciones y seeders**:
+```bash
+php artisan migrate --seed
+```
+
+Esto creará:
+- Roles y permisos
+- Usuario Super Admin: `admin@example.com` / `password`
+- Servicios API (AFIP, Mercado Pago)
+
+6. **Generar datos de demo** (Opcional):
+```bash
+php artisan db:seed --class=CompleteDemoSeeder
+```
+
+Esto creará:
+- 5 usuarios contadores con emails `*.demo.com`
+- 10+ clientes con datos completos (sedes y sucursales)
+- Credenciales API configuradas
+- 30 días de logs y transacciones
+
+7. **Compilar assets**:
+```bash
+npm run build
+# O para desarrollo:
+npm run dev
+```
+
+8. **Iniciar servidor**:
+```bash
+php artisan serve
+```
+
+Acceder a: `http://127.0.0.1:8000`
+
+---
+
+## 📧 Configuración de Email (SMTP)
+
+Para que el sistema de alertas funcione, configurar en `.env`:
+
+### Opción 1: Gmail
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=tu-email@gmail.com
+MAIL_PASSWORD=tu-app-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=tu-email@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+> **Nota**: Para Gmail necesitas crear una "Contraseña de Aplicación" en tu cuenta de Google.
+
+### Opción 2: Mailtrap (Testing)
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=tu-mailtrap-user
+MAIL_PASSWORD=tu-mailtrap-pass
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@front-api.com
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+Después de configurar:
+```bash
+php artisan config:clear
+```
+
+---
+
+## 🗄️ Estructura de Base de Datos
+
+### Tablas Principales
+
+#### `users`
+- Usuarios del sistema (Super Admin, Manager, Analista, User/Contador)
+- Relación con `clients` (1:N)
+
+#### `clients`
+- Clientes con información completa
+- `parent_id` para jerarquía (sede/sucursal)
+- `user_id` para asignar contador responsable
+- `deactivation_reason` para motivo de desactivación
+
+#### `client_credentials`
+- Credenciales API por cliente
+- `credentials` encriptado (JSON)
+- `execution_frequency` (daily, weekly)
+- `alert_email` para alertas específicas
+
+#### `api_services`
+- Catálogo de servicios disponibles (AFIP, Mercado Pago, etc.)
+- `required_fields` define qué campos necesita cada API
+
+#### `api_logs`
+- Registro de todas las ejecuciones API
+- Endpoint, método, status, tiempo de respuesta
+- Payloads de request/response
+- Mensajes de error
+
+#### `transactions`
+- Transacciones exitosas
+- Tipo, monto, moneda, estado
+- Relación con cliente y servicio API
+
+#### `email_logs`
+- Historial de emails enviados
+- Tipo (test, api_error, system)
+- Estado (sent, failed)
+- Metadata en JSON
+
+---
+
+## 🎯 Usuarios de Demo
+
+Después de ejecutar `CompleteDemoSeeder`:
+
+| Email | Password | Rol | Clientes |
+|-------|----------|-----|----------|
+| `admin@example.com` | `password` | Super Admin | - |
+| `maria.gonzalez@demo.com` | `password123` | User | 2 sedes, 2 sucursales |
+| `carlos.rodriguez@demo.com` | `password123` | User | 2 sedes, 1 sucursal |
+| `ana.martinez@demo.com` | `password123` | User | 1 sede, 2 sucursales |
+| `roberto.fernandez@demo.com` | `password123` | User | 2 sedes |
+| `laura.sanchez@demo.com` | `password123` | User | 2 sedes, 1 sucursal |
+
+---
+
+## 🚀 Características Técnicas
+
+### Backend
+- **Framework**: Laravel 11
+- **Autenticación**: Laravel Breeze
+- **Permisos**: Spatie Laravel Permission
+- **Base de Datos**: MySQL con migraciones
+- **Encriptación**: Credenciales API encriptadas
+- **Soft Deletes**: Eliminación lógica de clientes
+
+### Frontend
+- **CSS Framework**: Tailwind CSS 4
+- **JavaScript**: Alpine.js para interactividad
+- **Gráficos**: Chart.js 4.4.0
+- **Iconos**: Font Awesome 6
+- **Diseño**: Glassmorphism con gradientes
+
+### APIs y Servicios
+- **Email**: Sistema completo de alertas con historial
+- **Webhooks**: Receptor para notificaciones externas
+- **Cron Jobs**: Automatización programada
+
+---
+
+## 📊 Rutas Principales
+
+### Públicas
+- `/` - Landing page
+- `/login` - Inicio de sesión
+- `/register` - Registro (si está habilitado)
+
+### Usuario (Contador)
+- `/dashboard` - Dashboard principal
+- `/clients` - Gestión de clientes
+- `/clients/{id}` - Detalle de cliente
+- `/api-dashboard` - Monitor de APIs
+
+### Analista
+- `/analistas/dashboard` - Dashboard analítico
+- `/analistas/api-dashboard` - Dashboard API con filtros
+- `/analistas/clients` - Vista de clientes con estadísticas
+
+### Admin
+- `/admin/dashboard` - Panel de administración
+- `/admin/users` - Gestión de usuarios
+- `/admin/api-services` - Catálogo de APIs
+- `/admin/email-settings` - Configuración de email
+- `/admin/email-history` - Historial de emails
+- `/admin/email-stats` - Estadísticas de emails
+- `/admin/maintenance` - Mantenimiento del sistema
 
 ---
 
 ## 🧪 Testing
 
-Para verificar la seguridad de roles:
 ```bash
 php artisan test
 ```
 
 ---
 
-## 📝 Créditos
-Desarrollado con Laravel 11, Tailwind CSS y Alpine.js.
+## 🤝 Contribuir
+
+1. Fork el proyecto
+2. Crear rama de feature (`git checkout -b feature/AmazingFeature`)
+3. Commit cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir Pull Request
+
+---
+
+## 📝 Licencia
+
+Este proyecto es privado y está bajo licencia propietaria.
+
+---
+
+## 👨‍💻 Desarrollado por
+
+**Omar Olivera (Noodle1981)**
+- GitHub: [@Noodle1981](https://github.com/Noodle1981)
+- Proyecto: Front-API
+
+---
+
+## 🛟 Soporte
+
+Para reportar bugs o solicitar features, crear un issue en GitHub.
+
+---
+
+**Última actualización**: Diciembre 2024
+**Versión**: 2.0.0
