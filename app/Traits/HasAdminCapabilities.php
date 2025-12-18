@@ -11,7 +11,7 @@ trait HasAdminCapabilities
      */
     public function isAdmin(): bool
     {
-        return (bool) $this->is_admin;
+        return $this->hasAnyRole(['Super Admin', 'Manager']);
     }
 
     /**
