@@ -12,12 +12,19 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    // Redirigir a administradores a su panel
-    if (auth()->check() && auth()->user()->hasRole('Super Admin')) {
+    // Redirigir a administradores y managers a su panel
+    if (auth()->user()->hasAnyRole(['Super Admin', 'Manager'])) {
         return redirect()->route('admin.dashboard');
     }
+    
+    // Redirigir analistas a su dashboard
+    if (auth()->user()->hasRole('Analista')) {
+        return redirect()->route('analyst.dashboard');
+    }
+    
+    // Usuarios normales van al dashboard estándar
     return app(DashboardController::class)->index();
-})->middleware(['auth', 'verified', 'user'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'role:Super Admin|Manager|Analista|User'])->group(function () {
     // Rutas de Perfil

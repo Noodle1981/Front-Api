@@ -263,7 +263,33 @@ class CompleteDemoSeeder extends Seeder
             ],
         ];
 
-        // Crear usuario user@example.com primero (para demos y testing)
+        // 1. Crear SUPER ADMIN
+        $this->command->info('🔧 Creando Super Admin (admin@example.com)...');
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $admin->syncRoles(['Super Admin']);
+        $this->command->info("✅ Super Admin creado y rol asignado.");
+
+        // 2. Crear ANALISTA (Inspector)
+        $this->command->info('🔧 Creando Analista (analista@example.com)...');
+        $analista = User::firstOrCreate(
+            ['email' => 'analista@example.com'],
+            [
+                'name' => 'Analista Principal',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $analista->syncRoles(['Analista']);
+        $this->command->info("✅ Analista creado y rol asignado.");
+
+        // 3. Crear usuario user@example.com (para demos)
         $this->command->info('🔧 Creando usuario user@example.com...');
         
         $exampleUser = User::firstOrCreate(
@@ -279,38 +305,137 @@ class CompleteDemoSeeder extends Seeder
 
         // Crear 2 clientes para user@example.com
         $exampleClientsData = [
+            // Cliente 1: Empresa grande con sucursales
             [
+                'type' => 'headquarters',
                 'cuit' => '30-12345678-9',
-                'company' => 'Empresa de Prueba S.A.',
-                'fantasy_name' => 'Prueba SA',
+                'company' => 'Distribuidora Central S.A.',
+                'fantasy_name' => 'Distribuidora Central',
                 'tax_condition' => 'Responsable Inscripto',
-                'industry' => 'Comercio',
-                'employees_count' => 10,
-                'email' => 'contacto@prueba.com',
-                'phone' => '+54 11 1234-5678',
-                'address' => 'Av. Ejemplo 123',
+                'industry' => 'Comercio Mayorista',
+                'employees_count' => 45,
+                'email' => 'admin@distribuidoracentral.com',
+                'phone' => '+54 11 4567-8900',
+                'website' => 'www.distribuidoracentral.com',
+                'address' => 'Av. Corrientes 1500',
                 'city' => 'Buenos Aires',
                 'state' => 'CABA',
-                'zip_code' => '1000',
+                'zip_code' => '1043',
+                'branches' => [
+                    [
+                        'branch_name' => 'Sucursal Palermo',
+                        'cuit' => '30-12345678-9',
+                        'address' => 'Av. Santa Fe 3200',
+                        'city' => 'Buenos Aires',
+                        'state' => 'CABA',
+                        'zip_code' => '1425',
+                        'phone' => '+54 11 4567-8901',
+                    ],
+                    [
+                        'branch_name' => 'Sucursal Belgrano',
+                        'cuit' => '30-12345678-9',
+                        'address' => 'Av. Cabildo 2100',
+                        'city' => 'Buenos Aires',
+                        'state' => 'CABA',
+                        'zip_code' => '1428',
+                        'phone' => '+54 11 4567-8902',
+                    ],
+                ],
             ],
+            // Cliente 2: Empresa mediana
             [
+                'type' => 'headquarters',
                 'cuit' => '33-98765432-1',
-                'company' => 'Comercio Test S.R.L.',
-                'fantasy_name' => 'Test SRL',
+                'company' => 'Tecnología Avanzada S.R.L.',
+                'fantasy_name' => 'TechAvanzada',
                 'tax_condition' => 'Responsable Inscripto',
-                'industry' => 'Servicios',
-                'employees_count' => 5,
-                'email' => 'info@test.com',
-                'phone' => '+54 11 8765-4321',
-                'address' => 'Calle Falsa 456',
+                'industry' => 'Tecnología',
+                'employees_count' => 25,
+                'email' => 'contacto@techavanzada.com',
+                'phone' => '+54 11 5678-9012',
+                'website' => 'www.techavanzada.com',
+                'address' => 'Av. del Libertador 5678',
                 'city' => 'Buenos Aires',
                 'state' => 'CABA',
-                'zip_code' => '1001',
+                'zip_code' => '1426',
+            ],
+            // Cliente 3: Comercio con sucursal
+            [
+                'type' => 'headquarters',
+                'cuit' => '30-55667788-9',
+                'company' => 'Supermercado del Norte S.A.',
+                'fantasy_name' => 'Super Norte',
+                'tax_condition' => 'Responsable Inscripto',
+                'industry' => 'Comercio Minorista',
+                'employees_count' => 60,
+                'email' => 'ventas@supernorte.com',
+                'phone' => '+54 11 6789-0123',
+                'website' => 'www.supernorte.com',
+                'address' => 'Av. Rivadavia 8900',
+                'city' => 'Buenos Aires',
+                'state' => 'CABA',
+                'zip_code' => '1406',
+                'branches' => [
+                    [
+                        'branch_name' => 'Sucursal Caballito',
+                        'cuit' => '30-55667788-9',
+                        'address' => 'Av. Acoyte 456',
+                        'city' => 'Buenos Aires',
+                        'state' => 'CABA',
+                        'zip_code' => '1405',
+                        'phone' => '+54 11 6789-0124',
+                    ],
+                ],
+            ],
+            // Cliente 4: Servicios profesionales
+            [
+                'type' => 'headquarters',
+                'cuit' => '27-34567890-2',
+                'company' => 'Estudio Jurídico Asociados',
+                'fantasy_name' => 'EJA Abogados',
+                'tax_condition' => 'Responsable Inscripto',
+                'industry' => 'Servicios Profesionales',
+                'employees_count' => 12,
+                'email' => 'info@ejaabogados.com',
+                'phone' => '+54 11 4321-5678',
+                'address' => 'Av. Córdoba 1234 Piso 8',
+                'city' => 'Buenos Aires',
+                'state' => 'CABA',
+                'zip_code' => '1055',
+            ],
+            // Cliente 5: Industria con sucursal
+            [
+                'type' => 'headquarters',
+                'cuit' => '30-11223344-5',
+                'company' => 'Metalúrgica Industrial S.A.',
+                'fantasy_name' => 'MetalInd',
+                'tax_condition' => 'Responsable Inscripto',
+                'industry' => 'Industria Manufacturera',
+                'employees_count' => 80,
+                'email' => 'produccion@metalind.com',
+                'phone' => '+54 11 7890-1234',
+                'website' => 'www.metalind.com',
+                'address' => 'Parque Industrial Lote 15',
+                'city' => 'La Matanza',
+                'state' => 'Buenos Aires',
+                'zip_code' => '1755',
+                'branches' => [
+                    [
+                        'branch_name' => 'Depósito Morón',
+                        'cuit' => '30-11223344-5',
+                        'address' => 'Av. Gaona 2345',
+                        'city' => 'Morón',
+                        'state' => 'Buenos Aires',
+                        'zip_code' => '1708',
+                        'phone' => '+54 11 7890-1235',
+                    ],
+                ],
             ],
         ];
 
         foreach ($exampleClientsData as $clientData) {
-            $client = Client::create([
+            // Crear sede principal
+            $headquarters = Client::create([
                 'user_id' => $exampleUser->id,
                 'cuit' => $clientData['cuit'],
                 'company' => $clientData['company'],
@@ -320,6 +445,7 @@ class CompleteDemoSeeder extends Seeder
                 'employees_count' => $clientData['employees_count'],
                 'email' => $clientData['email'],
                 'phone' => $clientData['phone'],
+                'website' => $clientData['website'] ?? null,
                 'address' => $clientData['address'],
                 'city' => $clientData['city'],
                 'state' => $clientData['state'],
@@ -327,23 +453,67 @@ class CompleteDemoSeeder extends Seeder
                 'active' => true,
             ]);
 
-            $this->command->info("  📍 Cliente creado: {$client->company}");
+            $this->command->info("  📍 Cliente creado: {$headquarters->company}");
 
             // Crear credencial AFIP
             if ($afip) {
                 ClientCredential::create([
-                    'client_id' => $client->id,
+                    'client_id' => $headquarters->id,
                     'api_service_id' => $afip->id,
                     'credentials' => [
                         'cuit' => $clientData['cuit'],
-                        'certificate' => 'demo_cert_' . $client->id,
-                        'private_key' => 'demo_key_' . $client->id,
+                        'certificate' => 'demo_cert_' . $headquarters->id,
+                        'private_key' => 'demo_key_' . $headquarters->id,
                     ],
                     'is_active' => true,
                     'execution_frequency' => 'daily',
                     'alert_email' => $clientData['email'],
                 ]);
             }
+
+            // Crear credencial Mercado Pago (para algunos clientes)
+            if ($mercadoPago && rand(0, 1)) {
+                ClientCredential::create([
+                    'client_id' => $headquarters->id,
+                    'api_service_id' => $mercadoPago->id,
+                    'credentials' => [
+                        'access_token' => 'APP_USR_' . uniqid(),
+                        'public_key' => 'APP_' . uniqid(),
+                    ],
+                    'is_active' => true,
+                    'execution_frequency' => rand(0, 1) ? 'daily' : 'weekly',
+                    'alert_email' => null,
+                ]);
+            }
+
+            // Crear sucursales si existen
+            if (isset($clientData['branches'])) {
+                foreach ($clientData['branches'] as $branchData) {
+                    $branch = Client::create([
+                        'user_id' => $exampleUser->id,
+                        'parent_id' => $headquarters->id,
+                        'branch_name' => $branchData['branch_name'],
+                        'cuit' => $branchData['cuit'],
+                        'company' => $headquarters->company,
+                        'fantasy_name' => $headquarters->fantasy_name,
+                        'tax_condition' => $headquarters->tax_condition,
+                        'industry' => $headquarters->industry,
+                        'employees_count' => rand(5, 20),
+                        'email' => strtolower(str_replace(' ', '', $branchData['branch_name'])) . '@' . explode('@', $clientData['email'])[1],
+                        'phone' => $branchData['phone'],
+                        'address' => $branchData['address'],
+                        'city' => $branchData['city'],
+                        'state' => $branchData['state'],
+                        'zip_code' => $branchData['zip_code'],
+                        'active' => true,
+                    ]);
+
+                    $this->command->info("    🏢 Sucursal creada: {$branch->branch_name}");
+                }
+            }
+
+            // Generar logs y transacciones para este cliente
+            $this->generateLogsAndTransactions($headquarters, $afip, $mercadoPago);
         }
 
         $this->command->info('');
@@ -452,9 +622,10 @@ class CompleteDemoSeeder extends Seeder
         $this->command->info("🔑 Total de credenciales: " . ClientCredential::count());
         
         $this->command->info("\n🔐 CREDENCIALES DE ACCESO:");
-        $this->command->info("📧 user@example.com / password (Contador con 2 clientes)");
-        $this->command->info("📧 maria.gonzalez@demo.com / password123 (Contador)");
+        $this->command->info("📧 user@example.com / password (Contador con 5 sedes + 4 sucursales)");
+        $this->command->info("📧 analista@example.com / password (Analista/Inspector)");
         $this->command->info("📧 admin@example.com / password (Super Admin)");
+        $this->command->info("📧 maria.gonzalez@demo.com / password123 (Contador)");
     }
 
     /**
