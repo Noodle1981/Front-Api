@@ -14,11 +14,10 @@ Sistema completo de administración SaaS para gestión de clientes, integracione
 
 ### 2. Seguridad y Roles (RBAC) 🛡️
 Implementado con `spatie/laravel-permission`:
-- **Super Admin**: Acceso total + Panel de Administración
-- **Manager**: Gestión completa de clientes y usuarios
-- **Analista**: Vista global de todos los contadores, puede transferir clientes, acceso a dashboards analíticos
-- **User (Contador)**: Gestión de sus propios clientes y credenciales API
-
+- **Super Admin**: Acceso total + Panel de Administración 
+- **Analista**: Vista global de todos los contadores, puede transferir clientes, acceso a dashboards analíticos PROGRAMADOR
+- **User (Contador)**: Gestión de sus propios clientes y credenciales API OPERADOR
+ 
 ### 3. Catálogo de APIs y Credenciales 🔑
 - **Servicios Disponibles**: AFIP, Mercado Pago, y más
 - **Credenciales Encriptadas**: Almacenamiento seguro con `AsEncryptedArrayObject`
@@ -139,7 +138,13 @@ Esto creará:
 - Credenciales API configuradas
 - 30 días de logs y transacciones
 
-7. **Compilar assets**:
+8. **Resetear Demo** (Comando Personalizado):
+    ```bash
+    php artisan app:reset-demo
+    ```
+    > Este comando ejecuta automáticamente `migrate:fresh` y la secuencia correcta de seeders para restaurar el entorno de demostración.
+
+9. **Compilar assets**:
 ```bash
 npm run build
 # O para desarrollo:
@@ -234,6 +239,8 @@ php artisan config:clear
 - Metadata en JSON
 
 ---
+
+php artisan app:reset-demo ## para generar datos de demo
 
 ## 🎯 Usuarios de Demo
 
