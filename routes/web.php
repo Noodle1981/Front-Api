@@ -19,7 +19,7 @@ Route::get('/dashboard', function () {
     return app(DashboardController::class)->index();
 })->middleware(['auth', 'verified', 'user'])->name('dashboard');
 
-Route::middleware(['auth', 'user', 'role:Super Admin|Manager|Analista|User'])->group(function () {
+Route::middleware(['auth', 'role:Super Admin|Manager|Analista|User'])->group(function () {
     // Rutas de Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -263,6 +263,91 @@ class CompleteDemoSeeder extends Seeder
             ],
         ];
 
+        // Crear usuario user@example.com primero (para demos y testing)
+        $this->command->info('🔧 Creando usuario user@example.com...');
+        
+        $exampleUser = User::firstOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'Usuario Ejemplo',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $exampleUser->syncRoles(['User']);
+        $this->command->info("✅ Usuario creado: {$exampleUser->email}");
+
+        // Crear 2 clientes para user@example.com
+        $exampleClientsData = [
+            [
+                'cuit' => '30-12345678-9',
+                'company' => 'Empresa de Prueba S.A.',
+                'fantasy_name' => 'Prueba SA',
+                'tax_condition' => 'Responsable Inscripto',
+                'industry' => 'Comercio',
+                'employees_count' => 10,
+                'email' => 'contacto@prueba.com',
+                'phone' => '+54 11 1234-5678',
+                'address' => 'Av. Ejemplo 123',
+                'city' => 'Buenos Aires',
+                'state' => 'CABA',
+                'zip_code' => '1000',
+            ],
+            [
+                'cuit' => '33-98765432-1',
+                'company' => 'Comercio Test S.R.L.',
+                'fantasy_name' => 'Test SRL',
+                'tax_condition' => 'Responsable Inscripto',
+                'industry' => 'Servicios',
+                'employees_count' => 5,
+                'email' => 'info@test.com',
+                'phone' => '+54 11 8765-4321',
+                'address' => 'Calle Falsa 456',
+                'city' => 'Buenos Aires',
+                'state' => 'CABA',
+                'zip_code' => '1001',
+            ],
+        ];
+
+        foreach ($exampleClientsData as $clientData) {
+            $client = Client::create([
+                'user_id' => $exampleUser->id,
+                'cuit' => $clientData['cuit'],
+                'company' => $clientData['company'],
+                'fantasy_name' => $clientData['fantasy_name'],
+                'tax_condition' => $clientData['tax_condition'],
+                'industry' => $clientData['industry'],
+                'employees_count' => $clientData['employees_count'],
+                'email' => $clientData['email'],
+                'phone' => $clientData['phone'],
+                'address' => $clientData['address'],
+                'city' => $clientData['city'],
+                'state' => $clientData['state'],
+                'zip_code' => $clientData['zip_code'],
+                'active' => true,
+            ]);
+
+            $this->command->info("  📍 Cliente creado: {$client->company}");
+
+            // Crear credencial AFIP
+            if ($afip) {
+                ClientCredential::create([
+                    'client_id' => $client->id,
+                    'api_service_id' => $afip->id,
+                    'credentials' => [
+                        'cuit' => $clientData['cuit'],
+                        'certificate' => 'demo_cert_' . $client->id,
+                        'private_key' => 'demo_key_' . $client->id,
+                    ],
+                    'is_active' => true,
+                    'execution_frequency' => 'daily',
+                    'alert_email' => $clientData['email'],
+                ]);
+            }
+        }
+
+        $this->command->info('');
+
         foreach ($contadores as $contadorData) {
             // Crear usuario contador
             $user = User::create([
@@ -360,10 +445,16 @@ class CompleteDemoSeeder extends Seeder
         }
 
         $this->command->info("\n🎉 ¡Datos Completos de Demo Generados Exitosamente!");
-        $this->command->info("📊 Total de usuarios: " . User::role('User')->count());
+        $this->command->info("\n📊 RESUMEN:");
+        $this->command->info("👥 Total de usuarios: " . User::role('User')->count());
         $this->command->info("🏢 Total de clientes (sedes): " . Client::whereNull('parent_id')->count());
         $this->command->info("🏪 Total de sucursales: " . Client::whereNotNull('parent_id')->count());
         $this->command->info("🔑 Total de credenciales: " . ClientCredential::count());
+        
+        $this->command->info("\n🔐 CREDENCIALES DE ACCESO:");
+        $this->command->info("📧 user@example.com / password (Contador con 2 clientes)");
+        $this->command->info("📧 maria.gonzalez@demo.com / password123 (Contador)");
+        $this->command->info("📧 admin@example.com / password (Super Admin)");
     }
 
     /**

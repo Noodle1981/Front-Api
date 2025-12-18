@@ -72,10 +72,18 @@ class RolePermissionSeeder extends Seeder
             'manage credentials',
         ]);
 
-        // D. USER (Básico)
+        // D. USER (Contador - Usuario Común)
+        // Gestiona sus propios clientes y credenciales día a día
         $userRole = Role::firstOrCreate(['name' => 'User']);
         $userRole->givePermissionTo([
             'view clients',
+            'create clients',
+            'edit clients',
+            // NO puede borrar ('delete clients')
+            // NO puede restaurar ('restore clients')
+            // NO puede reasignar ('reassign clients')
+            'view api catalog',
+            'manage credentials',
         ]);
 
         // 4. Asignar Super Admin al primer usuario (si existe)
