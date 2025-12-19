@@ -25,7 +25,7 @@
 
                     {{-- Right Side: Configuration Form --}}
                     <div class="md:col-span-2 p-8">
-                        <form action="{{ route('programmer.apis.update', $credential->id) }}" method="POST">
+                        <form action="{{ route('programmer.enterprise.update', $credential->id) }}" method="POST">
                             @csrf
                             @method('PUT')
                             

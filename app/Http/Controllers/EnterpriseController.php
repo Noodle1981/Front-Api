@@ -6,17 +6,17 @@ use App\Models\ApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class ApiServiceController extends Controller
+class EnterpriseController extends Controller
 {
     public function index()
     {
         // Programmers see valid Integrations (ClientCredentials)
-        // We call them "APIs" in the UI for simplicity
+        // Now called "Enterprise" in the UI
         $apis = \App\Models\ClientCredential::with(['client', 'apiService'])
                     ->latest()
                     ->paginate(10);
         
-        return view('programmer.apis.index', compact('apis'));
+        return view('programmer.enterprise.index', compact('apis'));
     }
 
     public function create(Request $request)
@@ -24,12 +24,12 @@ class ApiServiceController extends Controller
         // If user explicitly wants to define a new Custom API Service from scratch
         if ($request->query('mode') === 'manual') {
             $clients = \App\Models\Client::orderBy('company')->get(['id', 'company', 'fantasy_name', 'cuit']);
-            return view('programmer.apis.form', compact('clients')); 
+            return view('programmer.enterprise.form', compact('clients')); 
         }
 
         // Default: Show the Provider/Template Catalog
         $providers = ApiService::withCount('endpoints')->get();
-        return view('programmer.apis.create', compact('providers'));
+        return view('programmer.enterprise.create', compact('providers'));
     }
 
     public function store(Request $request)
@@ -48,7 +48,7 @@ class ApiServiceController extends Controller
 
         $apiService = ApiService::create($validated);
 
-        $message = 'API creada correctamente.';
+        $message = 'Servicio creado correctamente.';
 
         // Handle Quick Assign to Client
         if (!empty($validated['client_id'])) {
@@ -59,10 +59,10 @@ class ApiServiceController extends Controller
                 'is_active' => true,
             ]);
             $client = \App\Models\Client::find($validated['client_id']);
-            $message .= " Y vinculada al cliente {$client->company}.";
+            $message .= " Y vinculado al cliente {$client->company}.";
         }
 
-        return redirect()->route('programmer.apis.index')->with('success', $message);
+        return redirect()->route('programmer.enterprise.index')->with('success', $message);
     }
 
     public function edit($id)
@@ -71,7 +71,7 @@ class ApiServiceController extends Controller
         $provider = $credential->apiService;
         $clients = \App\Models\Client::orderBy('company')->get(['id', 'company', 'fantasy_name', 'cuit']);
         
-        return view('programmer.apis.edit', compact('credential', 'provider', 'clients'));
+        return view('programmer.enterprise.edit', compact('credential', 'provider', 'clients'));
     }
 
     public function update(Request $request, $id)
@@ -98,13 +98,13 @@ class ApiServiceController extends Controller
             'credentials' => $validated['credentials'] ?? [],
         ]);
 
-        return redirect()->route('programmer.apis.index')->with('success', 'Integración actualizada correctamente.');
+        return redirect()->route('programmer.enterprise.index')->with('success', 'Integración actualizada correctamente.');
     }
 
     public function destroy($id)
     {
         $credential = \App\Models\ClientCredential::findOrFail($id);
         $credential->delete();
-        return redirect()->route('programmer.apis.index')->with('success', 'Integración eliminada correctamente.');
+        return redirect()->route('programmer.enterprise.index')->with('success', 'Integración eliminada correctamente.');
     }
 }

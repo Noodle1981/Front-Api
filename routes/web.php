@@ -64,8 +64,8 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
     // Endpoint Test execution
     Route::post('/endpoints/execute-test', [App\Http\Controllers\EndpointController::class, 'executeTest'])->name('endpoints.execute_test');
 
-    // API CRUD (Instances / Credentials)
-    Route::resource('apis', App\Http\Controllers\ApiServiceController::class);
+    // Enterprise Module (API Instances / Credentials)
+    Route::resource('enterprise', App\Http\Controllers\EnterpriseController::class);
 
     // API Templates & Endpoints
     Route::prefix('services/{service}')->name('services.')->group(function() {
@@ -84,6 +84,21 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
     Route::post('/integrations/test', [App\Http\Controllers\Programmer\IntegrationController::class, 'testConnection'])->name('integrations.test'); // Add this line
     Route::get('/integrations/{provider}/configure', [App\Http\Controllers\Programmer\IntegrationController::class, 'configure'])->name('integrations.configure');
     Route::post('/integrations/{provider}', [App\Http\Controllers\Programmer\IntegrationController::class, 'store'])->name('integrations.store');
+
+    // Reglas de Negocio ETL
+    Route::prefix('reglas')->name('business-rules.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'store'])->name('store');
+        Route::get('/{rule}/edit', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'edit'])->name('edit');
+        Route::put('/{rule}', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'update'])->name('update');
+        Route::delete('/{rule}', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'destroy'])->name('destroy');
+        
+        // API endpoints para AJAX
+        Route::get('/api/services/{apiService}/endpoints', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'getEndpoints'])->name('api.endpoints');
+        Route::get('/api/input-data', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'getInputData'])->name('api.input-data');
+        Route::post('/{rule}/execute-test', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'executeTest'])->name('execute-test');
+    });
 });
 
 Route::middleware(['auth', 'role:Super Admin|Manager'])->prefix('admin')->name('admin.')->group(function () {

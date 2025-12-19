@@ -25,7 +25,15 @@ Implementado con `spatie/laravel-permission`:
 - **Credenciales Dinámicas**: Soporte para OAuth, Tokens, Keys según el proveedor.
 - **Configuración por Cliente**: Cada cliente puede tener múltiples APIs configuradas.
 
-### 4. Dashboards Analíticos 📊
+### 4. Sistema de Reglas de Negocio ETL 🐍
+- **Workflow Builder**: Editor visual de 3 paneles (Entrada/Editor Python/Resultado)
+- **Motor Python (Pyodide)**: Ejecución de código Python directamente en el navegador para testing
+- **Editor Monaco**: Editor de código profesional (VS Code) integrado
+- **Tipos de Reglas**: Extracción, Transformación y Visualización
+- **Integración Enterprise**: Vinculación con clientes, APIs y endpoints
+- **Diseño Glassmorphism**: Interfaz moderna con efectos de vidrio esmerilado
+
+### 5. Dashboards Analíticos 📊
 
 #### Dashboard de Analista (`/analistas/dashboard`)
 - **KPIs por Usuario**: Error rate, % automatización, última actividad, carga de trabajo
@@ -298,9 +306,11 @@ Después de ejecutar `CompleteDemoSeeder`:
 
 ### Programador
 - `/programadores/dashboard` - Dashboard principal
-- `/programadores/apis` - Gestión de Integraciones
+- `/programadores/enterprise` - Gestión de Integraciones (Enterprise)
 - `/programadores/services/{id}/endpoints` - Gestor de Endpoints y Pruebas
 - `/programadores/clients` - Gestión de Clientes Avanzada
+- `/programadores/reglas` - Reglas de Negocio ETL
+- `/programadores/reglas/create` - Workflow Builder (nuevo/editar reglas)
 
 ### Admin
 - `/admin/dashboard` - Panel de administración

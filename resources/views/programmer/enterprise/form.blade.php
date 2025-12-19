@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     
-                    <form action="{{ route('programmer.apis.store') }}" method="POST">
+                    <form action="{{ route('programmer.enterprise.store') }}" method="POST">
                         @csrf
                         
                         <div class="mb-4">
@@ -50,7 +50,7 @@
                             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                                 Guardar API
                             </button>
-                            <a href="{{ route('programmer.apis.create') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                            <a href="{{ route('programmer.enterprise.create') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
                                 Volver al Catálogo
                             </a>
                         </div>

@@ -39,7 +39,7 @@
                 @endforeach
                 
                 {{-- Add "Custom" Option --}}
-                <a href="{{ route('programmer.apis.create') }}" 
+                <a href="{{ route('programmer.enterprise.create') }}" 
                    class="group bg-gray-50 rounded-xl shadow border-2 border-dashed border-gray-300 p-8 flex flex-col items-center hover:border-aurora-cyan hover:bg-white transition-all duration-300">
                     <div class="w-20 h-20 mb-6 bg-gray-200 rounded-full flex items-center justify-center text-4xl text-gray-400 group-hover:text-aurora-cyan group-hover:bg-cyan-50 transition">
                         <i class="fas fa-plus"></i>

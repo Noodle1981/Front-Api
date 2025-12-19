@@ -24,7 +24,7 @@ ETAPA 1 ANALISTA se cambiara por PROGRAMADORES
 
     Se agregara 
 
-    Apis http://127.0.0.1:8000/programadores/apis [DONE - Wizard de Integración]
+    Enterprise http://127.0.0.1:8000/programadores/enterprise [DONE - Renombrado de APIs a Enterprise + Wizard de Integración]
 
     los pogramadores deben tener la capacidad de crear apis 
 
@@ -34,13 +34,13 @@ ETAPA 1 ANALISTA se cambiara por PROGRAMADORES
 
     Phyton Builder http://127.0.0.1:8000/programadores/python
 
-    Reglas de Negocio http://127.0.0.1:8000/programadores/reglas
+    Reglas de Negocio http://127.0.0.1:8000/programadores/reglas [DONE - Sistema ETL con Pyodide + Monaco Editor + Glassmorphism]
 
     los pogramadores deben tener la capacidad de crear reglas de negocio usando phyton con los datos de los clientes con sus apis y endpoints
     osea que se crea las reglas de negocio con los datos de los clientes con sus apis y endpoints, para que los operarios tengan reglas predifinidas para ejecutar
     sin saber como se programan
 
-    Workflow Builder http://127.0.0.1:8000/programadores/workflow
+    Workflow Builder http://127.0.0.1:8000/programadores/workflow [DONE - Integrado en Reglas de Negocio]
 
     es donde el programador crean  y testean los workflows para los operarios eligiendo las reglas de negocio y las apis y endpoints
     
@@ -52,7 +52,7 @@ ETAPA 1 ANALISTA se cambiara por PROGRAMADORES
     DATOS A DEFINIR
 
 
-    Ejecución de código Python en el navegador (Pyodide)
+    Ejecución de código Python en el navegador (Pyodide) [DONE - Integrado en Workflow Builder]
     
 ETAPA 2  USUARIOS se cambiara por OPERADORES
 
@@ -68,4 +68,27 @@ ETAPA 2  USUARIOS se cambiara por OPERADORES
     workflow http://127.0.0.1:8000/programadores/workflow por http://127.0.0.1:8000/operadores/workflow    
 
     es donde usan las reglas de negocio y las apis y endpoints para ejecutar los workflows que fueron testeados por los programadores
+
+ETAPA 3 - LIVEWIRE (Opcional para Mejorar UX)
+
+    Livewire es un framework de Laravel para crear interfaces dinámicas sin escribir mucho JavaScript.
+    
+    INSTALACIÓN (Simple - 3 comandos):
+    
+    1. composer require livewire/livewire
+    2. Agregar @livewireStyles y @livewireScripts en el layout
+    3. php artisan make:livewire NombreDelComponente
+    
+    BENEFICIOS:
+    - Componentes reactivos sin JavaScript manual
+    - Mejor UX para filtros, búsquedas y paginación
+    - Formularios en tiempo real
+    - Compatible con Alpine.js (ya instalado)
+    
+    CASOS DE USO SUGERIDOS:
+    - [ ] Tabla de clientes con filtros en tiempo real
+    - [ ] Buscador de APIs y Endpoints
+    - [ ] Dashboard con actualización automática
+    - [ ] Formularios de reglas de negocio
+    - [ ] Notificaciones en tiempo real
 

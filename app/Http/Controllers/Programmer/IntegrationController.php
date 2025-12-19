@@ -103,7 +103,7 @@ class IntegrationController extends Controller
         $endpointIds = $provider->endpoints()->pluck('id');
         $credential->endpoints()->syncWithPivotValues($endpointIds, ['is_active' => true]);
 
-        return redirect()->route('programmer.apis.index')
+        return redirect()->route('programmer.enterprise.index')
             ->with('success', "Integración '{$name}' creada correctamente.");
     }
 }
