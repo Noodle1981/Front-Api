@@ -12,18 +12,27 @@ class ApiServiceSeeder extends Seeder
      */
     public function run(): void
     {
-        $services = [
-            [
-                'name' => 'AFIP Facturación',
-                'slug' => 'afip-wsfe',
-                'base_url' => 'https://wswhomo.afip.gov.ar/wsfev1/service.asmx',
-                'required_fields' => ['cuit', 'certificado_crt', 'clave_privada_key', 'punto_venta'],
-            ],
+        $providers = [
             [
                 'name' => 'Mercado Pago',
                 'slug' => 'mercado-pago',
-                'base_url' => 'https://api.mercadopago.com/v1',
+                'base_url' => 'https://api.mercadopago.com',
+                'logo_url' => 'img/logosApis/mercadopago.png',
                 'required_fields' => ['public_key', 'access_token', 'client_id', 'client_secret'],
+            ],
+            [
+                'name' => 'Ualá Bis',
+                'slug' => 'uala-bis',
+                'base_url' => 'https://api.uala.com.ar',
+                'logo_url' => 'img/logosApis/Uala.png',
+                'required_fields' => ['user_name', 'client_id', 'client_secret'],
+            ],
+            [
+                'name' => 'Naranja X',
+                'slug' => 'naranja-x',
+                'base_url' => 'https://api.naranjax.com',
+                'logo_url' => 'img/logosApis/naranjax.png',
+                'required_fields' => ['client_id', 'client_secret', 'grant_type'],
             ],
             [
                 'name' => 'Google Ads',
@@ -39,9 +48,9 @@ class ApiServiceSeeder extends Seeder
             ],
         ];
 
-        foreach ($services as $data) {
+        foreach ($providers as $data) {
             ApiService::firstOrCreate(
-                ['slug' => $data['slug']], 
+                ['slug' => $data['slug']],
                 $data
             );
         }

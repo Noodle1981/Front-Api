@@ -276,18 +276,18 @@ class CompleteDemoSeeder extends Seeder
         $admin->syncRoles(['Super Admin']);
         $this->command->info("✅ Super Admin creado y rol asignado.");
 
-        // 2. Crear ANALISTA (Inspector)
-        $this->command->info('🔧 Creando Analista (analista@example.com)...');
+        // 2. Crear PROGRAMADOR (Ex Analista)
+        $this->command->info('🔧 Creando Programador (analista@example.com)...');
         $analista = User::firstOrCreate(
             ['email' => 'analista@example.com'],
             [
-                'name' => 'Analista Principal',
+                'name' => 'Programador Principal',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
         );
-        $analista->syncRoles(['Analista']);
-        $this->command->info("✅ Analista creado y rol asignado.");
+        $analista->syncRoles(['Programador']);
+        $this->command->info("✅ Programador creado y rol asignado.");
 
         // 3. Crear usuario user@example.com (para demos)
         $this->command->info('🔧 Creando usuario user@example.com...');
@@ -300,7 +300,7 @@ class CompleteDemoSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
-        $exampleUser->syncRoles(['User']);
+        $exampleUser->syncRoles(['Operador']);
         $this->command->info("✅ Usuario creado: {$exampleUser->email}");
 
         // Crear 2 clientes para user@example.com
@@ -526,7 +526,7 @@ class CompleteDemoSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'email_verified_at' => now(),
             ]);
-            $user->assignRole('User');
+            $user->assignRole('Operador');
 
             $this->command->info("✅ Usuario creado: {$user->email}");
 
@@ -616,16 +616,16 @@ class CompleteDemoSeeder extends Seeder
 
         $this->command->info("\n🎉 ¡Datos Completos de Demo Generados Exitosamente!");
         $this->command->info("\n📊 RESUMEN:");
-        $this->command->info("👥 Total de usuarios: " . User::role('User')->count());
+        $this->command->info("👥 Total de usuarios: " . User::role('Operador')->count());
         $this->command->info("🏢 Total de clientes (sedes): " . Client::whereNull('parent_id')->count());
         $this->command->info("🏪 Total de sucursales: " . Client::whereNotNull('parent_id')->count());
         $this->command->info("🔑 Total de credenciales: " . ClientCredential::count());
         
         $this->command->info("\n🔐 CREDENCIALES DE ACCESO:");
-        $this->command->info("📧 user@example.com / password (Contador con 5 sedes + 4 sucursales)");
-        $this->command->info("📧 analista@example.com / password (Analista/Inspector)");
+        $this->command->info("📧 user@example.com / password (Operador con 5 sedes + 4 sucursales)");
+        $this->command->info("📧 analista@example.com / password (Programador Principal)");
         $this->command->info("📧 admin@example.com / password (Super Admin)");
-        $this->command->info("📧 maria.gonzalez@demo.com / password123 (Contador)");
+        $this->command->info("📧 maria.gonzalez@demo.com / password123 (Operador)");
     }
 
     /**

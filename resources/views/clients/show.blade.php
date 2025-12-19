@@ -234,6 +234,27 @@
                                             </div>
                                         @endforeach
 
+                                        {{-- Endpoints Selection (Edit) --}}
+                                        <div class="border-t border-white/10 pt-4 mt-2">
+                                            <label class="block text-xs font-medium text-gray-400 mb-2">Endpoints Habilitados</label>
+                                            @if($credential->apiService->endpoints->isEmpty())
+                                                <p class="text-xs text-gray-500 italic">No hay endpoints definidos para este servicio.</p>
+                                            @else
+                                                <div class="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto custom-scrollbar">
+                                                    @foreach($credential->apiService->endpoints as $endpoint)
+                                                        <label class="flex items-start cursor-pointer group">
+                                                            <input type="checkbox" name="endpoints[]" value="{{ $endpoint->id }}"
+                                                                @if($credential->endpoints->contains($endpoint->id)) checked @endif
+                                                                class="mt-0.5 form-checkbox bg-gray-900 border-gray-700 text-aurora-cyan rounded focus:ring-offset-gray-900 focus:ring-1 focus:ring-aurora-cyan/50 transition">
+                                                            <span class="ml-2 text-xs text-gray-300 group-hover:text-white transition">
+                                                                <span class="font-bold text-aurora-cyan">{{ $endpoint->method }}</span> {{ $endpoint->url }}
+                                                            </span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+
                                         {{-- Automatización (Copia de la lógica de creación) --}}
                                         <div class="border-t border-white/10 pt-4 mt-2">
                                             <div class="flex items-center space-x-4 mb-4">
@@ -259,8 +280,8 @@
                                                                     class="form-checkbox text-aurora-cyan focus:ring-aurora-cyan bg-gray-700 border-gray-500 rounded">
                                                                 <span class="ml-2 text-xs text-gray-300">{{ $label }}</span>
                                                             </label>
-                                                        @endforeach
-                                                    </div>
+                                            @endforeach
+                                        </div>
                                                 </div>
                                                 <div>
                                                     <label class="block text-xs font-medium text-gray-400 mb-2">Horario</label>
@@ -332,7 +353,28 @@
                                 </div>
                             </template>
                         </div>
-                        </template>
+
+                        {{-- Endpoints Selection (Create) --}}
+                        <div x-show="currentService && currentService.endpoints && currentService.endpoints.length > 0" 
+                             x-transition class="border-t border-gray-200 pt-4 mt-4">
+                            <h4 class="font-bold text-gray-900 mb-2 text-sm">Endpoints Habilitados</h4>
+                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
+                                <div class="grid grid-cols-1 gap-2">
+                                    <template x-for="endpoint in currentService.endpoints" :key="endpoint.id">
+                                        <label class="flex items-start cursor-pointer hover:bg-gray-100 p-1 rounded transition">
+                                            <input type="checkbox" name="endpoints[]" :value="endpoint.id" checked
+                                                class="mt-0.5 form-checkbox bg-white border-gray-300 text-aurora-cyan rounded focus:ring-aurora-cyan">
+                                            <span class="ml-2 text-xs text-gray-700">
+                                                <span class="font-bold text-brand-dark" x-text="endpoint.method"></span> 
+                                                <span x-text="endpoint.url"></span>
+                                            </span>
+                                        </label>
+                                    </template>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Por defecto todos seleccionados. Desmarca los que no quieras autorizar.</p>
+                        </div>
+
 
                         <div class="space-y-4 pt-4 border-t border-gray-200">
                             <h4 class="font-bold text-gray-900 mb-2">Automatización</h4>

@@ -193,11 +193,11 @@ class ApiDashboardController extends Controller
 
         // Prepare filter data
         $filterClients = (clone $clientQuery)->orderBy('company')->get(['id', 'company']);
-        $filterUsers = \App\Models\User::role('User')->orderBy('name')->get(['id', 'name']);
+
         $filterServices = \App\Models\ApiService::orderBy('name')->get(['id', 'name']);
 
         // User context selector (for Analysts)
-        $contextUsers = $isGlobal ? \App\Models\User::role('User')->orderBy('name')->get(['id', 'name']) : collect();
+        $contextUsers = $isGlobal ? \App\Models\User::role('Operador')->orderBy('name')->get(['id', 'name']) : collect();
 
         return view('admin.api-dashboard', compact('stats', 'logs', 'chartActivity', 'chartServices', 'filterClients', 'filterUsers', 'filterServices', 'contextUsers', 'selectedUser'));
     }

@@ -17,16 +17,16 @@ Route::get('/dashboard', function () {
         return redirect()->route('admin.dashboard');
     }
     
-    // Redirigir analistas a su dashboard
-    if (auth()->user()->hasRole('Analista')) {
-        return redirect()->route('analyst.dashboard');
+    // Redirigir programadores a su dashboard
+    if (auth()->user()->hasRole('Programador')) {
+        return redirect()->route('programmer.dashboard');
     }
     
-    // Usuarios normales van al dashboard estándar
+    // Operadores normales van al dashboard estándar
     return app(DashboardController::class)->index();
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'role:Super Admin|Manager|Analista|User'])->group(function () {
+Route::middleware(['auth', 'role:Super Admin|Manager|Programador|Operador'])->group(function () {
     // Rutas de Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -53,20 +53,37 @@ Route::middleware(['auth', 'role:Super Admin|Manager|Analista|User'])->group(fun
     Route::get('/api-dashboard', [App\Http\Controllers\Admin\ApiDashboardController::class, 'index'])->name('api.dashboard');
 });
 
-// --- RUTAS PARA ANALISTAS (Inspectores) ---
-Route::middleware(['auth', 'role:Analista'])->prefix('analistas')->name('analyst.')->group(function () {
-    // Dashboard Inspector
-    Route::get('/dashboard', [App\Http\Controllers\AnalystDashboardController::class, 'index'])->name('dashboard');
+// --- RUTAS PARA PROGRAMADORES (Ex Analistas) ---
+Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('programmer.')->group(function () {
+    // Dashboard Programador
+    Route::get('/dashboard', [App\Http\Controllers\ProgrammerDashboardController::class, 'index'])->name('dashboard');
     
-    // API Monitor (Analyst View)
+    // API Monitor (Programmer View)
     Route::get('/api-dashboard', [App\Http\Controllers\Admin\ApiDashboardController::class, 'index'])->name('api-dashboard');
 
-    // Clientes (Inspector View - Reusing Controller but strictly for Analysts)
+    // Endpoint Test execution
+    Route::post('/endpoints/execute-test', [App\Http\Controllers\EndpointController::class, 'executeTest'])->name('endpoints.execute_test');
+
+    // API CRUD (Instances / Credentials)
+    Route::resource('apis', App\Http\Controllers\ApiServiceController::class);
+
+    // API Templates & Endpoints
+    Route::prefix('services/{service}')->name('services.')->group(function() {
+        Route::resource('endpoints', App\Http\Controllers\EndpointController::class);
+    });
+
+    // Clientes (Programmer View - Reusing Controller but strictly for Programmers)
     Route::resource('clients', ClientController::class);
     
     // Transferir Clientes
     Route::get('/clients/{client}/transfer', [App\Http\Controllers\ClientTransferController::class, 'edit'])->name('clients.transfer');
     Route::put('/clients/{client}/transfer', [App\Http\Controllers\ClientTransferController::class, 'update'])->name('clients.transfer.update');
+
+    // Módulo de Integraciones (Wizard)
+    Route::get('/integrations/new', [App\Http\Controllers\Programmer\IntegrationController::class, 'create'])->name('integrations.create');
+    Route::post('/integrations/test', [App\Http\Controllers\Programmer\IntegrationController::class, 'testConnection'])->name('integrations.test'); // Add this line
+    Route::get('/integrations/{provider}/configure', [App\Http\Controllers\Programmer\IntegrationController::class, 'configure'])->name('integrations.configure');
+    Route::post('/integrations/{provider}', [App\Http\Controllers\Programmer\IntegrationController::class, 'store'])->name('integrations.store');
 });
 
 Route::middleware(['auth', 'role:Super Admin|Manager'])->prefix('admin')->name('admin.')->group(function () {

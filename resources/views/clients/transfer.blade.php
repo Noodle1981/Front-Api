@@ -25,7 +25,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('analyst.clients.transfer.update', $client) }}" method="POST">
+                <form action="{{ route('programmer.clients.transfer.update', $client) }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="flex justify-end space-x-3">
-                        <a href="{{ route('analyst.clients.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                        <a href="{{ route('programmer.clients.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
                             Cancelar
                         </a>
                         <button type="submit" class="px-4 py-2 bg-brand-dark text-white rounded hover:bg-gray-800 transition">

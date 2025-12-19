@@ -15,7 +15,7 @@ class ClientController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $isGlobal = $user->hasRole(['Super Admin', 'Manager', 'Analista']);
+        $isGlobal = $user->hasRole(['Super Admin', 'Manager', 'Programador']);
         
         // User Context Filter
         $userFilter = $request->input('user_filter');
@@ -55,8 +55,9 @@ class ClientController extends Controller
 
         $clients = $query->latest()->paginate(10)->appends($request->except('page'));
         
+        
         // User context selector data
-        $contextUsers = $isGlobal ? \App\Models\User::role('User')->orderBy('name')->get(['id', 'name']) : collect();
+        $contextUsers = $isGlobal ? \App\Models\User::role('Operador')->orderBy('name')->get(['id', 'name']) : collect();
         
         return view('clients.index', compact('clients', 'stats', 'filter', 'contextUsers', 'selectedUser'));
     }
@@ -80,12 +81,10 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         // 1. Seguridad: Solo el dueño puede ver los detalles.
-        if (Auth::user()->id !== $client->user_id) {
-            abort(404);
-        }
 
-        $client->load(['credentials.apiService', 'parent', 'children']);
-        $apiServices = \App\Models\ApiService::all();
+
+        $client->load(['credentials.apiService', 'credentials.endpoints', 'parent', 'children']);
+        $apiServices = \App\Models\ApiService::with('endpoints')->get();
 
         return view('clients.show', compact('client', 'apiServices'));
     }
@@ -116,9 +115,7 @@ class ClientController extends Controller
 
     public function destroy(Client $client)
     {
-        if (Auth::user()->id !== $client->user_id) {
-            abort(404);
-        }
+
 
         // Verificar permiso de borrado (Spatie)
         if (!Auth::user()->can('delete clients')) {
@@ -131,9 +128,7 @@ class ClientController extends Controller
 
     public function data(Client $client)
     {
-        if (Auth::user()->id !== $client->user_id) {
-            abort(404);
-        }
+
 
         return response()->json([
             'message' => 'Endpoint deprecated',

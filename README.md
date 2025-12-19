@@ -15,15 +15,15 @@ Sistema completo de administración SaaS para gestión de clientes, integracione
 ### 2. Seguridad y Roles (RBAC) 🛡️
 Implementado con `spatie/laravel-permission`:
 - **Super Admin**: Acceso total + Panel de Administración 
-- **Analista**: Vista global de todos los contadores, puede transferir clientes, acceso a dashboards analíticos PROGRAMADOR
-- **User (Contador)**: Gestión de sus propios clientes y credenciales API OPERADOR
+- **Programador (Ex Analista)**: Gestión avanzada de Integraciones, Endpoints, Clientes y reportes.
+- **Operador (Ex User)**: Gestión de sus propios clientes y ejecución de workflows.
  
-### 3. Catálogo de APIs y Credenciales 🔑
-- **Servicios Disponibles**: AFIP, Mercado Pago, y más
-- **Credenciales Encriptadas**: Almacenamiento seguro con `AsEncryptedArrayObject`
-- **Configuración por Cliente**: Cada cliente puede tener múltiples APIs configuradas
-- **Automatización**: Frecuencia de ejecución (Diaria/Semanal)
-- **Alertas Personalizadas**: Email específico por credencial o email del usuario
+### 3. Catálogo de APIs y Endpoints 🔌
+- **Wizard de Integración**: Interfaz paso a paso para configurar Mercado Pago, Ualá, etc.
+- **Gestión de Endpoints**: Alta de endpoints (GET/POST) con parámetros.
+- **Testing en Vivo**: Panel integrado para probar endpoints reales directamente desde la UI.
+- **Credenciales Dinámicas**: Soporte para OAuth, Tokens, Keys según el proveedor.
+- **Configuración por Cliente**: Cada cliente puede tener múltiples APIs configuradas.
 
 ### 4. Dashboards Analíticos 📊
 
@@ -296,10 +296,11 @@ Después de ejecutar `CompleteDemoSeeder`:
 - `/clients/{id}` - Detalle de cliente
 - `/api-dashboard` - Monitor de APIs
 
-### Analista
-- `/analistas/dashboard` - Dashboard analítico
-- `/analistas/api-dashboard` - Dashboard API con filtros
-- `/analistas/clients` - Vista de clientes con estadísticas
+### Programador
+- `/programadores/dashboard` - Dashboard principal
+- `/programadores/apis` - Gestión de Integraciones
+- `/programadores/services/{id}/endpoints` - Gestor de Endpoints y Pruebas
+- `/programadores/clients` - Gestión de Clientes Avanzada
 
 ### Admin
 - `/admin/dashboard` - Panel de administración

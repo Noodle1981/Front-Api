@@ -16,7 +16,7 @@ class ClientTransferController extends Controller
             abort(403);
         }
 
-        $users = User::role('User')->where('id', '!=', $client->user_id)->get();
+        $users = User::role('Operador')->where('id', '!=', $client->user_id)->get();
 
         return view('clients.transfer', compact('client', 'users'));
     }
@@ -40,7 +40,7 @@ class ClientTransferController extends Controller
         // Opcional: Loguear esto en una auditoría si existiera tabla
         // Log::info("Client {$client->id} transferred from $oldUser to {$newUser->name} by " . Auth::user()->name);
 
-        return redirect()->route('analyst.clients.index')
+        return redirect()->route('programmer.clients.index')
             ->with('success', "Cliente transferido correctamente de $oldUser a {$newUser->name}.");
     }
 }

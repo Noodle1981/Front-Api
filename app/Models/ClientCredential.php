@@ -11,6 +11,7 @@ class ClientCredential extends Model
     protected $fillable = [
         'client_id',
         'api_service_id',
+        'name',
         'credentials',
         'is_active',
         'execution_frequency',
@@ -30,5 +31,12 @@ class ClientCredential extends Model
     public function apiService(): BelongsTo
     {
         return $this->belongsTo(ApiService::class);
+    }
+
+    public function endpoints()
+    {
+        return $this->belongsToMany(Endpoint::class, 'client_credential_endpoint')
+                    ->withPivot('is_active')
+                    ->withTimestamps();
     }
 }

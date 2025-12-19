@@ -59,23 +59,23 @@ class RolePermissionSeeder extends Seeder
             // Para simplificar, le damos acceso básico a usuarios si se requiere, pero por ahora seguimos estrictos.
         ]);
 
-        // C. ANALISTA (Contador)
-        $analista = Role::firstOrCreate(['name' => 'Analista']);
-        $analista->givePermissionTo([
+        // C. PROGRAMADOR (Ex Analista)
+        $programador = Role::firstOrCreate(['name' => 'Programador']);
+        $programador->givePermissionTo([
             'view clients',
             'create clients',
             'edit clients',
-            'reassign clients', // Permiso Agregado para Inspector
+            'reassign clients', // Permiso Agregado for Programador
             // NO puede borrar ('delete clients')
             // NO puede restaurar ('restore clients')
             'view api catalog',
             'manage credentials',
         ]);
 
-        // D. USER (Contador - Usuario Común)
+        // D. OPERADOR (Ex User - Contador)
         // Gestiona sus propios clientes y credenciales día a día
-        $userRole = Role::firstOrCreate(['name' => 'User']);
-        $userRole->givePermissionTo([
+        $operador = Role::firstOrCreate(['name' => 'Operador']);
+        $operador->givePermissionTo([
             'view clients',
             'create clients',
             'edit clients',

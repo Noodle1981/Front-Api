@@ -2,7 +2,7 @@ INTRODUCCION -
 
     Se van a cambiar algunos nombres, 
     Analistas por Programadores
-    Contadores por Operadores
+    Usuarios por Operadores
     Administrador se mantiene
 
     quiere decir que los nombres de las vistas y rutas cambiaran
@@ -11,24 +11,24 @@ ETAPA 1 ANALISTA se cambiara por PROGRAMADORES
 
     Se cambiaran los nombres de las vistas y rutas
 
-    Panel Inspector se cambiara por Panel de Programadores 
+    Panel Inspector se cambiara por Panel de Programadores [DONE]
     http://127.0.0.1:8000/analistas/dashboard por http://127.0.0.1:8000/programadores/dashboard
 
     http://127.0.0.1:8000/analistas/api-dashboard por http://127.0.0.1:8000/programadores/api-dashboard
 
-    Clientes se mantiente
+    Clientes se mantiente [DONE]
 
     http://127.0.0.1:8000/analistas/clients por http://127.0.0.1:8000/programadores/clients
 
-    los pogramadores deben tener la capacidad de asociar clientes a apis (1 o varias, teniendo encuenta si son sedes o sucursales)
+    los pogramadores deben tener la capacidad de asociar clientes a apis (1 o varias, teniendo encuenta si son sedes o sucursales) [DONE]
 
     Se agregara 
 
-    Apis http://127.0.0.1:8000/programadores/apis
+    Apis http://127.0.0.1:8000/programadores/apis [DONE - Wizard de Integración]
 
     los pogramadores deben tener la capacidad de crear apis 
 
-    Endpoints http://127.0.0.1:8000/programadores/endpoint
+    Endpoints http://127.0.0.1:8000/programadores/services/{id}/endpoints [DONE - Gestor de Endpoints]
 
     los pogramadores deben tener la capacidad de crear endpoints segun sus apis tanto get como post
 

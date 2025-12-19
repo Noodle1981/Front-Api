@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-headings font-bold text-xl text-gray-800 leading-tight">
-            <i class="fas fa-user-shield mr-2 text-brand-dark"></i> Centro de Comando - Inspector
+            <i class="fas fa-user-shield mr-2 text-brand-dark"></i> Centro de Comando - Programador
         </h2>
     </x-slot>
 
@@ -79,7 +79,7 @@
                             <i class="fas fa-users text-2xl"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-blue-700 uppercase">Contadores</p>
+                            <p class="text-sm font-medium text-blue-700 uppercase">Operadores</p>
                             <p class="text-3xl font-bold text-blue-900">{{ $stats['total_users'] }}</p>
                         </div>
                     </div>
@@ -160,13 +160,13 @@
             {{-- Users Table with Enhanced Metrics --}}
             <div class="bg-white/70 backdrop-blur-md overflow-hidden shadow-lg sm:rounded-lg border border-white/20">
                 <div class="p-6 bg-white/50 border-b border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-800">Contadores - Vista Detallada</h3>
+                    <h3 class="text-lg font-bold text-gray-800">Operadores - Vista Detallada</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50/80">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contador</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Operador</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clientes</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tasa Error</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Automatización</th>
@@ -233,11 +233,11 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                        <a href="{{ route('analyst.api-dashboard', ['user_filter' => $user->id]) }}" 
+                                        <a href="{{ route('programmer.api-dashboard', ['user_filter' => $user->id]) }}" 
                                            class="text-blue-600 hover:text-blue-900 transition" title="Ver Dashboard API">
                                             <i class="fas fa-chart-line"></i>
                                         </a>
-                                        <a href="{{ route('analyst.clients.index', ['user_filter' => $user->id]) }}" 
+                                        <a href="{{ route('programmer.clients.index', ['user_filter' => $user->id]) }}" 
                                            class="text-indigo-600 hover:text-indigo-900 transition" title="Ver Clientes">
                                             <i class="fas fa-users"></i>
                                         </a>

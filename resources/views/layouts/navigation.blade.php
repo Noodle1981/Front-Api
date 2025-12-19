@@ -12,21 +12,27 @@
 
         <!-- Navigation Links -->
         <div class="flex flex-col space-y-2">
-            @role('Analista')
-                {{-- Rutas de INSPECTOR (Analista) --}}
-                <x-nav-link :href="route('analyst.dashboard')" :active="request()->routeIs('analyst.dashboard')"
+            @role('Programador')
+                {{-- Rutas de PROGRAMADOR (Ex Analista) --}}
+                <x-nav-link :href="route('programmer.dashboard')" :active="request()->routeIs('programmer.dashboard')"
                     class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
                     <i class="fas fa-user-shield w-6 text-center mr-3"></i>
-                    <span class="font-medium">Panel Inspector</span>
+                    <span class="font-medium">Panel Programador</span>
                 </x-nav-link>
 
-                <x-nav-link :href="route('analyst.clients.index')" :active="request()->routeIs('analyst.clients.*')"
+                <x-nav-link :href="route('programmer.apis.index')" :active="request()->routeIs('programmer.apis.*')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-server w-6 text-center mr-3"></i>
+                    <span class="font-medium">Gestión APIs</span>
+                </x-nav-link>
+
+                <x-nav-link :href="route('programmer.clients.index')" :active="request()->routeIs('programmer.clients.*')"
                     class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
                     <i class="fas fa-building w-6 text-center mr-3"></i>
                     <span class="font-medium">Clientes</span>
                 </x-nav-link>
 
-                <x-nav-link :href="route('analyst.api-dashboard')" :active="request()->routeIs('analyst.api-dashboard')"
+                <x-nav-link :href="route('programmer.api-dashboard')" :active="request()->routeIs('programmer.api-dashboard')"
                     class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
                     <i class="fas fa-tower-broadcast w-6 text-center mr-3"></i>
                     <span class="font-medium">Monitor APIs</span>

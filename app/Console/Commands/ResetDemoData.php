@@ -57,9 +57,9 @@ class ResetDemoData extends Command
             ['Role', 'Email', 'Password'],
             [
                 ['Super Admin', 'admin@example.com', 'password'],
-                ['Analyst/Inspector', 'analista@example.com', 'password'],
-                ['Accountant (Demo)', 'user@example.com', 'password'],
-                ['Accountant (Alt)', 'maria.gonzalez@demo.com', 'password123'],
+                ['Programador', 'analista@example.com', 'password'],
+                ['Operador (Demo)', 'user@example.com', 'password'],
+                ['Operador (Alt)', 'maria.gonzalez@demo.com', 'password123'],
             ]
         );
     }

@@ -14,7 +14,7 @@ class ClientCredentialController extends Controller
      */
     public function store(Request $request, Client $client)
     {
-        if (!$client->belongsToUser()) {
+        if (!auth()->user()->hasRole(['Super Admin', 'Manager', 'Programador']) && !$client->belongsToUser()) {
             abort(403);
         }
 
@@ -23,6 +23,8 @@ class ClientCredentialController extends Controller
             'credentials' => 'required|array',
             'execution_frequency' => 'nullable|string',
             'alert_email' => 'nullable|email',
+            'endpoints' => 'nullable|array',
+            'endpoints.*' => 'exists:endpoints,id',
         ]);
 
         $apiService = ApiService::findOrFail($request->api_service_id);
@@ -53,13 +55,17 @@ class ClientCredentialController extends Controller
         }
 
         // Crear credencial
-        $client->credentials()->create([
+        $credential = $client->credentials()->create([
             'api_service_id' => $apiService->id,
             'credentials' => $request->credentials,
             'is_active' => true,
             'execution_frequency' => $executionFrequency,
             'alert_email' => $request->alert_email,
         ]);
+
+        if ($request->has('endpoints')) {
+            $credential->endpoints()->sync($request->endpoints);
+        }
 
         return back()->with('success', 'Credenciales guardadas y encriptadas correctamente.');
     }
@@ -70,7 +76,7 @@ class ClientCredentialController extends Controller
     public function update(Request $request, ClientCredential $credential)
     {
         // Verificar propiedad del cliente
-        if (!$credential->client->belongsToUser()) {
+        if (!auth()->user()->hasRole(['Super Admin', 'Manager', 'Programador']) && !$credential->client->belongsToUser()) {
             abort(403);
         }
 
@@ -78,6 +84,8 @@ class ClientCredentialController extends Controller
             'credentials' => 'required|array',
             'execution_frequency' => 'nullable|string',
             'alert_email' => 'nullable|email',
+            'endpoints' => 'nullable|array',
+            'endpoints.*' => 'exists:endpoints,id',
         ]);
 
         $apiService = $credential->apiService;
@@ -113,6 +121,22 @@ class ClientCredentialController extends Controller
             'execution_frequency' => $executionFrequency,
             'alert_email' => $request->alert_email,
         ]);
+        
+        // Sync endpoints regardless, if array is present (or empty to clear)
+        // If not present in request (e.g. partial update), we might want to skip, 
+        // but for a full form submit usually we verify presence.
+        // Assuming the form always sends 'endpoints' (checked or not).
+        if ($request->has('endpoints')) {
+            $credential->endpoints()->sync($request->endpoints);
+        } else {
+             // If field is missing, it implies no endpoints selected only if the input was on the page.
+             // But careful if it's not sent when empty. AlpineJS usually sends nothing if no checkbox.
+             // safer to default to empty only if we know full form was submitted.
+             // For now, let's assume we send it as hidden empty if needed or handle logic in view.
+             // Actually, checkbox arrays just don't send anything if empty.
+             // We should explicit check if we are "managing integration".
+             $credential->endpoints()->sync([]);
+        }
 
         return back()->with('success', 'Integración actualizada correctamente.');
     }

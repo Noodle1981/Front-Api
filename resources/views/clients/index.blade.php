@@ -18,6 +18,11 @@
     @endif
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        {{-- Determine Route Prefix for Role-Based Navigation --}}
+        @php
+            $routePrefix = auth()->user()->hasRole('Programador') ? 'programmer.clients' : 'clients';
+        @endphp
+
         {{-- User Context Selector (Only for Analysts/Admins) --}}
         @if($contextUsers->isNotEmpty())
             <div class="mb-6 bg-white/70 backdrop-blur-md shadow-lg rounded-lg p-4 border border-white/20">
@@ -30,7 +35,7 @@
                         </div>
                     </div>
                     
-                    <form method="GET" action="{{ route('clients.index') }}" class="flex items-center gap-3">
+                    <form method="GET" action="{{ route($routePrefix . '.index') }}" class="flex items-center gap-3">
                         <select name="user_filter" onchange="this.form.submit()" 
                             class="text-sm border-gray-300 rounded-lg shadow-sm focus:ring-brand-accent focus:border-brand-accent bg-white/90">
                             <option value="">📊 General (Todos los contadores)</option>
@@ -42,7 +47,7 @@
                         </select>
                         
                         @if($selectedUser)
-                            <a href="{{ route('clients.index') }}" 
+                            <a href="{{ route($routePrefix . '.index') }}" 
                                class="px-3 py-2 text-xs bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
                                 <i class="fas fa-times mr-1"></i> Limpiar
                             </a>
@@ -94,10 +99,10 @@
         </div>
 
         <div class="mb-6 flex gap-4">
-            <a href="{{ route('clients.index', ['filter' => 'activos']) }}"
+            <a href="{{ route($routePrefix . '.index', ['filter' => 'activos']) }}"
                 class="px-4 py-2 rounded-lg font-bold text-white bg-brand-dark hover:bg-gray-800 transition @if($filter === 'activos') ring-2 ring-brand-accent @endif">Clientes
                 Activos</a>
-            <a href="{{ route('clients.index', ['filter' => 'inactivos']) }}"
+            <a href="{{ route($routePrefix . '.index', ['filter' => 'inactivos']) }}"
                 class="px-4 py-2 rounded-lg font-bold text-white bg-gray-500 hover:bg-gray-600 transition @if($filter === 'inactivos') ring-2 ring-brand-accent @endif">Clientes
                 Inactivos</a>
         </div>
@@ -170,11 +175,11 @@
                                 </td>
                                 <td class="p-4 text-right text-base font-medium">
                                     <div class="flex items-center justify-end space-x-4">
-                                        <a href="{{ route('clients.show', $client) }}"
+                                        <a href="{{ route($routePrefix . '.show', $client) }}"
                                             class="text-gray-600 hover:text-pink-500 transition" title="Gestionar Integraciones / Ver Detalles">
                                             <i class="fas fa-plug"></i>
                                         </a>
-                                        <a href="{{ route('clients.edit', $client) }}"
+                                        <a href="{{ route($routePrefix . '.edit', $client) }}"
                                             class="text-gray-600 hover:text-pink-500 transition" title="Editar Cliente">
                                             <i class="fas fa-pen"></i>
                                         </a>
@@ -225,7 +230,7 @@
                                         @endcan
 
                                         @can('reassign clients')
-                                            <a href="{{ route('analyst.clients.transfer', $client) }}"
+                                            <a href="{{ route('programmer.clients.transfer', $client) }}"
                                                 class="text-sm text-blue-500 hover:text-blue-700 transition ml-2"
                                                 title="Reasignar (Transferir)">
                                                 <i class="fas fa-exchange-alt"></i>

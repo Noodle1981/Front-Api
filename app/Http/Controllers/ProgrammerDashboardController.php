@@ -11,13 +11,15 @@ use App\Models\ClientCredential;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class AnalystDashboardController extends Controller
+class ProgrammerDashboardController extends Controller
 {
     public function index()
     {
         // Global Stats
         $stats = [
-            'total_users' => User::role('User')->count(),
+            'total_users' => User::role('Operador')->count(), // Updated to look for Operador (ex User) if renaming done, OR keep 'User' if strictly looking at model role name. Wait, the SEEDER renamed 'User' to 'Operador'? NO. The Seeder updated Role entries.
+            // Let's check RolePermissionSeeder change. I updated 'User' role to 'Operador'.
+            // So User::role('Operador') is correct.
             'total_clients' => Client::count(),
             'active_clients' => Client::where('active', true)->count(),
             'errors_today' => ApiLog::where('status', 'error')->whereDate('happened_at', now())->count(),
@@ -39,7 +41,8 @@ class AnalystDashboardController extends Controller
         $stats['trend'] = $stats['errors_today'] < $lastWeekErrors ? 'improving' : 'declining';
 
         // Users with Enhanced Metrics
-        $users = User::role('User')
+        // Note: Using role 'Operador' instead of 'User'
+        $users = User::role('Operador')
             ->withCount('clients')
             ->get()
             ->map(function($user) {
@@ -100,7 +103,7 @@ class AnalystDashboardController extends Controller
             $alerts[] = [
                 'level' => 'critical',
                 'icon' => 'fa-exclamation-triangle',
-                'message' => $highErrorUsers->count() . ' contador(es) con tasa de error >10%',
+                'message' => $highErrorUsers->count() . ' operador(es) con tasa de error >10%',
                 'users' => $highErrorUsers->pluck('name')->toArray()
             ];
         }
@@ -111,7 +114,7 @@ class AnalystDashboardController extends Controller
             $alerts[] = [
                 'level' => 'warning',
                 'icon' => 'fa-clock',
-                'message' => $inactiveUsers->count() . ' contador(es) sin actividad >7 días',
+                'message' => $inactiveUsers->count() . ' operador(es) sin actividad >7 días',
                 'users' => $inactiveUsers->pluck('name')->toArray()
             ];
         }
@@ -122,7 +125,7 @@ class AnalystDashboardController extends Controller
             $alerts[] = [
                 'level' => 'info',
                 'icon' => 'fa-robot',
-                'message' => $lowAutoUsers->count() . ' contador(es) con baja automatización (<30%)',
+                'message' => $lowAutoUsers->count() . ' operador(es) con baja automatización (<30%)',
                 'users' => $lowAutoUsers->pluck('name')->toArray()
             ];
         }
@@ -154,6 +157,6 @@ class AnalystDashboardController extends Controller
                 ->count();
         }
 
-        return view('analyst.dashboard', compact('stats', 'users', 'alerts', 'rankings', 'errorTrend'));
+        return view('programmer.dashboard', compact('stats', 'users', 'alerts', 'rankings', 'errorTrend'));
     }
 }
