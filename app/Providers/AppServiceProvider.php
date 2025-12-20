@@ -36,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Usamos un try-catch porque esta lógica se ejecuta muy temprano,
         // incluso durante las migraciones, cuando la tabla 'settings' podría no existir.
+        // También evitamos ejecutar esto durante tests para evitar problemas con SQLite en memoria
+        if (app()->runningUnitTests()) {
+            return;
+        }
+
         try {
             // Comprobamos si la tabla 'settings' ya ha sido migrada.
             if (Schema::hasTable('settings')) {

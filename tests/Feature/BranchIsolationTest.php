@@ -5,9 +5,8 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\ApiService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
+// Nota: Pest aplica LazilyRefreshDatabase automáticamente a todos los tests Feature
 
 test('credentials are isolated between Headquarters and Branch', function () {
     // 1. Setup: Crear Usuario y API Service

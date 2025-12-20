@@ -4,19 +4,21 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Client;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
+/**
+ * Tests de Acceso por Rol a Rutas del Sistema.
+ * 
+ * Verifica que cada rol puede o no acceder a rutas específicas
+ * y realizar operaciones permitidas/restringidas.
+ */
 class RoleAccessTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
-        // Seed roles and permissions
         $this->seed(\Database\Seeders\RolePermissionSeeder::class);
     }
 
@@ -31,32 +33,39 @@ class RoleAccessTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_analista_cannot_access_admin_dashboard()
+    public function test_programador_cannot_access_admin_dashboard()
     {
-        $analista = User::factory()->create();
-        $analista->assignRole('Analista');
+        $programador = User::factory()->create();
+        $programador->assignRole('Programador');
 
-        $response = $this->actingAs($analista)
+        $response = $this->actingAs($programador)
             ->get('/admin/dashboard');
-
-        if ($response->status() === 302) {
-            dump("Redirecting to: " . $response->headers->get('Location'));
-        }
 
         // Spatie middleware returns 403 Forbidden
         $response->assertStatus(403);
     }
 
-    public function test_analista_role_does_not_have_delete_permission()
+    public function test_programador_role_does_not_have_delete_permission()
     {
-        $analista = User::factory()->create();
-        $analista->assignRole('Analista');
+        $programador = User::factory()->create();
+        $programador->assignRole('Programador');
 
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $this->assertFalse($analista->can('delete clients'), 'Analista should NOT have [delete clients] permission');
-        $this->assertTrue($analista->can('view clients'), 'Analista SHOULD have [view clients] permission');
+        $this->assertFalse($programador->can('delete clients'), 'Programador should NOT have [delete clients] permission');
+        $this->assertTrue($programador->can('view clients'), 'Programador SHOULD have [view clients] permission');
+    }
+
+    public function test_operador_role_does_not_have_delete_permission()
+    {
+        $operador = User::factory()->create();
+        $operador->assignRole('Operador');
+
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        $this->assertFalse($operador->can('delete clients'), 'Operador should NOT have [delete clients] permission');
+        $this->assertTrue($operador->can('view clients'), 'Operador SHOULD have [view clients] permission');
     }
 
     public function test_manager_role_has_delete_permission()
@@ -81,19 +90,37 @@ class RoleAccessTest extends TestCase
         $this->assertSoftDeleted($client);
     }
 
-    public function test_analista_cannot_delete_clients()
+    public function test_programador_cannot_delete_clients()
     {
-        $analista = User::factory()->create();
-        $analista->assignRole('Analista');
+        $programador = User::factory()->create();
+        $programador->assignRole('Programador');
 
-        $client = Client::factory()->create(['user_id' => $analista->id]);
+        $client = Client::factory()->create(['user_id' => $programador->id]);
 
-        $response = $this->actingAs($analista)
+        $response = $this->actingAs($programador)
             ->delete(route('clients.destroy', $client));
 
         if ($response->status() === 302) {
             // If redirecting, ensure it's NOT to the index page (which implies success)
-            // Typically redirects to home or login or dashboard on error
+            $this->assertNotEquals(route('clients.index'), $response->headers->get('Location'), "Redirected to Index (Success) -> Security Fail");
+        } else {
+            $response->assertStatus(403);
+        }
+
+        $this->assertNotSoftDeleted($client);
+    }
+
+    public function test_operador_cannot_delete_clients()
+    {
+        $operador = User::factory()->create();
+        $operador->assignRole('Operador');
+
+        $client = Client::factory()->create(['user_id' => $operador->id]);
+
+        $response = $this->actingAs($operador)
+            ->delete(route('clients.destroy', $client));
+
+        if ($response->status() === 302) {
             $this->assertNotEquals(route('clients.index'), $response->headers->get('Location'), "Redirected to Index (Success) -> Security Fail");
         } else {
             $response->assertStatus(403);

@@ -5,17 +5,19 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\RolePermissionSeeder;
 
+/**
+ * Tests de la Matriz de Permisos del Sistema.
+ * 
+ * Verifica que cada rol tiene exactamente los permisos correspondientes
+ * según la matriz definida en RolePermissionSeeder.
+ */
 class RoleMatrixTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
-        // Ejecutamos el seeder para poblar la base de datos de prueba (sqlite :memory:)
         $this->seed(RolePermissionSeeder::class);
     }
 
@@ -23,9 +25,8 @@ class RoleMatrixTest extends TestCase
     {
         $this->assertTrue(Role::where('name', 'Super Admin')->exists(), 'Role Super Admin should exist');
         $this->assertTrue(Role::where('name', 'Manager')->exists(), 'Role Manager should exist');
-        $this->assertTrue(Role::where('name', 'Analista')->exists(), 'Role Analista should exist');
-        // El rol User también se crea en el seeder ahora
-        $this->assertTrue(Role::where('name', 'User')->exists(), 'Role User should exist');
+        $this->assertTrue(Role::where('name', 'Programador')->exists(), 'Role Programador should exist');
+        $this->assertTrue(Role::where('name', 'Operador')->exists(), 'Role Operador should exist');
     }
 
     public function test_super_admin_has_full_permissions()
@@ -61,28 +62,53 @@ class RoleMatrixTest extends TestCase
         $this->assertFalse($role->hasPermissionTo('manage users'), 'Manager should NOT manage users');
     }
 
-    public function test_analista_permissions_matrix()
+    public function test_programador_permissions_matrix()
     {
-        $role = Role::findByName('Analista');
+        $role = Role::findByName('Programador');
 
-        // Matrix: Clientes Create/Read/Update
-        $this->assertTrue($role->hasPermissionTo('view clients'), 'Analista should view clients');
-        $this->assertTrue($role->hasPermissionTo('create clients'), 'Analista should create clients');
-        $this->assertTrue($role->hasPermissionTo('edit clients'), 'Analista should edit clients');
+        // Matrix: Clientes Create/Read/Update + Reassign
+        $this->assertTrue($role->hasPermissionTo('view clients'), 'Programador should view clients');
+        $this->assertTrue($role->hasPermissionTo('create clients'), 'Programador should create clients');
+        $this->assertTrue($role->hasPermissionTo('edit clients'), 'Programador should edit clients');
+        $this->assertTrue($role->hasPermissionTo('reassign clients'), 'Programador should reassign clients');
 
-        // Matrix: Clientes NO Delete final
-        $this->assertFalse($role->hasPermissionTo('delete clients'), 'Analista should NOT delete clients');
-        $this->assertFalse($role->hasPermissionTo('restore clients'), 'Analista should NOT restore clients');
-        $this->assertFalse($role->hasPermissionTo('reassign clients'), 'Analista should NOT reassign clients');
+        // Matrix: Clientes NO Delete/Restore
+        $this->assertFalse($role->hasPermissionTo('delete clients'), 'Programador should NOT delete clients');
+        $this->assertFalse($role->hasPermissionTo('restore clients'), 'Programador should NOT restore clients');
 
         // Matrix: Catálogo APIs Ver (Solo lista)
-        $this->assertTrue($role->hasPermissionTo('view api catalog'), 'Analista should view api catalog');
-        $this->assertFalse($role->hasPermissionTo('manage api catalog'), 'Analista should NOT manage api catalog');
+        $this->assertTrue($role->hasPermissionTo('view api catalog'), 'Programador should view api catalog');
+        $this->assertFalse($role->hasPermissionTo('manage api catalog'), 'Programador should NOT manage api catalog');
 
         // Matrix: Credenciales Cargar y Editar
-        $this->assertTrue($role->hasPermissionTo('manage credentials'), 'Analista should manage credentials');
+        $this->assertTrue($role->hasPermissionTo('manage credentials'), 'Programador should manage credentials');
 
         // Matrix: Usuarios X
-        $this->assertFalse($role->hasPermissionTo('manage users'), 'Analista should NOT manage users');
+        $this->assertFalse($role->hasPermissionTo('manage users'), 'Programador should NOT manage users');
+    }
+
+    public function test_operador_permissions_matrix()
+    {
+        $role = Role::findByName('Operador');
+
+        // Matrix: Clientes Create/Read/Update
+        $this->assertTrue($role->hasPermissionTo('view clients'), 'Operador should view clients');
+        $this->assertTrue($role->hasPermissionTo('create clients'), 'Operador should create clients');
+        $this->assertTrue($role->hasPermissionTo('edit clients'), 'Operador should edit clients');
+
+        // Matrix: Clientes NO Delete/Restore/Reassign
+        $this->assertFalse($role->hasPermissionTo('delete clients'), 'Operador should NOT delete clients');
+        $this->assertFalse($role->hasPermissionTo('restore clients'), 'Operador should NOT restore clients');
+        $this->assertFalse($role->hasPermissionTo('reassign clients'), 'Operador should NOT reassign clients');
+
+        // Matrix: Catálogo APIs Ver (Solo lista)
+        $this->assertTrue($role->hasPermissionTo('view api catalog'), 'Operador should view api catalog');
+        $this->assertFalse($role->hasPermissionTo('manage api catalog'), 'Operador should NOT manage api catalog');
+
+        // Matrix: Credenciales
+        $this->assertTrue($role->hasPermissionTo('manage credentials'), 'Operador should manage credentials');
+
+        // Matrix: Usuarios X
+        $this->assertFalse($role->hasPermissionTo('manage users'), 'Operador should NOT manage users');
     }
 }
