@@ -199,6 +199,12 @@ class ApiDashboardController extends Controller
         // User context selector (for Analysts)
         $contextUsers = $isGlobal ? \App\Models\User::role('Operador')->orderBy('name')->get(['id', 'name']) : collect();
 
-        return view('admin.api-dashboard', compact('stats', 'logs', 'chartActivity', 'chartServices', 'filterClients', 'filterUsers', 'filterServices', 'contextUsers', 'selectedUser'));
+        // Filter users for dropdown (only for global access)
+        $filterUsers = $isGlobal ? \App\Models\User::orderBy('name')->get(['id', 'name']) : collect();
+
+        // Determine which view to use based on user role
+        $viewName = $user->hasRole('Programador') ? 'programmer.api-dashboard' : 'admin.api-dashboard';
+
+        return view($viewName, compact('stats', 'logs', 'chartActivity', 'chartServices', 'filterClients', 'filterUsers', 'filterServices', 'contextUsers', 'selectedUser'));
     }
 }
