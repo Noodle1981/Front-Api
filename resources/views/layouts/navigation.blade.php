@@ -100,6 +100,18 @@
                 </div>
             </div>
             @endrole
+
+            <x-nav-link href="#" :active="false"
+                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                <i class="fas fa-project-diagram w-6 text-center mr-3"></i>
+                <span class="font-medium">Workflows</span>
+            </x-nav-link>
+
+            <x-nav-link href="#" :active="false"
+                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                <i class="fas fa-history w-6 text-center mr-3"></i>
+                <span class="font-medium">Historial</span>
+            </x-nav-link>
         </div>
     </div>
 

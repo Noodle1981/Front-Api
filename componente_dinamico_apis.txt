@@ -1,0 +1,104 @@
+Para lograr que el Frontend sea totalmente agnóstico (que no le importe qué campos pide la API), la clave no está en el código de la vista, sino en el formato de la información que te envía el Backend.
+
+Si el Backend solo te envía los datos, estás obligado a programar cada input. Pero si el Backend envía la Metadata 
+(la descripción de los campos), tú solo tienes que hacer un "renderizador".
+
+Aquí te explico cómo implementarlo para que sea 100% dinámico:
+
+1. El "Contrato" de Metadata (Backend a Frontend)
+El Backend, tras investigar la API (ej. Mercado Pago), 
+no debe decirte "haz un campo para el Access Token". Debe entregarte un Array de Objetos con esta estructura.
+
+Ejemplo de lo que recibiría tu componente Livewire:
+
+JSON
+
+[
+  {
+    "key": "public_key",
+    "label": "Clave Pública",
+    "type": "text",
+    "placeholder": "APP_USR-...",
+    "required": true
+  },
+  {
+    "key": "access_token",
+    "label": "Access Token",
+    "type": "password",
+    "placeholder": "TEST-...",
+    "required": true
+  },
+  {
+    "key": "sandbox_mode",
+    "label": "Modo Prueba",
+    "type": "checkbox",
+    "required": false
+  }
+]
+
+2. El Renderizador Universal (Frontend - Blade/Livewire)
+En tu archivo de Blade, usarás un ciclo @foreach que decidirá qué tipo de input mostrar según el type que definió el Backend.
+
+Código sugerido para tu vista:
+
+HTML
+
+<div>
+    <h3>Configuración de Credenciales</h3>
+    
+    <form wire:submit.prevent="save">
+        @foreach($fieldsMetadata as $field)
+            <div class="form-group mb-3">
+                <label>{{ $field['label'] }}</label>
+
+                @if($field['type'] == 'text' || $field['type'] == 'password')
+                    <input 
+                        type="{{ $field['type'] }}" 
+                        wire:model.defer="userInput.{{ $field['key'] }}" 
+                        placeholder="{{ $field['placeholder'] }}"
+                        class="form-control"
+                    >
+                @elseif($field['type'] == 'checkbox')
+                    <input 
+                        type="checkbox" 
+                        wire:model.defer="userInput.{{ $field['key'] }}"
+                    >
+                @endif
+
+                @error('userInput.' . $field['key']) 
+                    <span class="text-danger">{{ $message }}</span> 
+                @enderror
+            </div>
+        @endforeach
+
+        <button type="submit">Guardar para esta Empresa</button>
+    </form>
+</div>
+
+3. Consideraciones para el Frontend
+
+Uso de Arreglos Asociativos: En el componente Livewire, define public $userInput = [];. Al usar wire:model="userInput.{{ $field['key'] }}", Livewire creará automáticamente la llave en el arreglo (ej: $userInput['public_key']).
+
+Independencia Total: Si mañana el Backend agrega una API con 10 campos nuevos, tú no tocas el código. El @foreach simplemente dará 10 vueltas en lugar de 3.
+
+Validación Dinámica: Puedes pedirle al Backend que incluya una llave "rules" => "required|min:10". En el método save() de Livewire, puedes pasar esas reglas directamente al validador de Laravel.
+
+4. Consideraciones para el Backend (Su parte)
+Diccionario de Esquemas: Debe tener una tabla o un archivo de configuración donde asocie cada API con su "Esquema de Campos".
+
+Almacenamiento Seguro: Cuando tú le envíes el arreglo $userInput, el Backend debe tomar todas esas llaves y guardarlas como un JSON en la base de datos (columna config en la tabla de la empresa).
+
+Normalización: El Backend es responsable de que, sin importar cómo se llame el campo en la API externa (ej: client_id_secret_long_name), a ti te llegue una key amigable y un label legible.
+
+Resumen del flujo para el caso de múltiples APIs por empresa:
+La empresa selecciona "Añadir nueva integración".
+
+Elige "Mercado Pago".
+
+Tu componente Livewire recibe el esquema de Mercado Pago y dibuja los 3 campos necesarios.
+
+La empresa guarda.
+
+La empresa elige "Añadir otra" -> Selecciona "Stripe".
+
+Tu mismo componente recibe el esquema de Stripe (que quizás tiene 5 campos distintos) y los dibuja automáticamente.
