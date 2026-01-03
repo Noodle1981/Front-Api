@@ -99,6 +99,12 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
         Route::get('/api/input-data', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'getInputData'])->name('api.input-data');
         Route::post('/{rule}/execute-test', [App\Http\Controllers\Programmer\BusinessRuleController::class, 'executeTest'])->name('execute-test');
     });
+
+    // Workflows - Sistema de carga de archivos
+    Route::prefix('workflows')->name('workflows.')->group(function () {
+        Route::get('/upload', App\Livewire\WorkflowFileUploadWizard::class)->name('upload');
+        Route::get('/batch/{batch}', [App\Http\Controllers\WorkflowBatchController::class, 'show'])->name('batch.show');
+    });
 });
 
 Route::middleware(['auth', 'role:Super Admin|Manager'])->prefix('admin')->name('admin.')->group(function () {
