@@ -11,7 +11,7 @@
                 class="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200">
                 <option value="">Seleccione un cliente...</option>
                 @foreach($clients as $client)
-                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                    <option value="{{ $client->id }}">{{ $client->company }}</option>
                 @endforeach
             </select>
             @error('selectedClientId')
@@ -30,7 +30,7 @@
                 {{ !$selectedClientId ? 'disabled' : '' }}>
                 <option value="">{{ $selectedClientId ? 'Seleccione una sede...' : 'Primero seleccione un cliente' }}</option>
                 @foreach($branches as $branch)
-                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                    <option value="{{ $branch->id }}">{{ $branch->branch_name }}</option>
                 @endforeach
             </select>
             @error('selectedBranchId')

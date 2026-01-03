@@ -157,6 +157,72 @@
                 </div>
             </div>
 
+            {{-- Recent Workflows Widget --}}
+            <div class="bg-white/70 backdrop-blur-md shadow-lg rounded-lg border border-white/20">
+                <div class="p-6 border-b border-gray-200/50 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-gray-800">
+                        <i class="fas fa-stream mr-2 text-brand-dark"></i> Workflows Recientes
+                    </h3>
+                    <div class="flex space-x-2">
+                        <a href="{{ route('programmer.workflows.upload') }}" class="px-3 py-1 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition">
+                            <i class="fas fa-plus mr-1"></i> NUEVO
+                        </a>
+                        <a href="{{ route('programmer.workflows.history') }}" class="px-3 py-1 bg-brand-dark text-white text-xs font-bold rounded hover:bg-opacity-90 transition">
+                            VER TODO
+                        </a>
+                    </div>
+                </div>
+                <div class="p-0">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50/50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Batch</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Workflow</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse($recentBatches as $batch)
+                                    <tr class="hover:bg-white/50 transition">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                                            {{ $batch->batch_code }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                            {{ $batch->workflowType->name }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                            {{ $batch->client->company ?? 'N/A' }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-0.5 text-xs font-bold rounded-full 
+                                                {{ $batch->status === 'completed' ? 'bg-green-100 text-green-800' : '' }}
+                                                {{ $batch->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                                {{ $batch->status === 'validated' ? 'bg-blue-100 text-blue-800' : '' }}
+                                                {{ $batch->status === 'executing' ? 'bg-purple-100 text-purple-800' : '' }}
+                                                {{ $batch->status === 'failed' ? 'bg-red-100 text-red-800' : '' }}">
+                                                {{ strtoupper($batch->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                            <a href="{{ route('programmer.workflows.batch.show', $batch) }}" class="text-brand-dark hover:underline font-bold">Ver</a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-8 text-center text-gray-500 italic">
+                                            No hay workflows recientes cargados.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             {{-- Users Table with Enhanced Metrics --}}
             <div class="bg-white/70 backdrop-blur-md overflow-hidden shadow-lg sm:rounded-lg border border-white/20">
                 <div class="p-6 bg-white/50 border-b border-gray-200">

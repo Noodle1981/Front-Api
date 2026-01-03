@@ -8,12 +8,12 @@
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <p class="text-sm text-gray-600">Cliente:</p>
-                <p class="font-medium text-gray-900">{{ $clients->find($selectedClientId)->name ?? 'N/A' }}</p>
+                <p class="font-medium text-gray-900">{{ $clients->find($selectedClientId)->company ?? 'N/A' }}</p>
             </div>
             
             <div>
                 <p class="text-sm text-gray-600">Sede:</p>
-                <p class="font-medium text-gray-900">{{ $branches->find($selectedBranchId)->name ?? 'N/A' }}</p>
+                <p class="font-medium text-gray-900">{{ $branches->find($selectedBranchId)->branch_name ?? 'N/A' }}</p>
             </div>
             
             <div>
@@ -76,7 +76,7 @@
         <div class="mb-6">
             <details class="bg-gray-50 rounded-lg overflow-hidden">
                 <summary class="px-6 py-4 cursor-pointer font-medium text-gray-900 hover:bg-gray-100 transition-colors">
-                    Ver Preview de JSON (Metadata)
+                    Ver Preview de JSON Maestro (Basado en archivos cargados)
                 </summary>
                 <div class="px-6 py-4 bg-gray-900 text-gray-100">
                     <pre class="text-xs overflow-x-auto">{{ json_encode($jsonPreview, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
@@ -86,7 +86,7 @@
     @endif
 
     <!-- Confirmation Message -->
-    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-md">
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
         <div class="flex">
             <div class="flex-shrink-0">
                 <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -95,8 +95,7 @@
             </div>
             <div class="ml-3">
                 <p class="text-sm text-blue-700">
-                    Al hacer clic en "Confirmar y Guardar", los archivos se guardarán en el sistema y estarán listos para ser procesados.
-                    Asegúrese de que toda la información sea correcta antes de continuar.
+                    Al hacer clic en **"EJECUTAR WORKFLOW"**, los archivos se procesarán íntegramente y se generará el JSON maestro para su inspección en la vista de testing.
                 </p>
             </div>
         </div>

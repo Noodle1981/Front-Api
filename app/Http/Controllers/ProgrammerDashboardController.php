@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Transaction;
 use App\Models\ApiLog;
 use App\Models\ClientCredential;
+use App\Models\WorkflowFileBatch;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -157,6 +158,19 @@ class ProgrammerDashboardController extends Controller
                 ->count();
         }
 
-        return view('programmer.dashboard', compact('stats', 'users', 'alerts', 'rankings', 'errorTrend'));
+        // Recent Workflows
+        $recentBatches = WorkflowFileBatch::with(['workflowType', 'client', 'user'])
+            ->latest('uploaded_at')
+            ->take(5)
+            ->get();
+
+        return view('programmer.dashboard', compact(
+            'stats', 
+            'users', 
+            'alerts', 
+            'rankings', 
+            'errorTrend',
+            'recentBatches'
+        ));
     }
 }

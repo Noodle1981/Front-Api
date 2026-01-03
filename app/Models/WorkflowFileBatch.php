@@ -60,11 +60,11 @@ class WorkflowFileBatch extends Model
     }
 
     /**
-     * Get the branch that owns this batch
+     * Get the branch (client child) that owns this batch
      */
     public function branch(): BelongsTo
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Client::class, 'branch_id');
     }
 
     /**

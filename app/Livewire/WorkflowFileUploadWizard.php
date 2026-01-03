@@ -3,10 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\Client;
-use App\Models\Branch;
 use App\Models\WorkflowType;
 use App\Models\WorkflowFileBatch;
 use App\Models\WorkflowUploadedFile;
+use App\Models\WorkflowExecution;
+use App\Models\WorkflowFileDefinition;
 use App\Services\FileValidationService;
 use App\Services\WorkflowJsonGeneratorService;
 use Livewire\Component;
@@ -243,17 +244,51 @@ class WorkflowFileUploadWizard extends Component
             
             $tempBatch->setRelation('workflowType', WorkflowType::find($this->selectedWorkflowTypeId));
             $tempBatch->setRelation('client', Client::find($this->selectedClientId));
-            $tempBatch->setRelation('branch', Branch::find($this->selectedBranchId));
+            $tempBatch->setRelation('branch', Client::find($this->selectedBranchId));
             $tempBatch->setRelation('user', auth()->user());
             
-            // Build metadata only (don't read files for preview)
+            // Build Data preview
+            $filesData = [];
+            foreach ($this->uploadedFiles as $index => $file) {
+                $definitionId = $this->fileMatches[$index] ?? null;
+                if ($definitionId) {
+                    $definition = WorkflowFileDefinition::find($definitionId);
+                    if ($definition) {
+                        try {
+                            // Read first 3 rows for preview
+                            $data = \Maatwebsite\Excel\Facades\Excel::toArray(new \Maatwebsite\Excel\HeadingRowImport(), $file->getRealPath());
+                            $allRows = \Maatwebsite\Excel\Facades\Excel::toArray(new \stdClass(), $file->getRealPath());
+                            $sheetData = $allRows[0] ?? [];
+                            
+                            if (count($sheetData) > 0) {
+                                $headers = array_shift($sheetData);
+                                $sampleRows = array_slice($sheetData, 0, 3); // Limit to 3 rows for preview
+                                
+                                $filesData[$definition->file_identifier] = array_map(function ($row) use ($headers) {
+                                    $result = [];
+                                    foreach ($headers as $idx => $header) {
+                                        $result[$header] = $row[$idx] ?? null;
+                                    }
+                                    return $result;
+                                }, $sampleRows);
+                            } else {
+                                $filesData[$definition->file_identifier] = [];
+                            }
+                        } catch (\Exception $e) {
+                            $filesData[$definition->file_identifier] = ['error' => 'No se pudo leer el archivo'];
+                        }
+                    }
+                }
+            }
+
+            // Build full preview
             $this->jsonPreview = [
+                'Data' => $filesData,
                 'metadata' => [
+                    'client_id' => $tempBatch->client_id,
+                    'branch_id' => $tempBatch->branch_id,
+                    'uploaded_at' => $tempBatch->uploaded_at->toIso8601String(),
                     'workflow_type' => $tempBatch->workflowType->name,
-                    'client_name' => $tempBatch->client->name ?? null,
-                    'branch_name' => $tempBatch->branch->name ?? null,
-                    'uploaded_by' => $tempBatch->user->name ?? null,
-                    'total_files' => count($this->uploadedFiles),
                 ],
             ];
         } catch (\Exception $e) {
@@ -272,7 +307,9 @@ class WorkflowFileUploadWizard extends Component
         }
         
         try {
-            // Create batch
+            \Illuminate\Support\Facades\Log::info('Iniciando submitBatch para workflow');
+            
+            // 1. Create batch
             $batch = WorkflowFileBatch::create([
                 'workflow_type_id' => $this->selectedWorkflowTypeId,
                 'client_id' => $this->selectedClientId,
@@ -282,23 +319,57 @@ class WorkflowFileUploadWizard extends Component
                 'uploaded_at' => now(),
             ]);
             
-            // Save files
+            \Illuminate\Support\Facades\Log::info('Batch creado: ' . $batch->batch_code);
+            
+            // 2. Save files
             foreach ($this->uploadedFiles as $index => $file) {
                 $this->saveUploadedFile($batch, $file, $index);
             }
             
-            // Update batch status to validated
+            \Illuminate\Support\Facades\Log::info('Archivos guardados físicamente');
+            
+            // 3. Update batch status to validated
             $batch->update([
                 'status' => 'validated',
                 'validated_at' => now(),
             ]);
+
+            // 4. Generate FULL Master JSON
+            \Illuminate\Support\Facades\Log::info('Generando JSON Maestro...');
+            $jsonService = app(WorkflowJsonGeneratorService::class);
+            $masterJson = $jsonService->generateFromBatch($batch);
+            \Illuminate\Support\Facades\Log::info('JSON Maestro generado con éxito');
+
+            // 5. Create Mock Execution
+            $execution = WorkflowExecution::create([
+                'workflow_id' => null,
+                'workflow_file_batch_id' => $batch->id,
+                'status' => 'success',
+                'json_sent' => $masterJson,
+                'json_response' => [
+                    'status' => 'success',
+                    'message' => 'Workflow ejecutado correctamente (Mock)',
+                    'data' => [
+                        'processed_rows' => count($masterJson['Data']['Turnos'] ?? []),
+                        'rules_applied' => ['reconcile_sales', 'validate_payments']
+                    ]
+                ],
+                'execution_time_ms' => 1250,
+                'started_at' => now()->subSeconds(2),
+                'completed_at' => now(),
+                'logs_json' => ['info' => 'Ejecución de prueba generada automáticamente']
+            ]);
             
-            // Redirect to batch detail
-            session()->flash('success', 'Archivos cargados exitosamente. Batch: ' . $batch->batch_code);
-            return redirect()->route('workflows.batch.show', $batch);
+            \Illuminate\Support\Facades\Log::info('Ejecución mock registrada. Redirigiendo...');
+            
+            // 6. Redirect to test view
+            session()->flash('success', 'Workflow ejecutado con éxito. Visualizando JSON maestro.');
+            return redirect()->route('programmer.workflows.test');
             
         } catch (\Exception $e) {
-            $this->addError('submit', 'Error al guardar: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Error en submitBatch: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            $this->addError('submit', 'Error al guardar y ejecutar: ' . $e->getMessage());
         }
     }
     
@@ -336,10 +407,14 @@ class WorkflowFileUploadWizard extends Component
     
     public function render()
     {
-        $clients = Client::orderBy('name')->get();
+        // Get parent clients (not branches)
+        $clients = Client::whereNull('parent_id')->orderBy('company')->get();
+        
+        // Get branches (children) of selected client
         $branches = $this->selectedClientId 
-            ? Branch::where('client_id', $this->selectedClientId)->orderBy('name')->get()
+            ? Client::where('parent_id', $this->selectedClientId)->orderBy('branch_name')->get()
             : collect();
+            
         $workflowTypes = WorkflowType::active()->get();
         $selectedWorkflow = $this->selectedWorkflowTypeId 
             ? WorkflowType::with('fileDefinitions')->find($this->selectedWorkflowTypeId)
@@ -350,6 +425,6 @@ class WorkflowFileUploadWizard extends Component
             'branches' => $branches,
             'workflowTypes' => $workflowTypes,
             'selectedWorkflow' => $selectedWorkflow,
-        ]);
+        ])->layout('layouts.app');
     }
 }

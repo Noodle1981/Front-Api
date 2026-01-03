@@ -40,11 +40,11 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                             <p class="text-sm text-gray-600">Cliente</p>
-                            <p class="font-medium text-gray-900">{{ $batch->client->name ?? 'N/A' }}</p>
+                            <p class="font-medium text-gray-900">{{ $batch->client->company ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Sede</p>
-                            <p class="font-medium text-gray-900">{{ $batch->branch->name ?? 'N/A' }}</p>
+                            <p class="font-medium text-gray-900">{{ $batch->branch->branch_name ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Workflow</p>

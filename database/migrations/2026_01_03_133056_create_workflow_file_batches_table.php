@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('workflow_type_id')->constrained('workflow_types')->onDelete('cascade');
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
-            $table->foreignId('branch_id')->constrained('branches')->onDelete('cascade');
+            $table->foreignId('branch_id')->constrained('clients')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('batch_code', 50)->unique();
             $table->enum('status', ['pending', 'validated', 'executing', 'completed', 'failed'])->default('pending');

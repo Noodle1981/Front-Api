@@ -101,17 +101,26 @@
             </div>
             @endrole
 
-            <x-nav-link href="#" :active="false"
-                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                <i class="fas fa-project-diagram w-6 text-center mr-3"></i>
-                <span class="font-medium">Workflows</span>
-            </x-nav-link>
+            @role('Programador')
+                {{-- Workflows Links --}}
+                <x-nav-link :href="route('programmer.workflows.upload')" :active="request()->routeIs('programmer.workflows.upload')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-cloud-upload-alt w-6 text-center mr-3"></i>
+                    <span class="font-medium">Cargar Workflows</span>
+                </x-nav-link>
 
-            <x-nav-link href="#" :active="false"
-                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                <i class="fas fa-history w-6 text-center mr-3"></i>
-                <span class="font-medium">Historial</span>
-            </x-nav-link>
+                <x-nav-link :href="route('programmer.workflows.history')" :active="request()->routeIs('programmer.workflows.history')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-history w-6 text-center mr-3"></i>
+                    <span class="font-medium">Historial Workflows</span>
+                </x-nav-link>
+
+                <x-nav-link :href="route('programmer.workflows.test')" :active="request()->routeIs('programmer.workflows.test')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-code w-6 text-center mr-3"></i>
+                    <span class="font-medium">Testing</span>
+                </x-nav-link>
+            @endrole
         </div>
     </div>
 

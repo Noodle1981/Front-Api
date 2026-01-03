@@ -66,19 +66,13 @@ class WorkflowJsonGeneratorService
     public function buildJsonStructure(WorkflowFileBatch $batch, array $filesData): array
     {
         return [
-            'metadata' => [
-                'batch_code' => $batch->batch_code,
-                'workflow_type' => $batch->workflowType->name,
-                'workflow_type_id' => $batch->workflow_type_id,
-                'client_id' => $batch->client_id,
-                'client_name' => $batch->client->name ?? null,
-                'branch_id' => $batch->branch_id,
-                'branch_name' => $batch->branch->name ?? null,
-                'uploaded_at' => $batch->uploaded_at->toIso8601String(),
-                'uploaded_by' => $batch->user->name ?? null,
-                'total_files' => count($filesData),
-            ],
             'Data' => $filesData,
+            'metadata' => [
+                'client_id' => $batch->client_id,
+                'branch_id' => $batch->branch_id,
+                'uploaded_at' => $batch->uploaded_at->toIso8601String(),
+                'workflow_type' => $batch->workflowType->name,
+            ],
         ];
     }
     

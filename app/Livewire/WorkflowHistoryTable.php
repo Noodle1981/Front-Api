@@ -112,6 +112,6 @@ class WorkflowHistoryTable extends Component
         return view('livewire.workflow-history-table', [
             'executions' => $executions,
             'clients' => $clients,
-        ]);
+        ])->layout('layouts.app');
     }
 }

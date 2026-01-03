@@ -11,7 +11,7 @@
                         <select wire:model.live="searchClient" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
                             <option value="">Todos</option>
                             @foreach($clients as $client)
-                                <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                <option value="{{ $client->id }}">{{ $client->company }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -67,7 +67,7 @@
                                         {{ $execution->fileBatch->batch_code }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $execution->fileBatch->client->name ?? 'N/A' }}
+                                        {{ $execution->fileBatch->client->company ?? 'N/A' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ $execution->fileBatch->workflowType->name }}
@@ -84,7 +84,7 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                        <a href="{{ route('workflows.batch.show', $execution->fileBatch) }}" class="text-purple-600 hover:text-purple-900">Ver</a>
+                                        <a href="{{ route('programmer.workflows.batch.show', $execution->fileBatch) }}" class="text-purple-600 hover:text-purple-900">Ver</a>
                                         <button wire:click="downloadPdf({{ $execution->id }})" class="text-green-600 hover:text-green-900">PDF</button>
                                     </td>
                                 </tr>

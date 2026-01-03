@@ -26,7 +26,7 @@
                     <div class="grid grid-cols-4 gap-4 mb-4 text-sm">
                         <div>
                             <p class="text-gray-500">Cliente</p>
-                            <p class="text-white">{{ $execution->fileBatch->client->name ?? 'N/A' }}</p>
+                            <p class="text-white">{{ $execution->fileBatch->client->company ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-gray-500">Workflow</p>
@@ -43,7 +43,7 @@
                     </div>
 
                     <!-- JSON Sent -->
-                    <details class="mb-4">
+                    <details class="mb-4" {{ $loop->first ? 'open' : '' }}>
                         <summary class="cursor-pointer text-purple-400 hover:text-purple-300 font-medium mb-2">
                             JSON Enviado
                         </summary>
