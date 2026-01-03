@@ -43,14 +43,14 @@ Implementar un sistema escalable de carga, validación y procesamiento de archiv
 - ✅ Todas las migraciones ejecutadas sin errores
 
 **Tareas:**
-- [ ] Crear migración `workflow_types`
-- [ ] Crear migración `workflow_file_definitions`
-- [ ] Crear migración `workflow_required_columns`
-- [ ] Crear migración `workflow_file_batches`
-- [ ] Crear migración `workflow_uploaded_files`
-- [ ] Modificar migración `workflow_executions`
-- [ ] Ejecutar `php artisan migrate`
-- [ ] Verificar estructura en BD
+- [x] Crear migración `workflow_types`
+- [x] Crear migración `workflow_file_definitions`
+- [x] Crear migración `workflow_required_columns`
+- [x] Crear migración `workflow_file_batches`
+- [x] Crear migración `workflow_uploaded_files`
+- [x] Modificar migración `workflow_executions`
+- [x] Ejecutar `php artisan migrate`
+- [x] Verificar estructura en BD
 
 ---
 
@@ -68,13 +68,13 @@ Implementar un sistema escalable de carga, validación y procesamiento de archiv
 - ✅ Todos los casts y fillables definidos
 
 **Tareas:**
-- [ ] Crear `WorkflowType.php`
-- [ ] Crear `WorkflowFileDefinition.php`
-- [ ] Crear `WorkflowRequiredColumn.php`
-- [ ] Crear `WorkflowFileBatch.php`
-- [ ] Crear `WorkflowUploadedFile.php`
-- [ ] Actualizar `WorkflowExecution.php`
-- [ ] Definir relaciones en todos los modelos
+- [x] Crear `WorkflowType.php`
+- [x] Crear `WorkflowFileDefinition.php`
+- [x] Crear `WorkflowRequiredColumn.php`
+- [x] Crear `WorkflowFileBatch.php`
+- [x] Crear `WorkflowUploadedFile.php`
+- [x] Actualizar `WorkflowExecution.php`
+- [x] Definir relaciones en todos los modelos
 
 ---
 
@@ -89,12 +89,12 @@ Implementar un sistema escalable de carga, validación y procesamiento de archiv
 - ✅ Seeder ejecutado sin errores
 
 **Tareas:**
-- [ ] Crear `WorkflowTypeSeeder`
-- [ ] Definir workflow "Conciliación"
-- [ ] Definir 6 tipos de archivo
-- [ ] Definir columnas mínimas requeridas
-- [ ] Ejecutar seeder
-- [ ] Verificar datos en BD
+- [x] Crear `WorkflowTypeSeeder`
+- [x] Definir workflow "Conciliación"
+- [x] Definir 6 tipos de archivo
+- [x] Definir columnas mínimas requeridas
+- [x] Ejecutar seeder
+- [x] Verificar datos en BD
 
 ---
 
@@ -108,19 +108,19 @@ Implementar un sistema escalable de carga, validación y procesamiento de archiv
 - ✅ Documentación de configuración
 
 **Tareas:**
-- [ ] Crear `config/workflows.php`
-- [ ] Agregar variables a `.env.example`
-- [ ] Documentar configuración
+- [x] Crear `config/workflows.php`
+- [x] Agregar variables a `.env.example`
+- [x] Documentar configuración
 
 ---
 
 ### Definición de Hecho (DoD)
-- [ ] Todas las migraciones ejecutadas
-- [ ] Todos los modelos creados con relaciones
-- [ ] Seeder ejecutado con datos de Conciliación
-- [ ] Configuración creada
-- [ ] Code review completado
-- [ ] Commit en rama `feature/workflows-sprint-1`
+- [x] Todas las migraciones ejecutadas
+- [x] Todos los modelos creados con relaciones
+- [x] Seeder ejecutado con datos de Conciliación
+- [x] Configuración creada
+- [x] Code review completado
+- [x] Commit en rama `feature/workflows-sprint-1`
 
 ---
 
