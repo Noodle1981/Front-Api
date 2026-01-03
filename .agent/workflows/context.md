@@ -4,21 +4,37 @@ description: Contexto completo del proyecto Front-API para cualquier IA o desarr
 
 # 🚀 Front-API - Contexto del Proyecto
 
-> **Sistema SaaS de Gestión de Clientes e Integraciones API**  
-> Última actualización: Diciembre 2024 | Versión: 2.0.0
+> **Sistema SaaS de Gestión de Clientes, Integraciones API y Automatización de Workflows**  
+> Última actualización: Enero 2026 | Versión: 2.1.0
 
 ---
 
 ## 📋 Descripción General
 
-**Front-API** es un sistema completo de administración SaaS para:
-- Gestión de clientes (CRUD con jerarquías sede/sucursal)
-- Integraciones con APIs externas (Mercado Pago, AFIP, Ualá, Naranja X)
-- Monitoreo de transacciones y ejecución de APIs
-- Sistema de alertas automatizadas por email
-- Reglas de negocio ETL con Python (Pyodide) para procesamiento de datos
+**Front-API** es un sistema completo de administración SaaS que ha evolucionado para adaptarse a las necesidades reales del negocio:
 
-**Propósito**: Permitir a programadores crear integraciones API y workflows, mientras operadores ejecutan estos workflows predefinidos para sus clientes.
+### Visión Original (2024)
+Sistema enfocado en **integraciones automáticas con APIs externas** para:
+- Consumir datos de APIs de terceros (Mercado Pago, AFIP, Ualá, Naranja X)
+- Procesar transacciones automáticamente
+- Ejecutar reglas de negocio ETL con Python
+- Sincronización en tiempo real
+
+### Realidad Actual (2026)
+**Enfoque híbrido** que combina:
+1. **Automatización de procesos manuales** (prioridad actual)
+   - Los clientes actualmente procesan datos "a mano" usando Excel
+   - El sistema automatiza estos procesos mientras se resuelven problemas con APIs
+   - Carga, validación y procesamiento de archivos Excel
+   - Ejecución de reglas de negocio en Python sobre datos cargados
+
+2. **Integraciones API** (implementación progresiva)
+   - Se mantiene la infraestructura de APIs
+   - Se implementarán gradualmente cuando estén disponibles
+   - Migración transparente de workflows manuales a automáticos
+
+### Propósito Actual
+Permitir a **Programadores** crear workflows de procesamiento de datos (manuales o automáticos), mientras **Operadores** ejecutan estos workflows para sus clientes, ya sea cargando archivos Excel o consumiendo APIs cuando estén disponibles.
 
 ---
 
@@ -44,6 +60,14 @@ description: Contexto completo del proyecto Front-API para cualquier IA o desarr
 | Monaco Editor | - | Editor de código Python |
 | Pyodide | - | Ejecución Python en navegador |
 | Vite | 7.0 | Build tool |
+
+### Procesamiento de Datos
+| Tecnología | Versión | Uso |
+|------------|---------|-----|
+| Laravel Excel | 3.1+ | Lectura/escritura de archivos Excel |
+| PhpSpreadsheet | 1.30+ | Procesamiento de Excel |
+| DomPDF | - | Generación de PDFs |
+| Python (servidor) | 3.10+ | Ejecución de reglas de negocio |
 
 ### Base de Datos
 | Tecnología | Versión | Uso |
@@ -154,25 +178,68 @@ Front-Api/
 | `Transaction` | `transactions` | Transacciones exitosas |
 | `BusinessRule` | `business_rules` | Reglas de negocio ETL |
 | `Workflow` | `workflows` | Workflows compuestos |
+| `WorkflowType` | `workflow_types` | Tipos de workflow (Conciliación, etc.) |
+| `WorkflowFileDefinition` | `workflow_file_definitions` | Definiciones de archivos por workflow |
+| `WorkflowRequiredColumn` | `workflow_required_columns` | Columnas requeridas por archivo |
+| `WorkflowFileBatch` | `workflow_file_batches` | Batches de archivos cargados |
+| `WorkflowUploadedFile` | `workflow_uploaded_files` | Archivos individuales cargados |
+| `WorkflowExecution` | `workflow_executions` | Ejecuciones de workflows |
 | `EmailLog` | `email_logs` | Historial de emails enviados |
 
 ---
 
 ## 📊 Estado Actual del Roadmap
 
-### ✅ ETAPA 1 - Programadores (Completado)
+### ✅ ETAPA 1 - Infraestructura API (Completado)
 - [x] Panel de Programadores (`/programadores/dashboard`)
 - [x] Enterprise Module (Gestión de integraciones)
 - [x] Endpoints Manager (`/programadores/services/{id}/endpoints`)
 - [x] Reglas de Negocio ETL con Pyodide + Monaco Editor
 - [x] Workflow Builder integrado
+- [x] Sistema de roles y permisos (Spatie)
 
-### 🔄 ETAPA 2 - Operadores (En Progreso)
-- [ ] Dashboard Operador actualizado
-- [ ] Vista `/operadores/workflow` para ejecutar workflows predefinidos
-- [ ] Sistema de ejecución de reglas sin programación
+### 🚀 ETAPA 2 - Sistema de Workflows (En Desarrollo - Prioridad Alta)
+**Objetivo:** Automatizar procesos manuales con Excel mientras se implementan APIs
 
-### ✅ ETAPA 3 - Livewire (Instalado)
+#### Sprint 1: Fundación (Planificado)
+- [ ] Migraciones de BD (workflow_types, file_definitions, etc.)
+- [ ] Modelos Eloquent con relaciones
+- [ ] Seeder de workflow "Conciliación"
+- [ ] Configuración del sistema
+
+#### Sprint 2: Servicios Core (Planificado)
+- [ ] FileValidationService (validación inteligente por columnas)
+- [ ] WorkflowJsonGeneratorService (generación de JSON)
+- [ ] WorkflowExecutionService (ejecución + API Python)
+- [ ] WorkflowPdfService (generación de reportes)
+
+#### Sprint 3: UI de Carga (Planificado)
+- [ ] Wizard de carga de archivos (4 pasos)
+- [ ] Validación en tiempo real
+- [ ] Checklist visual de validaciones
+
+#### Sprint 4: Ejecución e Historial (Planificado)
+- [ ] Panel de ejecución de workflows
+- [ ] Historial de ejecuciones
+- [ ] Vista /test para debugging
+- [ ] Descarga de PDFs
+
+#### Sprint 5: Configuración UI (Planificado)
+- [ ] Admin de tipos de workflow
+- [ ] Editor de columnas requeridas
+- [ ] Sistema configurable sin código
+
+#### Sprint 6: Testing y Refinamiento (Planificado)
+- [ ] Suite de tests completa (>80% coverage)
+- [ ] Optimización de performance
+- [ ] Documentación completa
+
+### 🔄 ETAPA 3 - Migración Progresiva a APIs (Futuro)
+- [ ] Implementar APIs cuando estén disponibles
+- [ ] Migración transparente de workflows manuales a automáticos
+- [ ] Mantener compatibilidad con ambos métodos
+
+### ✅ ETAPA 4 - Livewire (Instalado)
 - [x] Livewire v3.7 instalado
 - [x] Componente `BuscadorClientes` creado
 - [ ] Dashboard con actualización automática
@@ -387,6 +454,105 @@ php artisan make:livewire     # Crear componente Livewire
 
 ---
 
+## 🔄 Sistema de Workflows (Nuevo - Enero 2026)
+
+### Contexto y Motivación
+
+**Problema Original:**
+- El proyecto nació para automatizar integraciones con APIs externas
+- Problemas con disponibilidad y estabilidad de APIs de terceros
+- Clientes procesando datos manualmente en Excel mientras se resuelven problemas
+
+**Solución Implementada:**
+Sistema híbrido que permite:
+1. **Automatizar procesos manuales** (corto plazo)
+2. **Migrar a APIs** cuando estén disponibles (largo plazo)
+3. **Coexistencia** de ambos métodos
+
+### Arquitectura del Sistema
+
+```mermaid
+graph TB
+    User[Programador] -->|Carga 6 Excel| Wizard[Upload Wizard]
+    Wizard -->|Valida| Validation[FileValidationService]
+    Validation -->|Identifica por columnas| Match[Smart Matching]
+    Match -->|Crea| Batch[WorkflowFileBatch]
+    Batch -->|Genera| JSON[JSON Generator]
+    JSON -->|Envía| Python[Servidor Python]
+    Python -->|Retorna| Result[Resultado]
+    Result -->|Guarda| DB[(Base de Datos)]
+    Result -->|Muestra| History[Historial]
+    History -->|Descarga| PDF[PDF Report]
+```
+
+### Características Clave
+
+#### 1. Validación Inteligente
+- **No depende del nombre del archivo**
+- Identifica tipo por estructura de columnas
+- Normalización automática de nombres
+- Detección de archivos duplicados/faltantes
+
+#### 2. Sistema Configurable
+- Gestión de workflows desde UI
+- Edición de columnas requeridas sin código
+- Columnas obligatorias vs opcionales
+- Escalable a múltiples workflows
+
+#### 3. Procesamiento Flexible
+- JSON incluye TODOS los campos (no solo validados)
+- Programador Python tiene acceso completo a datos
+- Reglas de negocio personalizables
+- Mock API para desarrollo
+
+#### 4. Trazabilidad Completa
+- Historial de todas las ejecuciones
+- Logs detallados
+- Generación de PDFs
+- Auditoría completa
+
+### Workflow "Conciliación" (Primer Caso de Uso)
+
+**Archivos Requeridos:**
+1. `Turnos.xlsx` - Turnos de caja
+2. `Reporte Ventas.xlsx` - Ventas del sistema
+3. `Reporte getnet.xlsx` - Transacciones Getnet
+4. `Ventas MP.xlsx` - Transacciones Mercado Pago
+5. `Devoluciones.xlsx` - Devoluciones/anulaciones
+6. `Caja Adicion.xlsx` - Movimientos de caja
+
+**Proceso:**
+1. Programador carga 6 archivos
+2. Sistema valida estructura
+3. Genera JSON consolidado
+4. Envía a servidor Python
+5. Python ejecuta reglas de conciliación
+6. Retorna resultado con diferencias
+7. Se genera PDF con reporte
+
+### Migración Futura a APIs
+
+Cuando las APIs estén disponibles:
+- El mismo workflow "Conciliación" funcionará
+- En lugar de cargar Excel, consumirá APIs
+- Reglas de negocio Python se mantienen
+- Migración transparente para el usuario
+
+### Documentación
+
+| Documento | Ubicación | Contenido |
+|-----------|-----------|-----------|
+| README Principal | `docs/Desarrollos/workflows_README.md` | Índice maestro |
+| Plan de Implementación | `docs/Desarrollos/workflows_implementation_plan.md` | Detalles técnicos |
+| Diagramas | `docs/Lógica_del_diseño/workflows_diagrama.md` | Flujos visuales |
+| Validación | `docs/Lógica_del_diseño/workflows_validation_strategy.md` | Estrategia de validación |
+| Sistema Configurable | `docs/Lógica_del_diseño/workflows_configurable_system.md` | UI de administración |
+| Escalabilidad | `docs/Lógica_del_diseño/workflows_escalabilidad.md` | Capacidades futuras |
+| Roadmap | `docs/Roadmap/workflows_roadmap.md` | Plan de 6 sprints |
+| Roadmap Visual | `docs/Roadmap/workflows_roadmap_visual.md` | Diagramas y timeline |
+
+---
+
 ## ⚠️ Notas Importantes
 
 1. **Credenciales API**: Se almacenan encriptadas en `client_credentials.credentials`
@@ -394,8 +560,13 @@ php artisan make:livewire     # Crear componente Livewire
 3. **Jerarquías**: Los clientes pueden ser sedes (`parent_id = null`) o sucursales (`parent_id = sede_id`)
 4. **Pyodide**: Se ejecuta en el navegador, no requiere instalación Python en servidor
 5. **Roles renombrados**: Analista → Programador, Usuario → Operador
+6. **Workflows**: Sistema híbrido que automatiza procesos manuales (Excel) mientras se implementan APIs
+7. **Validación Inteligente**: Los archivos se identifican por estructura de columnas, no por nombre
+8. **Escalabilidad**: El sistema de workflows es configurable y soporta múltiples tipos de workflow
 
 ---
 
 **Desarrollado por**: Omar Olivera ([@Noodle1981](https://github.com/Noodle1981))  
-**Repositorio**: [github.com/Noodle1981/Front-Api](https://github.com/Noodle1981/Front-Api)
+**Repositorio**: [github.com/Noodle1981/Front-Api](https://github.com/Noodle1981/Front-Api)  
+**Última actualización**: Enero 2026 - Sistema de Workflows implementado
+```
