@@ -264,7 +264,7 @@ class WorkflowFileUploadWizard extends Component
     /**
      * Submit and save batch
      */
-    public function submitBatch(): void
+    public function submitBatch()
     {
         // Final validation
         if (!$this->validateCurrentStep()) {

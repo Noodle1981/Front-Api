@@ -104,6 +104,8 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
     Route::prefix('workflows')->name('workflows.')->group(function () {
         Route::get('/upload', App\Livewire\WorkflowFileUploadWizard::class)->name('upload');
         Route::get('/batch/{batch}', [App\Http\Controllers\WorkflowBatchController::class, 'show'])->name('batch.show');
+        Route::get('/history', App\Livewire\WorkflowHistoryTable::class)->name('history');
+        Route::get('/test', [App\Http\Controllers\WorkflowBatchController::class, 'test'])->name('test');
     });
 });
 
