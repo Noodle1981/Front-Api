@@ -85,7 +85,11 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                         <a href="{{ route('programmer.workflows.batch.show', $execution->fileBatch) }}" class="text-purple-600 hover:text-purple-900">Ver</a>
-                                        <button wire:click="downloadPdf({{ $execution->id }})" class="text-green-600 hover:text-green-900">PDF</button>
+                                        @if($execution->hasExcelResponse())
+                                            <a href="{{ route('programmer.workflows.execution.pdf', $execution) }}" class="text-green-600 hover:text-green-900" target="_blank">PDF</a>
+                                        @else
+                                            <span class="text-gray-400">PDF</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

@@ -106,6 +106,7 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
         Route::get('/batch/{batch}', [App\Http\Controllers\WorkflowBatchController::class, 'show'])->name('batch.show');
         Route::get('/history', App\Livewire\WorkflowHistoryTable::class)->name('history');
         Route::get('/test', [App\Http\Controllers\WorkflowBatchController::class, 'test'])->name('test');
+        Route::get('/execution/{execution}/pdf', [App\Http\Controllers\WorkflowBatchController::class, 'downloadExecutionPdf'])->name('execution.pdf');
     });
 });
 

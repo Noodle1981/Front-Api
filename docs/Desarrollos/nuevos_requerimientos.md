@@ -1,91 +1,38 @@
 
 ## NUEVOS REQUERIMIENTOS
 
-Primero revisa la estructura actual del proyecto, y luego ve los nuevos requerimientos
+# Cambio de estructura de http://127.0.0.1:8000/programadores/workflows/upload
 
-## 1_ Subida de archivos
+Analisa la estructura actual para entrar en contexto, y vamos a modifica como es el nuevo requerimiento
 
-Ser requiere que el sistema, una vez que eliga el cliente y su sede, se nos permita hacer los siguientes pasos 
-      
-   a_ Seleccionar archivo Turnos
-   b_ Seleccionar archivo reporte de ventas (sistema)
-   c_ Seleccionar archivo reporte ventas getnet
-   d_ Seleccionar archivo reporte ventas MP
-   e_ Seleccionar archivo reporte devoluciones 
-   f_ Seleccionar archivo caja adicion
+primero que nada el wizard de carga de archivos "Cargar Archivos de Workflow" tendra que cambiar a 3 pasos
 
-De Estos archivos, tiene la siguiente estructura, la cual se debe respetar en el sistema, podemos revisar en laravel para certificar que la estructura sea la correcta.
+1. seleccionar cliente y sucursal
+2. seleccionar tipo de workflow
+3. cargar archivos, analizar archivos y ejecutar workflow
 
-Estructura de Archivos Excel
-Archivo Columnas Clave
+la diferencia es que el paso 2 y 3 se hara en el mismo paso, y se necesita que se visualice una barra de proceso. visualmente sería así
 
-Turnos.xlsx 
+Analizando tipo de archivo...
 
-Fecha Apertura, Hs Ap. Caja, Fecha Cierre, Hs Cierre Caja, TURNO, Encargado, APERTURA CAJA Efectivo, Recuento Efectivo
+Analizando archivos...
 
-Reporte_Ventas.xlsx FechaCierre, Comanda, Total, Propina, Pagos, Boleta, Efectivo, Getnet,
-Mercado Pago, Cta Cte
+Analizando contenido..
+
+Ejecutando workflow...
+
+Esperando respuesta del servidor...
+
+Generando reporte...
 
 
-Reporte_getnet.xlsx 
-Fecha de operacion, Cod de Transaccion, Monto Bruto Transaccion, Arancel, Estado
-
-Prueba_MP.xlsx FECHA DE ORIGEN (ISO), ID DE OPERACIÓN EN MERCADO PAGO, VALOR DE LA COMPRA, MEDIO DE PAGO, NÚMERO DE SERIE DEL LECTOR
-
-Devoluciones.xlsx ID Comanda, Producto, Precios, Hora pedido, Hora Anulación, Descuadre, DTE Emision
-
-Caja_Adicion.xlsx Fecha Contable, Origen, Proveedor / Para, Monto, Forma de Pago, Comentario Toteat POS
+Bien, ahora lo que tenemos que tener en cuenta que los excel, deben respetar las estructuras original de cada uno, digamos si originalmente trae 20 columnas, encontes el excel debe pasar por el filtro de validacion de columnas que tenga 20 columnas, si no tiene 20 columnas, debe darte error, porque el filtrado de columnas lo hará el servidor bajo el calculo de python. y asi susecivamente con cada columna, cada tipo de workflow tiene su propia validacion de columnas, por lo que el excel debe respetar la estructura original de cada uno. pero por el momento estamos con conciliación, como workflow, eso significa que el servidor no espera json maestro como actualmente, espera todo el conjunto de arhivos, por lo tanto el front tiene que cumplir con esta estructura, osea elegir clientes, sedes, workflow y cargar archivos, analizar archivos y ejecutar workflow, enviar esos archivos a la api de python para que haga el calculo y devolverá otro excel que eso lo convertirá en un informe pdf.
 
 
 
-   Abrir el ejecutable Conciliador
-   a_ Seleccionar archivo Turnos
-   b_ Seleccionar archivo reporte de ventas (sistema)
-   c_ Seleccionar archivo reporte ventas getnet
-   d_ Seleccionar archivo reporte ventas MP
-   e_ Seleccionar archivo reporte devoluciones 
-   f_ Seleccionar archivo caja adicion
-
-Esto significa que el sistema debe tener la capacidad de hacer lo siguiente:
-
-1_ tomar todos los archivos de una subida
-2_ verificar que los nombres coincidan con los archivos que se subieron
-3_ verificar que las los nombres y las cantidades de archivos coincidan con los archivos que se subieron
-4_ Armar un Jason con la informacion de los archivos, que deberia mandarse a un servidor mediante una api
-5_ como el servidor no está listo, visualizar esa api en un archivo json en un /test.html
-6_ analizar la viabilidad de guardar ese jason en un campo asociado al cliente en si, si no es mucha información
-7- la estructura de la carga deberia tener algun tipo de proceso visual que nos permita ver que esta pasando en el sistema, por ejemplo checklis de coincidencia de nombres de archivos, cantidades de archivos, coincidencia de tablas, porcentaje de carga.
-
-## 2_ Ejecucion de workflow
-
-Este procedimiento debe estar disponible solo para el usuario con el rol de Programador
+ahora para la estructura de la base de datos, controladores y apis cambiara, esto lo encontraras en D:\Front-Api\docs\procedimientos\workflows_nuevaversion.md
 
 
-el problema es que esto se llama workflow, y ya hay algo hecho, pero no esta bien que digamos
+Entonces analiza el nuevo requerimiento, revisea el workflow_nuevaversion.md y dame las pautas de como poder testearlo si todavia no esta el servidor activo, lo estan trabajando, y como puedo tomar ese excel para muestre en http://127.0.0.1:8000/programadores/workflows/history y en acciones ver PDF lo muestre como unos diseños, ese excel motrara una X cantidad de pestañas lo cual el informe deberá mostrarlos como una x cantidad de hojas! el diseño lo tengo en un excel que se llama "arqueo.xlsx" igual lo voy a preparar mientras implementamos todo.
 
-la idea es que el pogramador pueda cargar los archivos,  y el operador pueda ver el arhivo que genero la subida de archivos que fueron enviardos al servidor donde se ejecutan reglas del negocio, y entrega un resultado, ese resultado lo debe ver el programador para verificar que fue exitoso, y el operador para darle el uso que tiene que hacer
-
-entonces el flujo es asi:
-
-1_ el pogramador sube los archivos
-2_ el progrmador ve los archivos subidos
-3_ el programador ejecuta el workflow
-4_ el programador ve el resultado
-5_ el operador da el uso que tiene que hacer
-
-entonces el programador elige empresa, sede, el workflow, que puede tener varias nombres, vamos a armar uno que se llama "Conciliación", este workflow, tiene sus cantidad de archivos, nombres de arhivos y cantidades de campos y sus nombres, carga los archivos,, todo eso debe visualizarse en proceso de carga, tranforma en un json general, prepara el json para ser enviado al servidor, ejecuta las reglas de negocios que estane el servidor, y entrega un resultado, osea todo esto en un workflow se que lleva a cabo en la palabra ejectuar que se ven en el front.
-
-## 3_ Resultado de workflow
-
-el resultado debe enviarse al Historial, y programado debe verlo, y tambiene el operador debe verlo
-
-## 4_ Historial
-
-el historial debe tener un boton para descargar un pdf
-
-## 5
-
-Analizar que va a pasar con las columans de la base de datos workflow, workflow_ejecution, tambien hay que analizar, si por cada tipo de workflow se va a crear una tabla, y si por cada tipo de ejecucion se va a crear una tabla, en donde se guarde el tipo la cantidad de archivos, nombres de archivos y cantidades de campos y sus nombres. por ejemplo conciliación. determinar si para json armado se guarda en un tabla, y para cada respuesta tambien se guarda en una tabla.
-
-
-es todo un lio
+Debatamos armamos un plan maestros, 

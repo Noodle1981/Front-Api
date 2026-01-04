@@ -1,0 +1,80 @@
+=== ANÁLISIS DEL ARCHIVO ARQUEO.XLSM ===
+
+Número total de hojas: 4
+
+================================================================================
+HOJA 1: ENVIAR SUCURSAL
+================================================================================
+Dimensión: 1000 filas x Z columnas
+
+Primeras 20 filas:
+--------------------------------------------------------------------------------
+
+
+================================================================================
+HOJA 2: ENVIAR EGRESOS
+================================================================================
+Dimensión: 1000 filas x Z columnas
+
+Primeras 20 filas:
+--------------------------------------------------------------------------------
+Fila 1: C: =+TABLAS!$A$4
+Fila 4: C: =+TABLAS!$C$5 | D: =+TABLAS!$E$5
+Fila 5: C: =+TABLAS!$B$5 | D: =+TABLAS!$D$5
+Fila 9: B: =SUM($B$11:$B$18)
+Fila 10: B: IMPORTE | C: HORA | D: DETALLE
+Fila 11: B: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | C: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | D: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF
+Fila 12: B: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | C: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | D: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF
+Fila 13: B: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | C: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | D: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF
+Fila 14: B: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | C: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | D: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF
+Fila 15: B: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | C: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | D: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF
+Fila 16: B: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | C: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | D: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF
+Fila 17: B: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | C: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | D: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF
+Fila 18: B: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | C: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF | D: =IFERROR(INDEX('Caja Adicion'!$A$2:$V$201,SMALL(IF
+Fila 19: B: =IFERROR(INDEX(#REF!,SMALL(IF((#REF!>=$C$5)*(#REF!
+
+
+================================================================================
+HOJA 3: ENVIAR NO CONCILIADOS
+================================================================================
+Dimensión: 1000 filas x Z columnas
+
+Primeras 20 filas:
+--------------------------------------------------------------------------------
+Fila 1: C: =+TABLAS!$A$4 | N: INTERNO
+Fila 4: C: =+TABLAS!$C$5 | D: =+TABLAS!$E$5
+Fila 5: C: =+TABLAS!$B$5 | D: =+TABLAS!$D$5
+Fila 11: D: =SUM($D$13:$D$20) | H: =+SUM(H13:$H$20) | J: =D11-H11
+Fila 12: B: ID de Venta | C: Hora | D: Monto | F: ID de Venta | G: Hora | H: Monto
+Fila 13: B: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | C: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | D: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | F: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | G: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | H: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I
+Fila 14: B: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | C: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | D: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | F: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | G: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | H: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I
+Fila 15: B: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | C: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | D: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | F: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | G: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | H: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I
+Fila 16: B: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | C: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | D: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | F: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | G: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | H: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I
+Fila 17: B: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | C: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | D: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | F: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | G: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | H: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I
+Fila 18: B: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | C: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | D: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | F: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | G: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | H: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I
+Fila 19: B: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | C: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | D: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | F: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | G: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | H: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I
+Fila 20: B: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | C: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | D: =IFERROR(INDEX('No Conciliado MP'!$A$2:$G$500,SMAL | F: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | G: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I | H: =IFERROR(INDEX('No conciliado'!$O$3:$T$500,SMALL(I
+
+
+================================================================================
+HOJA 4: ENVIAR ANULACIONES
+================================================================================
+Dimensión: 1000 filas x Z columnas
+
+Primeras 20 filas:
+--------------------------------------------------------------------------------
+Fila 1: C: =TABLAS!$A$4 | M: =+#REF!+#REF!+#REF!+#REF!
+Fila 4: C: =TABLAS!$C$5 | D: =TABLAS!$E$5
+Fila 5: C: =+TABLAS!$B$5 | D: =+TABLAS!$D$5
+Fila 9: G: =+SUM(G11:$G$18)
+Fila 10: B: ID Comanda | C: Camarero Mesa | D: Producto | E: Comentario | F: Hora Anulación | G: Precios
+Fila 11: B: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | C: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | D: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | E: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | F: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | G: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF((
+Fila 12: B: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | C: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | D: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | E: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | F: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | G: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF((
+Fila 13: B: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | C: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | D: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | E: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | F: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | G: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF((
+Fila 14: B: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | C: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | D: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | E: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | F: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | G: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF((
+Fila 15: B: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | C: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | D: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | E: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | F: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | G: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF((
+Fila 16: B: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | C: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | D: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | E: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | F: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | G: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF((
+Fila 17: B: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | C: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | D: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | E: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | F: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | G: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF((
+Fila 18: B: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | C: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | D: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | E: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | F: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF(( | G: =IFERROR(INDEX(Devoluciones!$A$2:$Q$250,SMALL(IF((
+
+

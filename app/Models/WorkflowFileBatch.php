@@ -92,6 +92,14 @@ class WorkflowFileBatch extends Model
     }
 
     /**
+     * Get all executions for this batch
+     */
+    public function executions(): HasMany
+    {
+        return $this->hasMany(WorkflowExecution::class);
+    }
+
+    /**
      * Generate a unique batch code
      */
     public function generateBatchCode(): string

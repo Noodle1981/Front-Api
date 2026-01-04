@@ -4,57 +4,97 @@ namespace App\Services;
 
 use App\Models\WorkflowExecution;
 use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class WorkflowPdfService
 {
     /**
-     * Generate execution report PDF
+     * Generate PDF from Excel execution result
      */
-    public function generateExecutionReport(WorkflowExecution $execution): string
+    public function generateFromExcel(WorkflowExecution $execution): string
     {
-        $data = $this->buildPdfData($execution);
+        if (!$execution->hasExcelResponse()) {
+            throw new \Exception('No hay archivo Excel disponible para esta ejecución');
+        }
+
+        $excelPath = $execution->getExcelResponseFullPath();
+        $spreadsheet = IOFactory::load($excelPath);
         
-        $pdf = Pdf::loadView('pdfs.workflow-execution', $data);
+        $data = $this->buildPdfDataFromExcel($execution, $spreadsheet);
         
-        // Set paper size and orientation
-        $pdf->setPaper('a4', 'portrait');
+        $pdf = Pdf::loadView('pdfs.workflow-execution-excel', $data);
+        $pdf->setPaper('a4', 'landscape');
         
-        // Generate filename
         $filename = "workflow_execution_{$execution->fileBatch->batch_code}.pdf";
         $path = storage_path("app/workflows/pdfs/{$filename}");
         
-        // Ensure directory exists
         $directory = dirname($path);
         if (!is_dir($directory)) {
             mkdir($directory, 0755, true);
         }
         
-        // Save PDF
         $pdf->save($path);
         
         return $path;
     }
     
     /**
-     * Build data array for PDF
+     * Build data array for PDF from Excel
      */
-    public function buildPdfData(WorkflowExecution $execution): array
+    protected function buildPdfDataFromExcel(WorkflowExecution $execution, $spreadsheet): array
     {
-        $batch = $execution->fileBatch;
-        $results = $execution->logs_json ?? [];
+        $sheets = [];
+        
+        foreach ($spreadsheet->getAllSheets() as $index => $sheet) {
+            $sheets[] = [
+                'name' => $sheet->getTitle(),
+                'data' => $this->extractSheetData($sheet),
+            ];
+        }
         
         return [
             'execution' => $execution,
-            'batch' => $batch,
-            'workflow_type' => $batch->workflowType,
-            'client' => $batch->client,
-            'branch' => $batch->branch,
-            'user' => $batch->user,
-            'files' => $batch->uploadedFiles,
-            'results' => $results,
-            'is_success' => $execution->status === 'success',
+            'batch' => $execution->fileBatch,
+            'workflow_type' => $execution->fileBatch->workflowType,
+            'client' => $execution->fileBatch->client,
+            'branch' => $execution->fileBatch->branch,
+            'user' => $execution->fileBatch->user,
+            'sheets' => $sheets,
             'generated_at' => now(),
         ];
+    }
+    
+    /**
+     * Extract data from a worksheet
+     */
+    protected function extractSheetData(Worksheet $sheet): array
+    {
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+        
+        $data = [];
+        
+        for ($row = 1; $row <= min($highestRow, 100); $row++) {
+            $rowData = [];
+            $hasData = false;
+            
+            for ($col = 'A'; $col <= $highestColumn; $col++) {
+                $value = $sheet->getCell($col . $row)->getCalculatedValue();
+                
+                if ($value !== null && $value !== '') {
+                    $hasData = true;
+                }
+                
+                $rowData[] = $value;
+            }
+            
+            if ($hasData) {
+                $data[] = $rowData;
+            }
+        }
+        
+        return $data;
     }
     
     /**
@@ -62,10 +102,17 @@ class WorkflowPdfService
      */
     public function downloadExecutionReport(WorkflowExecution $execution): \Illuminate\Http\Response
     {
-        $data = $this->buildPdfData($execution);
+        if (!$execution->hasExcelResponse()) {
+            throw new \Exception('No hay archivo Excel disponible para esta ejecución');
+        }
+
+        $excelPath = $execution->getExcelResponseFullPath();
+        $spreadsheet = IOFactory::load($excelPath);
         
-        $pdf = Pdf::loadView('pdfs.workflow-execution', $data);
-        $pdf->setPaper('a4', 'portrait');
+        $data = $this->buildPdfDataFromExcel($execution, $spreadsheet);
+        
+        $pdf = Pdf::loadView('pdfs.workflow-execution-excel', $data);
+        $pdf->setPaper('a4', 'landscape');
         
         $filename = "workflow_execution_{$execution->fileBatch->batch_code}.pdf";
         

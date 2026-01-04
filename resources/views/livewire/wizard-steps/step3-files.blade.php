@@ -160,5 +160,70 @@
                 @endif
             </div>
         @endif
+
+        <!-- Detailed Progress Bar (shown during processing) -->
+        @if($isProcessing)
+            <div class="mt-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <svg class="animate-spin h-5 w-5 text-purple-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Procesando Workflow
+                </h3>
+
+                <!-- Progress Bar -->
+                <div class="mb-4">
+                    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 h-3 rounded-full transition-all duration-500 ease-out"
+                             style="width: {{ $progressPercentage }}%">
+                        </div>
+                    </div>
+                    <div class="text-right mt-1">
+                        <span class="text-sm font-medium text-purple-700">{{ $progressPercentage }}%</span>
+                    </div>
+                </div>
+
+                <!-- Progress Steps -->
+                <div class="space-y-2">
+                    @php
+                        $steps = [
+                            ['label' => 'Analizando tipo de archivo...', 'threshold' => 10],
+                            ['label' => 'Analizando archivos...', 'threshold' => 20],
+                            ['label' => 'Analizando contenido...', 'threshold' => 40],
+                            ['label' => 'Ejecutando workflow...', 'threshold' => 50],
+                            ['label' => 'Esperando respuesta del servidor...', 'threshold' => 70],
+                            ['label' => 'Generando reporte...', 'threshold' => 90],
+                        ];
+                    @endphp
+
+                    @foreach($steps as $step)
+                        @php
+                            $isComplete = $progressPercentage > $step['threshold'];
+                            $isCurrent = $currentProgress === $step['label'];
+                        @endphp
+                        <div class="flex items-center space-x-2 py-1 px-3 rounded-md transition-all duration-300
+                            {{ $isCurrent ? 'bg-white shadow-sm' : '' }}">
+                            @if($isComplete)
+                                <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            @elseif($isCurrent)
+                                <svg class="animate-spin w-5 h-5 text-purple-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            @else
+                                <div class="w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"></div>
+                            @endif
+                            <span class="text-sm {{ $isCurrent ? 'font-semibold text-purple-700' : ($isComplete ? 'text-gray-600' : 'text-gray-400') }}">
+                                {{ $step['label'] }}
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     @endif
 </div>
+```

@@ -12,10 +12,9 @@
                 @foreach([
                     1 => 'Cliente/Sede',
                     2 => 'Workflow',
-                    3 => 'Archivos',
-                    4 => 'Confirmar'
+                    3 => 'Archivos & Ejecución'
                 ] as $step => $label)
-                    <div class="flex-1 {{ $step < 4 ? 'relative' : '' }}">
+                    <div class="flex-1 {{ $step < 3 ? 'relative' : '' }}">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
                                 <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300
@@ -31,7 +30,7 @@
                                     @endif
                                 </div>
                             </div>
-                            @if($step < 4)
+                            @if($step < 3)
                                 <div class="flex-1 h-0.5 mx-2 transition-all duration-300
                                     {{ $currentStep > $step ? 'bg-green-500' : 'bg-gray-200' }}">
                                 </div>
@@ -54,14 +53,12 @@
                 @include('livewire.wizard-steps.step2-workflow')
             @elseif($currentStep === 3)
                 @include('livewire.wizard-steps.step3-files')
-            @elseif($currentStep === 4)
-                @include('livewire.wizard-steps.step4-confirm')
             @endif
         </div>
 
         <!-- Navigation Buttons -->
         <div class="flex justify-between">
-            @if($currentStep > 1)
+            @if($currentStep > 1 && !$isProcessing)
                 <button wire:click="previousStep" type="button"
                     class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +70,7 @@
                 <div></div>
             @endif
 
-            @if($currentStep < 4)
+            @if($currentStep < 3)
                 <button wire:click="nextStep" type="button"
                     class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     wire:loading.attr="disabled">
@@ -92,20 +89,31 @@
             @else
                 <button wire:click="submitBatch" type="button"
                     class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="submitBatch" class="flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        EJECUTAR WORKFLOW
-                    </span>
-                    <span wire:loading wire:target="submitBatch" class="flex items-center">
-                        <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Guardando...
-                    </span>
+                    wire:loading.attr="disabled"
+                    @if($isProcessing) disabled @endif>
+                    @if($isProcessing)
+                        <span class="flex items-center">
+                            <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            {{ $currentProgress }}
+                        </span>
+                    @else
+                        <span wire:loading.remove wire:target="submitBatch" class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            EJECUTAR WORKFLOW
+                        </span>
+                        <span wire:loading wire:target="submitBatch" class="flex items-center">
+                            <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Iniciando...
+                        </span>
+                    @endif
                 </button>
             @endif
         </div>

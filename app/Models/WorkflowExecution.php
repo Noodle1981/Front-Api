@@ -14,6 +14,7 @@ class WorkflowExecution extends Model
         'logs_json',
         'json_sent',
         'json_response',
+        'excel_response_path',
         'execution_time_ms',
         'started_at',
         'completed_at',
@@ -42,5 +43,25 @@ class WorkflowExecution extends Model
     public function fileBatch(): BelongsTo
     {
         return $this->belongsTo(WorkflowFileBatch::class, 'workflow_file_batch_id');
+    }
+
+    /**
+     * Get the Excel response file path (full storage path)
+     */
+    public function getExcelResponseFullPath(): ?string
+    {
+        if (!$this->excel_response_path) {
+            return null;
+        }
+
+        return storage_path('app/public/' . $this->excel_response_path);
+    }
+
+    /**
+     * Check if Excel response exists
+     */
+    public function hasExcelResponse(): bool
+    {
+        return $this->excel_response_path && \Storage::disk('public')->exists($this->excel_response_path);
     }
 }

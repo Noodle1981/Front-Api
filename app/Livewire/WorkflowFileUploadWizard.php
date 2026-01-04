@@ -10,6 +10,7 @@ use App\Models\WorkflowExecution;
 use App\Models\WorkflowFileDefinition;
 use App\Services\FileValidationService;
 use App\Services\WorkflowJsonGeneratorService;
+use App\Services\WorkflowPythonApiService;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
@@ -28,13 +29,15 @@ class WorkflowFileUploadWizard extends Component
     // Step 2: Workflow Type
     public ?int $selectedWorkflowTypeId = null;
     
-    // Step 3: Files
+    // Step 3: Files + Processing
     public array $uploadedFiles = [];
     public array $fileMatches = []; // Map uploaded files to definitions
     public array $validationErrors = [];
     
-    // Step 4: Confirmation
-    public ?array $jsonPreview = null;
+    // Progress tracking
+    public bool $isProcessing = false;
+    public string $currentProgress = '';
+    public int $progressPercentage = 0;
     
     protected $listeners = ['fileUploaded' => 'handleFileUpload'];
     
@@ -45,11 +48,6 @@ class WorkflowFileUploadWizard extends Component
     {
         if ($this->validateCurrentStep()) {
             $this->currentStep++;
-            
-            // Generate JSON preview when reaching step 4
-            if ($this->currentStep === 4) {
-                $this->generateJsonPreview();
-            }
         }
     }
     
@@ -225,75 +223,13 @@ class WorkflowFileUploadWizard extends Component
     }
     
     /**
-     * Generate JSON preview for step 4
+     * Update progress message and percentage
      */
-    protected function generateJsonPreview(): void
+    protected function updateProgress(string $message, int $percentage): void
     {
-        try {
-            $jsonService = app(WorkflowJsonGeneratorService::class);
-            
-            // Create temporary batch for preview
-            $tempBatch = new WorkflowFileBatch([
-                'workflow_type_id' => $this->selectedWorkflowTypeId,
-                'client_id' => $this->selectedClientId,
-                'branch_id' => $this->selectedBranchId,
-                'user_id' => auth()->id(),
-                'batch_code' => 'PREVIEW-' . now()->format('YmdHis'),
-                'uploaded_at' => now(),
-            ]);
-            
-            $tempBatch->setRelation('workflowType', WorkflowType::find($this->selectedWorkflowTypeId));
-            $tempBatch->setRelation('client', Client::find($this->selectedClientId));
-            $tempBatch->setRelation('branch', Client::find($this->selectedBranchId));
-            $tempBatch->setRelation('user', auth()->user());
-            
-            // Build Data preview
-            $filesData = [];
-            foreach ($this->uploadedFiles as $index => $file) {
-                $definitionId = $this->fileMatches[$index] ?? null;
-                if ($definitionId) {
-                    $definition = WorkflowFileDefinition::find($definitionId);
-                    if ($definition) {
-                        try {
-                            // Read first 3 rows for preview
-                            $data = \Maatwebsite\Excel\Facades\Excel::toArray(new \Maatwebsite\Excel\HeadingRowImport(), $file->getRealPath());
-                            $allRows = \Maatwebsite\Excel\Facades\Excel::toArray(new \stdClass(), $file->getRealPath());
-                            $sheetData = $allRows[0] ?? [];
-                            
-                            if (count($sheetData) > 0) {
-                                $headers = array_shift($sheetData);
-                                $sampleRows = array_slice($sheetData, 0, 3); // Limit to 3 rows for preview
-                                
-                                $filesData[$definition->file_identifier] = array_map(function ($row) use ($headers) {
-                                    $result = [];
-                                    foreach ($headers as $idx => $header) {
-                                        $result[$header] = $row[$idx] ?? null;
-                                    }
-                                    return $result;
-                                }, $sampleRows);
-                            } else {
-                                $filesData[$definition->file_identifier] = [];
-                            }
-                        } catch (\Exception $e) {
-                            $filesData[$definition->file_identifier] = ['error' => 'No se pudo leer el archivo'];
-                        }
-                    }
-                }
-            }
-
-            // Build full preview
-            $this->jsonPreview = [
-                'Data' => $filesData,
-                'metadata' => [
-                    'client_id' => $tempBatch->client_id,
-                    'branch_id' => $tempBatch->branch_id,
-                    'uploaded_at' => $tempBatch->uploaded_at->toIso8601String(),
-                    'workflow_type' => $tempBatch->workflowType->name,
-                ],
-            ];
-        } catch (\Exception $e) {
-            $this->jsonPreview = ['error' => $e->getMessage()];
-        }
+        $this->currentProgress = $message;
+        $this->progressPercentage = $percentage;
+        $this->dispatch('progress-updated');
     }
     
     /**
@@ -307,6 +243,9 @@ class WorkflowFileUploadWizard extends Component
         }
         
         try {
+            $this->isProcessing = true;
+            $this->updateProgress('Analizando tipo de archivo...', 10);
+            
             \Illuminate\Support\Facades\Log::info('Iniciando submitBatch para workflow');
             
             // 1. Create batch
@@ -319,54 +258,82 @@ class WorkflowFileUploadWizard extends Component
                 'uploaded_at' => now(),
             ]);
             
+            $this->updateProgress('Analizando archivos...', 20);
             \Illuminate\Support\Facades\Log::info('Batch creado: ' . $batch->batch_code);
             
-            // 2. Save files
-            foreach ($this->uploadedFiles as $index => $file) {
-                $this->saveUploadedFile($batch, $file, $index);
-            }
+            $this->updateProgress('Analizando contenido...', 40);
             
-            \Illuminate\Support\Facades\Log::info('Archivos guardados físicamente');
-            
-            // 3. Update batch status to validated
+            // 2. Update batch status to validated
             $batch->update([
                 'status' => 'validated',
                 'validated_at' => now(),
             ]);
 
-            // 4. Generate FULL Master JSON
-            \Illuminate\Support\Facades\Log::info('Generando JSON Maestro...');
-            $jsonService = app(WorkflowJsonGeneratorService::class);
-            $masterJson = $jsonService->generateFromBatch($batch);
-            \Illuminate\Support\Facades\Log::info('JSON Maestro generado con éxito');
-
-            // 5. Create Mock Execution
+            // 3. Create execution record
             $execution = WorkflowExecution::create([
                 'workflow_id' => null,
                 'workflow_file_batch_id' => $batch->id,
-                'status' => 'success',
-                'json_sent' => $masterJson,
-                'json_response' => [
-                    'status' => 'success',
-                    'message' => 'Workflow ejecutado correctamente (Mock)',
-                    'data' => [
-                        'processed_rows' => count($masterJson['Data']['Turnos'] ?? []),
-                        'rules_applied' => ['reconcile_sales', 'validate_payments']
-                    ]
-                ],
-                'execution_time_ms' => 1250,
-                'started_at' => now()->subSeconds(2),
-                'completed_at' => now(),
-                'logs_json' => ['info' => 'Ejecución de prueba generada automáticamente']
+                'status' => 'processing',
+                'started_at' => now(),
             ]);
+
+            $this->updateProgress('Ejecutando workflow...', 50);
+
+            // 4. Prepare files for Python API (from uploaded files, not from storage)
+            $pythonService = app(WorkflowPythonApiService::class);
+            $workflowType = WorkflowType::find($this->selectedWorkflowTypeId);
             
-            \Illuminate\Support\Facades\Log::info('Ejecución mock registrada. Redirigiendo...');
+            // Map uploaded files to their identifiers
+            $filesForApi = [];
+            foreach ($this->uploadedFiles as $index => $file) {
+                $definitionId = $this->fileMatches[$index] ?? null;
+                if ($definitionId) {
+                    $definition = WorkflowFileDefinition::find($definitionId);
+                    if ($definition) {
+                        $filesForApi[$definition->file_identifier] = $file;
+                    }
+                }
+            }
+
+            $this->updateProgress('Esperando respuesta del servidor...', 70);
             
-            // 6. Redirect to test view
-            session()->flash('success', 'Workflow ejecutado con éxito. Visualizando JSON maestro.');
-            return redirect()->route('programmer.workflows.test');
+            $result = $pythonService->processFiles(
+                $filesForApi,
+                $workflowType->code ?? 'conciliacion',
+                $execution->id
+            );
+
+            $this->updateProgress('Generando reporte...', 90);
+
+            if ($result['success']) {
+                // Update execution with success
+                $execution->update([
+                    'status' => 'success',
+                    'excel_response_path' => $result['excel_path'],
+                    'completed_at' => now(),
+                    'execution_time_ms' => now()->diffInMilliseconds($execution->started_at),
+                ]);
+
+                $this->updateProgress('¡Completado!', 100);
+                
+                \Illuminate\Support\Facades\Log::info('Workflow ejecutado con éxito');
+                
+                session()->flash('success', 'Workflow ejecutado con éxito.');
+                return redirect()->route('programmer.workflows.history');
+            } else {
+                // Update execution with error
+                $execution->update([
+                    'status' => 'failed',
+                    'completed_at' => now(),
+                    'logs_json' => ['error' => $result['error']],
+                ]);
+
+                $this->isProcessing = false;
+                $this->addError('submit', 'Error al procesar: ' . $result['error']);
+            }
             
         } catch (\Exception $e) {
+            $this->isProcessing = false;
             \Illuminate\Support\Facades\Log::error('Error en submitBatch: ' . $e->getMessage());
             \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
             $this->addError('submit', 'Error al guardar y ejecutar: ' . $e->getMessage());

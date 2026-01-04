@@ -41,4 +41,18 @@ class WorkflowBatchController extends Controller
         
         return view('workflows.test', compact('executions'));
     }
+    
+    /**
+     * Download PDF for execution
+     */
+    public function downloadExecutionPdf(WorkflowExecution $execution)
+    {
+        $pdfService = app(\App\Services\WorkflowPdfService::class);
+        
+        try {
+            return $pdfService->downloadExecutionReport($execution);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al generar PDF: ' . $e->getMessage());
+        }
+    }
 }

@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'workflow_python_api' => [
+        'url' => env('WORKFLOW_PYTHON_API_URL', 'http://localhost:8000/procesar'),
+        'timeout' => env('WORKFLOW_PYTHON_API_TIMEOUT', 120),
+        'mock_mode' => env('WORKFLOW_PYTHON_API_MOCK', true),
+    ],
+
 ];
