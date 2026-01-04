@@ -18,6 +18,7 @@ class WorkflowFileBatch extends Model
         'batch_code',
         'status',
         'validation_errors',
+        'files_metadata',
         'uploaded_at',
         'validated_at',
     ];
@@ -28,6 +29,7 @@ class WorkflowFileBatch extends Model
         'branch_id' => 'integer',
         'user_id' => 'integer',
         'validation_errors' => 'array',
+        'files_metadata' => 'array',
         'uploaded_at' => 'datetime',
         'validated_at' => 'datetime',
     ];

@@ -226,4 +226,6 @@
         @endif
     @endif
 </div>
-```
+
+{{-- Include Progress Modal --}}
+@include('livewire.wizard-steps.progress-modal')

@@ -36,6 +36,7 @@ class WorkflowFileUploadWizard extends Component
     
     // Progress tracking
     public bool $isProcessing = false;
+    public bool $showProgressModal = false;
     public string $currentProgress = '';
     public int $progressPercentage = 0;
     
@@ -223,16 +224,6 @@ class WorkflowFileUploadWizard extends Component
     }
     
     /**
-     * Update progress message and percentage
-     */
-    protected function updateProgress(string $message, int $percentage): void
-    {
-        $this->currentProgress = $message;
-        $this->progressPercentage = $percentage;
-        $this->dispatch('progress-updated');
-    }
-    
-    /**
      * Submit and save batch
      */
     public function submitBatch()
@@ -244,6 +235,7 @@ class WorkflowFileUploadWizard extends Component
         
         try {
             $this->isProcessing = true;
+            $this->showProgressModal = true; // Open modal
             $this->updateProgress('Analizando tipo de archivo...', 10);
             
             \Illuminate\Support\Facades\Log::info('Iniciando submitBatch para workflow');
@@ -261,15 +253,18 @@ class WorkflowFileUploadWizard extends Component
             $this->updateProgress('Analizando archivos...', 20);
             \Illuminate\Support\Facades\Log::info('Batch creado: ' . $batch->batch_code);
             
+            // 2. Save uploaded files to database with metadata
+            $this->saveUploadedFilesToDatabase($batch);
+            
             $this->updateProgress('Analizando contenido...', 40);
             
-            // 2. Update batch status to validated
+            // 3. Update batch status
             $batch->update([
                 'status' => 'validated',
                 'validated_at' => now(),
             ]);
 
-            // 3. Create execution record
+            // 4. Create execution record
             $execution = WorkflowExecution::create([
                 'workflow_id' => null,
                 'workflow_file_batch_id' => $batch->id,
@@ -334,6 +329,7 @@ class WorkflowFileUploadWizard extends Component
             
         } catch (\Exception $e) {
             $this->isProcessing = false;
+            $this->showProgressModal = false; // Close modal on error
             \Illuminate\Support\Facades\Log::error('Error en submitBatch: ' . $e->getMessage());
             \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
             $this->addError('submit', 'Error al guardar y ejecutar: ' . $e->getMessage());
@@ -341,35 +337,74 @@ class WorkflowFileUploadWizard extends Component
     }
     
     /**
-     * Save individual uploaded file
+     * Update progress state
      */
-    protected function saveUploadedFile(WorkflowFileBatch $batch, $file, int $index): void
+    protected function updateProgress(string $message, int $percentage): void
     {
-        $definitionId = $this->fileMatches[$index] ?? null;
-        
-        if (!$definitionId) {
-            throw new \Exception("No se pudo identificar el archivo: " . $file->getClientOriginalName());
-        }
-        
-        $definition = $batch->workflowType->fileDefinitions()->find($definitionId);
-        
-        // Generate filename
-        $extension = $file->getClientOriginalExtension();
-        $filename = $batch->batch_code . '_' . $definition->file_identifier . '.' . $extension;
-        
-        // Store file
-        $path = $file->storeAs("workflows/{$batch->id}", $filename);
-        
-        // Create record
-        WorkflowUploadedFile::create([
-            'workflow_file_batch_id' => $batch->id,
-            'workflow_file_definition_id' => $definition->id,
-            'original_filename' => $file->getClientOriginalName(),
-            'stored_filename' => $filename,
-            'file_path' => $path,
-            'file_size' => $file->getSize(),
-            'validation_status' => 'valid',
+        $this->currentProgress = $message;
+        $this->progressPercentage = $percentage;
+        $this->dispatch('workflow-progress', [
+            'message' => $message, 
+            'percentage' => $percentage
         ]);
+    }
+
+    /**
+     * Save uploaded files to database with metadata
+     */
+    protected function saveUploadedFilesToDatabase(WorkflowFileBatch $batch): void
+    {
+        foreach ($this->uploadedFiles as $index => $file) {
+            $definitionId = $this->fileMatches[$index] ?? null;
+            if (!$definitionId) {
+                continue;
+            }
+            
+            $definition = WorkflowFileDefinition::find($definitionId);
+            if (!$definition) {
+                continue;
+            }
+
+            // Generate filename (virtual)
+            $extension = $file->getClientOriginalExtension();
+            $filename = $batch->batch_code . '_' . $definition->file_identifier . '.' . $extension;
+            
+            // NOTE: We do NOT store the file physically as per user requirement.
+            // We only process it in memory to get metadata and pass to Python API.
+            $path = 'MEMORY_ONLY'; 
+            
+            // Default metadata
+            $columnsCount = 0;
+            $rowsCount = 0;
+            
+            // Count columns and rows using PhpSpreadsheet
+            try {
+                $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
+                $sheet = $spreadsheet->getActiveSheet();
+                
+                $highestColumn = $sheet->getHighestColumn();
+                $highestRow = $sheet->getHighestRow();
+                
+                $columnsCount = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+                $rowsCount = $highestRow;
+                
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning("No se pudo analizar archivo {$file->getClientOriginalName()}: " . $e->getMessage());
+            }
+            
+            // Create record
+            WorkflowUploadedFile::create([
+                'workflow_file_batch_id' => $batch->id,
+                'workflow_file_definition_id' => $definition->id,
+                'original_filename' => $file->getClientOriginalName(),
+                'stored_filename' => $filename,
+                'file_path' => $path,
+                'file_size' => $file->getSize(),
+                'rows_count' => $rowsCount,
+                'columns_count' => $columnsCount,
+                'validation_status' => 'valid',
+            ]);
+        }
     }
     
     public function render()

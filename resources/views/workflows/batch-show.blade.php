@@ -71,41 +71,48 @@
                 <div class="p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Archivos Cargados</h3>
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre Original</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tamaño</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($batch->uploadedFiles as $index => $file)
+                        @if($batch->uploadedFiles->count() > 0)
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                {{ $file->fileDefinition->display_name }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-900">{{ $file->original_filename }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ number_format($file->file_size / 1024, 2) }} KB
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                {{ $file->validation_status === 'valid' ? 'bg-green-100 text-green-800' : '' }}
-                                                {{ $file->validation_status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                                {{ $file->validation_status === 'invalid' ? 'bg-red-100 text-red-800' : '' }}">
-                                                {{ ucfirst($file->validation_status) }}
-                                            </span>
-                                        </td>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre Original</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tamaño</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Columnas</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Filas</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($batch->uploadedFiles as $index => $file)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                    {{ $file->fileDefinition->file_identifier ?? 'N/A' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-sm text-gray-900">{{ $file->original_filename }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ number_format($file->file_size / 1024, 2) }} KB
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
+                                                {{ $file->columns_count ?? '-' }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
+                                                {{ $file->rows_count ?? '-' }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            <div class="mt-4 text-sm text-gray-600">
+                                <p><strong>Total archivos:</strong> {{ $batch->uploadedFiles->count() }}</p>
+                                <p><strong>Tamaño total:</strong> {{ number_format($batch->uploadedFiles->sum('file_size') / 1024, 2) }} KB</p>
+                            </div>
+                        @else
+                            <p class="text-gray-500 italic">No hay información de archivos disponible.</p>
+                        @endif
                     </div>
                 </div>
             </div>

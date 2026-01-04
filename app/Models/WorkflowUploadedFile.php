@@ -16,6 +16,7 @@ class WorkflowUploadedFile extends Model
         'file_path',
         'file_size',
         'rows_count',
+        'columns_count',
         'validation_status',
         'validation_errors',
     ];
@@ -25,6 +26,7 @@ class WorkflowUploadedFile extends Model
         'workflow_file_definition_id' => 'integer',
         'file_size' => 'integer',
         'rows_count' => 'integer',
+        'columns_count' => 'integer',
         'validation_errors' => 'array',
     ];
 
