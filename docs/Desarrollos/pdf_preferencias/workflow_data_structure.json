@@ -1,0 +1,162 @@
+{
+    "metadata": {
+        "fecha": "12/02/2025",
+        "dia": "Martes",
+        "turno": "MAÑANA",
+        "encargado": "Felipe",
+        "hs_apertura": "11:10",
+        "hs_cierre": "8:19",
+        "sucursal": "PARADOR"
+    },
+    "enviar_sucursal": {
+        "total_ventas": "816,500.00",
+        "parador": {
+            "cantidad_tickets": 9,
+            "ticket_promedio": "90,722.22",
+            "cantidad_comensales": 32,
+            "comensales_promedio": "25,515.63"
+        },
+        "horarios_venta": {
+            "apertura": "11:10",
+            "primera_venta": "2:37:00 pm",
+            "ultima_venta": "8:09",
+            "cierre": "8:19",
+            "intervalo_primera_venta": "3:27:00 am",
+            "duracion_jornada": "9:09:00 am",
+            "intervalo_ultima_venta": "12:00"
+        },
+        "diferencias_caja": {
+            "mercado_pago": {
+                "real": "169,100.00",
+                "real_no_conciliado": "0.00",
+                "sistema": "0.00",
+                "sistema_no_conciliado": "169,100.00",
+                "diferencia": "-169,100.00",
+                "porcentaje": "0.00"
+            },
+            "getnet": {
+                "real": "747,740.00",
+                "real_no_conciliado": "0.00",
+                "sistema": "747,740.00",
+                "sistema_no_conciliado": "0.00",
+                "diferencia": "0.00",
+                "porcentaje": "0.00"
+            },
+            "efectivo": {
+                "apertura_caja": "138,260.00",
+                "efectivo_real": "143,900.00",
+                "pagos": "91,100.00",
+                "recuento_real": "191,060.00",
+                "diferencia": "191,060.00",
+                "porcentaje": "0.00"
+            },
+            "cta_cte": {
+                "sistema": "0.00",
+                "conciliado_sistema": "0.00",
+                "real": "0.00"
+            }
+        },
+        "ventas_por_hora": [
+            {
+                "hora": "14:00",
+                "monto": 150600
+            },
+            {
+                "hora": "15:00",
+                "monto": 566700
+            },
+            {
+                "hora": "16:00",
+                "monto": 102440
+            }
+        ],
+        "facturacion": {
+            "real": "841,700.00",
+            "ideal": "747,740.00",
+            "diferencia": "93,960.00",
+            "desvio_porcentaje": "12.57"
+        }
+    },
+    "enviar_egresos": {
+        "caja_adicion": [
+            {
+                "importe": "",
+                "hora": "",
+                "detalle": ""
+            }
+        ],
+        "mercado_pago": [
+            {
+                "importe": "",
+                "hora": "",
+                "detalle": ""
+            }
+        ]
+    },
+    "enviar_no_conciliados": {
+        "mercado_pago": {
+            "total_real_no_conciliado": "",
+            "total_sistema_no_conciliado": "",
+            "items_real": [
+                {
+                    "id_venta": "",
+                    "hora": "",
+                    "monto": ""
+                }
+            ],
+            "items_sistema": [
+                {
+                    "id_venta": "",
+                    "hora": "",
+                    "monto": ""
+                }
+            ]
+        },
+        "getnet": {
+            "total_real_no_conciliado": "",
+            "total_sistema_no_conciliado": "",
+            "items_real": [
+                {
+                    "id_venta": "",
+                    "hora": "",
+                    "monto": ""
+                }
+            ],
+            "items_sistema": [
+                {
+                    "id_venta": "",
+                    "hora": "",
+                    "monto": ""
+                }
+            ]
+        },
+        "efectivo_cta_cte": {
+            "total_real_no_conciliado": "",
+            "total_sistema_no_conciliado": "",
+            "items_real": [
+                {
+                    "id_venta": "",
+                    "hora": "",
+                    "monto": ""
+                }
+            ],
+            "items_sistema": [
+                {
+                    "id_venta": "",
+                    "hora": "",
+                    "monto": ""
+                }
+            ]
+        }
+    },
+    "enviar_anulaciones": [
+        {
+            "id_comanda": "",
+            "camarero_mesa": "",
+            "producto": "",
+            "comentario": "",
+            "hora_anulacion": "",
+            "precio": ""
+        }
+    ]
+}

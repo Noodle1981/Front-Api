@@ -86,7 +86,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                         <a href="{{ route('programmer.workflows.batch.show', $execution->fileBatch) }}" class="text-purple-600 hover:text-purple-900">Ver</a>
                                         @if($execution->hasExcelResponse())
-                                            <a href="{{ route('programmer.workflows.execution.pdf', $execution) }}" class="text-green-600 hover:text-green-900" target="_blank">PDF</a>
+                                            <a href="{{ route('programmer.workflows.execution.pdf.preview', $execution) }}" class="text-green-600 hover:text-green-900" target="_blank">PDF</a>
                                         @else
                                             <span class="text-gray-400">PDF</span>
                                         @endif

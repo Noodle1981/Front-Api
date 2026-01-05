@@ -21,7 +21,7 @@
                 </x-nav-link>
 
                 <x-nav-link :href="route('programmer.enterprise.index')" :active="request()->routeIs('programmer.enterprise.*')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200" style="display: none;">
                     <i class="fas fa-server w-6 text-center mr-3"></i>
                     <span class="font-medium">Enterprise</span>
                 </x-nav-link>
@@ -33,13 +33,13 @@
                 </x-nav-link>
 
                 <x-nav-link :href="route('programmer.api-dashboard')" :active="request()->routeIs('programmer.api-dashboard')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200" style="display: none;">
                     <i class="fas fa-tower-broadcast w-6 text-center mr-3"></i>
                     <span class="font-medium">Monitor APIs</span>
                 </x-nav-link>
 
                 <x-nav-link :href="route('programmer.business-rules.index')" :active="request()->routeIs('programmer.business-rules.*')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200" style="display: none;">
                     <i class="fas fa-code-branch w-6 text-center mr-3"></i>
                     <span class="font-medium">Reglas de Negocio</span>
                 </x-nav-link>
@@ -58,7 +58,7 @@
                 </x-nav-link>
 
                 <x-nav-link :href="route('api.dashboard')" :active="request()->routeIs('api.dashboard')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200" style="display: none;">
                     <i class="fas fa-tower-broadcast w-6 text-center mr-3"></i>
                     <span class="font-medium">Monitor APIs</span>
                 </x-nav-link>
