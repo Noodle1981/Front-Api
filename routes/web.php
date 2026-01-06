@@ -22,8 +22,13 @@ Route::get('/dashboard', function () {
         return redirect()->route('programmer.dashboard');
     }
     
-    // Operadores normales van al dashboard estándar
-    return app(DashboardController::class)->index();
+    // Redirigir operadores a su dashboard
+    if (auth()->user()->hasRole('Operador')) {
+        return redirect()->route('operator.dashboard');
+    }
+
+    // Default legacy redirect
+    return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'role:Super Admin|Manager|Programador|Operador'])->group(function () {
@@ -55,6 +60,9 @@ Route::middleware(['auth', 'role:Super Admin|Manager|Programador|Operador'])->gr
 
 // --- RUTAS PARA OPERADORES ---
 Route::middleware(['auth', 'role:Operador'])->prefix('operador')->name('operator.')->group(function () {
+    // Dashboard Operador
+    Route::get('/dashboard', [App\Http\Controllers\Operator\DashboardController::class, 'index'])->name('dashboard');
+
     // Historial de Workflows (reutiliza el componente del programador pero filtrado por clientes del operador)
     Route::get('/workflows/history', App\Livewire\WorkflowHistoryTable::class)->name('workflows.history');
     
@@ -127,6 +135,11 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
         // PDF Routes
         Route::get('/execution/{execution}/pdf/preview', [App\Http\Controllers\WorkflowPdfController::class, 'preview'])->name('execution.pdf.preview');
         Route::get('/execution/{execution}/pdf/download', [App\Http\Controllers\WorkflowPdfController::class, 'download'])->name('execution.pdf.download');
+
+        // Workflow Requests from Operators
+        Route::get('/requests', [App\Http\Controllers\Programmer\WorkflowRequestController::class, 'index'])->name('requests');
+        Route::post('/requests/{request}/accept', [App\Http\Controllers\Programmer\WorkflowRequestController::class, 'accept'])->name('requests.accept');
+        Route::post('/requests/{request}/reject', [App\Http\Controllers\Programmer\WorkflowRequestController::class, 'reject'])->name('requests.reject');
     });
 
     // Logs y Mantenimiento del Sistema (movido desde Admin)

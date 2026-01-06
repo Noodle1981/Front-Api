@@ -24,7 +24,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
             {{-- SECCIÓN 1: KPIs PRINCIPALES --}}
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {{-- Errores Hoy --}}
                 <div class="backdrop-blur-xl bg-gradient-to-br from-red-50/80 to-white/70 rounded-2xl shadow-lg p-5 border border-red-200/30 hover:shadow-xl transition-all">
                     <div class="flex items-center justify-between">
@@ -64,18 +64,7 @@
                     </div>
                 </div>
 
-                {{-- APIs Automatizadas --}}
-                <div class="backdrop-blur-xl bg-gradient-to-br from-purple-50/80 to-white/70 rounded-2xl shadow-lg p-5 border border-purple-200/30 hover:shadow-xl transition-all">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-medium text-purple-600 uppercase tracking-wider">Automatizadas</p>
-                            <p class="text-3xl font-bold text-purple-700 mt-1">{{ $stats['automated_apis'] }}</p>
-                        </div>
-                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-robot text-purple-500 text-xl"></i>
-                        </div>
-                    </div>
-                </div>
+
 
                 {{-- Total APIs --}}
                 <div class="backdrop-blur-xl bg-gradient-to-br from-gray-50/80 to-white/70 rounded-2xl shadow-lg p-5 border border-gray-200/30 hover:shadow-xl transition-all">
@@ -91,35 +80,23 @@
                 </div>
             </div>
 
-            {{-- SECCIÓN 2: GRÁFICOS --}}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {{-- Gráfico de Actividad --}}
-                <div class="backdrop-blur-xl bg-white/80 rounded-2xl shadow-lg p-6 border border-white/30">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-gray-800">
-                            <i class="fas fa-chart-area mr-2 text-aurora-cyan"></i> Actividad de APIs
-                        </h3>
-                        <div class="flex space-x-2 text-xs">
-                            @foreach(['7d' => '7D', '30d' => '30D', '90d' => '90D'] as $key => $label)
-                                <a href="{{ route('programmer.api-dashboard', ['range' => $key]) }}" 
-                                   class="px-3 py-1 rounded-full transition {{ request('range', '7d') === $key ? 'bg-aurora-cyan text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                                    {{ $label }}
-                                </a>
-                            @endforeach
+            {{-- SECCIÓN 2: PRÓXIMAMENTE (Métricas Avanzadas) --}}
+            <div class="backdrop-blur-xl bg-white/80 rounded-2xl shadow-lg p-8 border border-white/30 text-center">
+                <div class="max-w-md mx-auto">
+                    <div class="w-20 h-20 bg-aurora-cyan/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-chart-line text-aurora-cyan text-4xl animate-pulse"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Métricas Avanzadas</h3>
+                    <p class="text-gray-500 mb-6">
+                        Estamos desarrollando un nuevo motor de análisis de datos para ofrecerte métricas más precisas sobre el rendimiento de tus APIs y tiempos de respuesta.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 text-left">
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-xs text-gray-600">
+                            <i class="fas fa-bolt mr-2 text-yellow-500"></i> Latencia Promedio
                         </div>
-                    </div>
-                    <div class="h-64">
-                        <canvas id="activityChart"></canvas>
-                    </div>
-                </div>
-
-                {{-- Gráfico de Distribución por Servicio --}}
-                <div class="backdrop-blur-xl bg-white/80 rounded-2xl shadow-lg p-6 border border-white/30">
-                    <h3 class="font-bold text-gray-800 mb-4">
-                        <i class="fas fa-chart-pie mr-2 text-aurora-cyan"></i> Distribución por Servicio
-                    </h3>
-                    <div class="h-64 flex justify-center">
-                        <canvas id="servicesChart"></canvas>
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-xs text-gray-600">
+                            <i class="fas fa-microchip mr-2 text-blue-500"></i> Carga del Servidor
+                        </div>
                     </div>
                 </div>
             </div>
@@ -268,58 +245,5 @@
         </div>
     </div>
 
-    @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Activity Chart
-            const ctxActivity = document.getElementById('activityChart').getContext('2d');
-            new Chart(ctxActivity, {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode($chartActivity['labels']) !!},
-                    datasets: [
-                        {
-                            label: 'Exitosas',
-                            data: {!! json_encode($chartActivity['success']) !!},
-                            backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Errores',
-                            data: {!! json_encode($chartActivity['error']) !!},
-                            backgroundColor: 'rgba(239, 68, 68, 0.7)',
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } },
-                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
-                }
-            });
-
-            // Services Chart
-            const ctxServices = document.getElementById('servicesChart').getContext('2d');
-            new Chart(ctxServices, {
-                type: 'doughnut',
-                data: {
-                    labels: {!! json_encode($chartServices['labels']) !!},
-                    datasets: [{
-                        data: {!! json_encode($chartServices['data']) !!},
-                        backgroundColor: ['#3B82F6', '#F59E0B', '#10B981', '#6366F1', '#EC4899', '#14B8A6'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'right' } }
-                }
-            });
-        });
-    </script>
-    @endpush
+    {{-- Scripts de analítica removidos temporalmente para limpieza de automatizaciones --}}
 </x-app-layout>

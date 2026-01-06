@@ -16,7 +16,7 @@ Panel de monitoreo de las conexiones externas. Permite supervisar el estado de l
 | **URL** | `/programadores/api-dashboard` |
 | **Ruta nombrada** | `programmer.api-dashboard` |
 | **Controlador** | `App\Http\Controllers\Admin\ApiDashboardController@index` (compartido/redirigido) |
-| **Vista** | `resources/views/admin/api-dashboard.blade.php` |
+| **Vista** | `resources/views/programmer/api-dashboard.blade.php` |
 | **Layout** | `layouts/programmer` (cuando se accede como programador) |
 | **Middleware** | `auth`, `role:Programador` |
 
@@ -24,8 +24,9 @@ Panel de monitoreo de las conexiones externas. Permite supervisar el estado de l
 
 ## Funcionalidades
 
-- **Estado de Conexión:** Indicadores de disponibilidad de APIs.
-- **Estadísticas de Tráfico:** (En Sprint 1 se eliminaron las estadísticas de automatización para centrarse en conectividad).
+- **Estado de Conexión:** Indicadores de disponibilidad de APIs (Errores hoy, Syncs hoy, Clientes conectados).
+- **Métricas Avanzadas (Próximamente):** Sección preparada para futuras integraciones de latencia y carga de servidor.
+- **Bitácora en Vivo:** Registro detallado de eventos y logs de APIs para depuración técnica.
 
 ---
 

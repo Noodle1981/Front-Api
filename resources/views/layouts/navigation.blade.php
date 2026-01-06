@@ -38,6 +38,12 @@
                     <span class="font-medium">Monitor APIs</span>
                 </x-nav-link>
 
+                <x-nav-link :href="route('programmer.workflows.requests')" :active="request()->routeIs('programmer.workflows.requests*')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200 text-aurora-cyan">
+                    <i class="fas fa-envelope-open-text w-6 text-center mr-3"></i>
+                    <span class="font-medium">Pedidos de Workflows</span>
+                </x-nav-link>
+
                 <x-nav-link :href="route('programmer.business-rules.index')" :active="request()->routeIs('programmer.business-rules.*')"
                     class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
                     <i class="fas fa-code-branch w-6 text-center mr-3"></i>
