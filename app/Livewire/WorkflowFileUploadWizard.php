@@ -39,6 +39,7 @@ class WorkflowFileUploadWizard extends Component
     public bool $showProgressModal = false;
     public string $currentProgress = '';
     public int $progressPercentage = 0;
+    public ?string $failedStep = null; // Track which step failed
     
     protected $listeners = ['fileUploaded' => 'handleFileUpload'];
     
@@ -216,11 +217,12 @@ class WorkflowFileUploadWizard extends Component
     }
     
     /**
-     * When files are uploaded, validate them
+     * When files are uploaded, just store them (validation happens on submit)
      */
     public function updatedUploadedFiles(): void
     {
-        $this->validateFiles();
+        // Validation will happen when executing the workflow
+        // This allows the modal to show the validation process
     }
     
     /**
@@ -228,19 +230,42 @@ class WorkflowFileUploadWizard extends Component
      */
     public function submitBatch()
     {
-        // Final validation
-        if (!$this->validateCurrentStep()) {
-            return;
-        }
-        
         try {
             $this->isProcessing = true;
             $this->showProgressModal = true; // Open modal
-            $this->updateProgress('Analizando tipo de archivo...', 10);
+            
+            // Step 1: Validate files
+            $this->updateProgress('Validando archivos...', 5);
+            $this->validateFiles();
+            
+            // Check for validation errors
+            if (!empty($this->validationErrors)) {
+                $this->failedStep = 'Validando archivos...';
+                $this->isProcessing = false;
+                // Keep modal open to show the error
+                
+                // Add errors to the error bag
+                foreach ($this->validationErrors as $error) {
+                    $this->addError('validation', $error['message']);
+                }
+                return;
+            }
+            
+            $this->updateProgress('Verificando estructura de archivos...', 10);
+            
+            // Final step validation
+            if (!$this->validateCurrentStep()) {
+                $this->failedStep = 'Verificando estructura de archivos...';
+                $this->isProcessing = false;
+                // Keep modal open to show the error
+                return;
+            }
+            
+            $this->updateProgress('Analizando tipo de archivo...', 15);
             
             \Illuminate\Support\Facades\Log::info('Iniciando submitBatch para workflow');
             
-            // 1. Create batch
+            // 2. Create batch
             $batch = WorkflowFileBatch::create([
                 'workflow_type_id' => $this->selectedWorkflowTypeId,
                 'client_id' => $this->selectedClientId,
@@ -250,21 +275,21 @@ class WorkflowFileUploadWizard extends Component
                 'uploaded_at' => now(),
             ]);
             
-            $this->updateProgress('Analizando archivos...', 20);
+            $this->updateProgress('Analizando archivos...', 25);
             \Illuminate\Support\Facades\Log::info('Batch creado: ' . $batch->batch_code);
             
-            // 2. Save uploaded files to database with metadata
+            // 3. Save uploaded files to database with metadata
             $this->saveUploadedFilesToDatabase($batch);
             
-            $this->updateProgress('Analizando contenido...', 40);
+            $this->updateProgress('Analizando contenido...', 45);
             
-            // 3. Update batch status
+            // 4. Update batch status
             $batch->update([
                 'status' => 'validated',
                 'validated_at' => now(),
             ]);
 
-            // 4. Create execution record
+            // 5. Create execution record
             $execution = WorkflowExecution::create([
                 'workflow_id' => null,
                 'workflow_file_batch_id' => $batch->id,
@@ -272,9 +297,9 @@ class WorkflowFileUploadWizard extends Component
                 'started_at' => now(),
             ]);
 
-            $this->updateProgress('Ejecutando workflow...', 50);
+            $this->updateProgress('Ejecutando workflow...', 55);
 
-            // 4. Prepare files for Python API (from uploaded files, not from storage)
+            // 6. Prepare files for Python API (from uploaded files, not from storage)
             $pythonService = app(WorkflowPythonApiService::class);
             $workflowType = WorkflowType::find($this->selectedWorkflowTypeId);
             
@@ -290,7 +315,7 @@ class WorkflowFileUploadWizard extends Component
                 }
             }
 
-            $this->updateProgress('Esperando respuesta del servidor...', 70);
+            $this->updateProgress('Esperando respuesta del servidor...', 75);
             
             $result = $pythonService->processFiles(
                 $filesForApi,
@@ -298,7 +323,7 @@ class WorkflowFileUploadWizard extends Component
                 $execution->id
             );
 
-            $this->updateProgress('Generando reporte...', 90);
+            $this->updateProgress('Generando reporte...', 95);
 
             if ($result['success']) {
                 // Update execution with success
@@ -323,13 +348,16 @@ class WorkflowFileUploadWizard extends Component
                     'logs_json' => ['error' => $result['error']],
                 ]);
 
+                $this->failedStep = 'Esperando respuesta del servidor...';
                 $this->isProcessing = false;
+                // Keep modal open to show the error
                 $this->addError('submit', 'Error al procesar: ' . $result['error']);
             }
             
         } catch (\Exception $e) {
+            $this->failedStep = $this->currentProgress ?: 'Error desconocido';
             $this->isProcessing = false;
-            $this->showProgressModal = false; // Close modal on error
+            // Keep modal open to show the error
             \Illuminate\Support\Facades\Log::error('Error en submitBatch: ' . $e->getMessage());
             \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
             $this->addError('submit', 'Error al guardar y ejecutar: ' . $e->getMessage());
