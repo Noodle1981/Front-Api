@@ -1,0 +1,1 @@
+no lo tiene activado, pero podria acceder a los workflows de los clientes, para acceder a los resultados, lo veo lógico para su funcion 

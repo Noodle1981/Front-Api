@@ -1,0 +1,1 @@
+esta vista es la gestión de usuarios, lo cual le permitirá al administrador crear, editar, deshabilitar, etc. los usuarios son los programadores y los operadores
