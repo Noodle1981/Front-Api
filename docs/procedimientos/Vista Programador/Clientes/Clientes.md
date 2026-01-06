@@ -1,9 +1,43 @@
-http://127.0.0.1:8000/programadores/clients
+# Vista de Clientes (Programador)
 
-En esta vista se puede ver los clientes que se han registrado en el sistema. 
+> **Estado:** ✅ OK  
+> **Última actualización:** 2026-01-06
 
-En la tabla se puede ver los clientes que se han registrado en el sistema.  El total, activos, inactivos, sedes, sucursales, y a futuros los que usan apis para bajar los elementos que deben pasar por las reglas de negocios y los workflows
+## Descripción
 
-no los crea, solo los ves
+Vista informativa para que los programadores consulten la lista de clientes activos en el sistema. A diferencia del operador, esta es una vista de **solo lectura**.
 
-agregar detalles tecnicos del esta vista, controladores, web, tablas, etc.
+---
+
+## Detalles Técnicos
+
+| Elemento | Valor |
+|----------|-------|
+| **URL** | `/programadores/clients` |
+| **Ruta nombrada** | `programmer.clients` |
+| **Controlador** | `App\Http\Controllers\ClientController@index` (con lógica de filtrado de vista) |
+| **Vista** | `resources/views/programmer/clients/index.blade.php` |
+| **Layout** | `layouts/programmer` |
+| **Middleware** | `auth`, `role:Programador` |
+
+---
+
+## Funcionalidades
+
+- **Visualización:** Lista de empresas y sus contactos.
+- **Búsqueda/Filtro:** Permite localizar clientes para asociar nuevos workflows.
+
+---
+
+## Modelo Relacionado
+
+**Tabla:** `clients`
+
+(Ver documentación de Clientes en Vista Operador para el detalle de la tabla).
+
+---
+
+## Permisos Requeridos
+
+- Rol: `Programador`
+- Acceso: Solo lectura de los datos básicos del cliente.

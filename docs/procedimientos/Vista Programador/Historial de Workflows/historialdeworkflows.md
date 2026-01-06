@@ -1,15 +1,44 @@
-Hitorial de ejecuciones
+# Historial de Workflows (Programador)
 
-esta vista es para ver el historial de ejecuciones de los workflows, por el momento está bien
+> **Estado:** 🔧 MEJORAR (Sprint 3)  
+> **Última actualización:** 2026-01-06
 
-solo que hay que ver como mejorar el tema del pdf que no logra visualizarce bien
+## Descripción
 
-segun este procedimiento tenemos 
+Centro de gestión de todos los workflows ejecutados en el sistema. Permite a los programadores auditar los resultados, ver batches y descargar reportes PDF.
 
-http://127.0.0.1:8000/programadores/workflows/batch/
+---
 
-que es la vista del detalle del bach, lo cual esta muy bien
+## Detalles Técnicos
 
-la vista de http://127.0.0.1:8000/programadores/workflows/execution/17/pdf/preview que trate de aproximarme lo mas posible a la vista del este informe
+| Elemento | Valor |
+|----------|-------|
+| **URL** | `/programadores/workflows/history` |
+| **Ruta nombrada** | `programmer.workflows.history` |
+| **Controlador** | `App\Http\Controllers\WorkflowHistoryController@index` |
+| **Componente Livewire** | `App\Livewire\WorkflowHistoryTable` |
+| **Vista** | `resources/views/programmer/workflows/history.blade.php` |
+| **Layout** | `layouts/programmer` |
+| **Middleware** | `auth`, `role:Programador\|Super Admin` |
 
-agregar detalles tecnicos de estas vistas, controladores, web, tablas, etc.
+---
+
+## Funcionalidades
+
+- **Auditoría:** Revisión línea por línea de los resultados procesados en cada lote (batch).
+- **Reportes:** Generación de PDF con el resumen de la ejecución.
+- **Preview del PDF:** (Actualmente en proceso de mejora debido a problemas de visualización).
+
+---
+
+## Modelo Relacionado
+
+**Tabla:** `workflow_file_batches`
+**Tabla Relacionada:** `workflow_file_results`
+
+---
+
+## Permisos Requeridos
+
+- Rol: `Programador` o `Super Admin`.
+- Acceso: Menú "Historial de Workflows".

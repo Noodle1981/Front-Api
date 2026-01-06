@@ -1,7 +1,28 @@
-Documentación del Endpoint de Arqueo
-Implementación con Laravel y Blade
-1. Análisis de la Petición CURL
-1.1 Comando Original
+# Cargar Workflows
+
+> **Estado:** ✅ OK  
+> **Última actualización:** 2026-01-06
+
+## Descripción
+
+Interfaz para que los programadores carguen y procesen archivos mediante workflows. Utiliza un asistente (Wizard) para guiar al usuario en la subida de los archivos requeridos según el tipo de proceso.
+
+---
+
+## Detalles Técnicos
+
+| Elemento | Valor |
+|----------|-------|
+| **URL** | `/programadores/workflows/upload` |
+| **Ruta nombrada** | `programmer.workflows.upload` |
+| **Componente Livewire** | `App\Livewire\WorkflowFileUploadWizard` |
+| **Controlador** | `App\Http\Controllers\WorkflowController` |
+| **Layout** | `layouts/programmer` |
+| **Middleware** | `auth`, `role:Programador` |
+
+---
+
+## Ejemplo de Implementación (Arqueo)
 curl -X POST "http://localhost:8000/procesar" \
   -F "turnos=@Turnos.xlsx" \
   -F "ventas=@Reporte_Ventas.xlsx" \

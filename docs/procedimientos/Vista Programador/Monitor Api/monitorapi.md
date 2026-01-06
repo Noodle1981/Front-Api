@@ -1,7 +1,35 @@
-http://127.0.0.1:8000/programadores/api-dashboard
- Monitor de APIs & Endpoints
-Monitoreo en tiempo real de todas tus integraciones
+# Monitor API (Programador)
 
-este seria un dashboar que monitoria toda la cuestion de APIS, pero no logramos conectarnos a la api por el momento, aca hace mencion de automatización lo cual debemos sacarlo
+> **Estado:** 🧹 LIMPIAR (Sprint 1)  
+> **Última actualización:** 2026-01-06
 
-agregar detalles tecnicos del esta vista, controladores, web, tablas, etc.
+## Descripción
+
+Panel de monitoreo de las conexiones externas. Permite supervisar el estado de los servicios API integrados y diagnosticar fallas de comunicación.
+
+---
+
+## Detalles Técnicos
+
+| Elemento | Valor |
+|----------|-------|
+| **URL** | `/programadores/api-dashboard` |
+| **Ruta nombrada** | `programmer.api-dashboard` |
+| **Controlador** | `App\Http\Controllers\Admin\ApiDashboardController@index` (compartido/redirigido) |
+| **Vista** | `resources/views/admin/api-dashboard.blade.php` |
+| **Layout** | `layouts/programmer` (cuando se accede como programador) |
+| **Middleware** | `auth`, `role:Programador` |
+
+---
+
+## Funcionalidades
+
+- **Estado de Conexión:** Indicadores de disponibilidad de APIs.
+- **Estadísticas de Tráfico:** (En Sprint 1 se eliminaron las estadísticas de automatización para centrarse en conectividad).
+
+---
+
+## Permisos Requeridos
+
+- Rol: `Programador`.
+- Acceso: Menú "Monitor API".

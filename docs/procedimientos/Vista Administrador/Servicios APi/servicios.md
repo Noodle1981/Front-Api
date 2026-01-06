@@ -66,3 +66,7 @@ Vista de catálogo de servicios API disponibles en el sistema. Es **solo lectura
 
 - Rol: `Super Admin` o `Manager`
 - Acceso: Menú "Servicios API" en navegación de administrador
+
+## Notas
+
+- Esto esta a modo de presentación, no se implementa la funcionalidad de conectar apis por el momento
