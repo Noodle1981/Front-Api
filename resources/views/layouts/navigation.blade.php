@@ -57,10 +57,22 @@
                     <span class="font-medium">Clientes</span>
                 </x-nav-link>
 
-                <x-nav-link :href="route('api.dashboard')" :active="request()->routeIs('api.dashboard')"
+                <x-nav-link :href="route('operator.workflows.history')" :active="request()->routeIs('operator.workflows.*')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-history w-6 text-center mr-3"></i>
+                    <span class="font-medium">Historial Workflows</span>
+                </x-nav-link>
+
+                <x-nav-link :href="route('operator.workflows.request')" :active="request()->routeIs('operator.workflows.request')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-paper-plane w-6 text-center mr-3"></i>
+                    <span class="font-medium">Solicitar Workflow</span>
+                </x-nav-link>
+
+                <x-nav-link :href="route('operator.api.status')" :active="request()->routeIs('operator.api.*')"
                     class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
                     <i class="fas fa-tower-broadcast w-6 text-center mr-3"></i>
-                    <span class="font-medium">Monitor APIs</span>
+                    <span class="font-medium">Estado APIs</span>
                 </x-nav-link>
             @endrole
 

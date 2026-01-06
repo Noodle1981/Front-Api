@@ -53,6 +53,23 @@ Route::middleware(['auth', 'role:Super Admin|Manager|Programador|Operador'])->gr
     Route::get('/api-dashboard', [App\Http\Controllers\Admin\ApiDashboardController::class, 'index'])->name('api.dashboard');
 });
 
+// --- RUTAS PARA OPERADORES ---
+Route::middleware(['auth', 'role:Operador'])->prefix('operador')->name('operator.')->group(function () {
+    // Historial de Workflows (reutiliza el componente del programador pero filtrado por clientes del operador)
+    Route::get('/workflows/history', App\Livewire\WorkflowHistoryTable::class)->name('workflows.history');
+    
+    // Solicitar Workflow (nuevo feature)
+    Route::get('/workflows/request', function () {
+        return view('operator.workflows.request');
+    })->name('workflows.request');
+    Route::post('/workflows/request', [App\Http\Controllers\Operator\WorkflowRequestController::class, 'store'])->name('workflows.request.store');
+    
+    // Estado de APIs (vista próximamente)
+    Route::get('/api/status', function () {
+        return view('operator.api-status');
+    })->name('api.status');
+});
+
 // --- RUTAS PARA PROGRAMADORES (Ex Analistas) ---
 Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('programmer.')->group(function () {
     // Dashboard Programador

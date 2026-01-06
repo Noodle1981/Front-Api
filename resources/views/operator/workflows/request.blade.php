@@ -1,0 +1,143 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <i class="fas fa-paper-plane mr-2 text-brand-dark"></i>Solicitar Workflow
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
+                <div class="p-6">
+                    <!-- Encabezado -->
+                    <div class="mb-6 pb-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-800">Nueva Solicitud de Workflow</h3>
+                        <p class="text-gray-500 text-sm mt-1">
+                            Completa el formulario para solicitar la creación de un nuevo workflow al equipo de programación.
+                        </p>
+                    </div>
+
+                    <!-- Formulario -->
+                    <form action="{{ route('operator.workflows.request.store') }}" method="POST" class="space-y-6">
+                        @csrf
+                        
+                        <!-- Cliente -->
+                        <div>
+                            <label for="client_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-building mr-1"></i> Cliente
+                            </label>
+                            <select name="client_id" id="client_id" required
+                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-brand-accent focus:border-brand-accent">
+                                <option value="">-- Selecciona un cliente --</option>
+                                @foreach(auth()->user()->clients as $client)
+                                    <option value="{{ $client->id }}">{{ $client->company }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Tipo de Workflow -->
+                        <div>
+                            <label for="workflow_type" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-project-diagram mr-1"></i> Tipo de Workflow
+                            </label>
+                            <select name="workflow_type" id="workflow_type" required
+                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-brand-accent focus:border-brand-accent">
+                                <option value="">-- Selecciona un tipo --</option>
+                                <option value="conciliacion">Conciliación Bancaria</option>
+                                <option value="facturacion">Facturación</option>
+                                <option value="reportes">Generación de Reportes</option>
+                                <option value="importacion">Importación de Datos</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <!-- Título de la solicitud -->
+                        <div>
+                            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-heading mr-1"></i> Título de la Solicitud
+                            </label>
+                            <input type="text" name="title" id="title" required
+                                placeholder="Ej: Conciliación mensual de ventas"
+                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-brand-accent focus:border-brand-accent">
+                        </div>
+
+                        <!-- Descripción -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-align-left mr-1"></i> Descripción Detallada
+                            </label>
+                            <textarea name="description" id="description" rows="4" required
+                                placeholder="Describe qué necesitas, qué archivos se usarán, qué resultado esperas..."
+                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-brand-accent focus:border-brand-accent"></textarea>
+                        </div>
+
+                        <!-- Prioridad -->
+                        <div>
+                            <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-flag mr-1"></i> Prioridad
+                            </label>
+                            <div class="flex space-x-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="priority" value="low" class="form-radio text-green-500">
+                                    <span class="ml-2 text-sm text-gray-700">
+                                        <i class="fas fa-arrow-down text-green-500"></i> Baja
+                                    </span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="priority" value="medium" checked class="form-radio text-yellow-500">
+                                    <span class="ml-2 text-sm text-gray-700">
+                                        <i class="fas fa-minus text-yellow-500"></i> Media
+                                    </span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="priority" value="high" class="form-radio text-red-500">
+                                    <span class="ml-2 text-sm text-gray-700">
+                                        <i class="fas fa-arrow-up text-red-500"></i> Alta
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Fecha esperada -->
+                        <div>
+                            <label for="expected_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calendar mr-1"></i> Fecha Esperada (Opcional)
+                            </label>
+                            <input type="date" name="expected_date" id="expected_date"
+                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-brand-accent focus:border-brand-accent">
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                            <a href="{{ route('dashboard') }}" 
+                               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                                Cancelar
+                            </a>
+                            <button type="submit" 
+                                class="px-6 py-2 bg-brand-dark text-white rounded-lg hover:bg-gray-800 transition">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Enviar Solicitud
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info adicional -->
+            <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-info-circle text-blue-500 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="text-sm font-medium text-blue-800">¿Cómo funciona?</h4>
+                        <p class="text-sm text-blue-700 mt-1">
+                            Tu solicitud será enviada al equipo de programación. Recibirás una notificación 
+                            cuando el workflow esté listo para ser utilizado.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
