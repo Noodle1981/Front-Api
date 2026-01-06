@@ -33,7 +33,7 @@
                     </div>
 
                     <div class="space-y-3">
-                        <form action="{{ route('admin.maintenance.optimize') }}" method="POST" class="inline">
+                        <form action="{{ route('programmer.maintenance.optimize') }}" method="POST" class="inline">
                             @csrf
                             <button type="submit"
                                 class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-sm">
@@ -41,7 +41,7 @@
                             </button>
                         </form>
 
-                        <form action="{{ route('admin.maintenance.clear-cache') }}" method="POST" class="inline">
+                        <form action="{{ route('programmer.maintenance.clear-cache') }}" method="POST" class="inline">
                             @csrf
                             <button type="submit"
                                 class="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition text-sm">
@@ -49,7 +49,7 @@
                             </button>
                         </form>
 
-                        <form action="{{ route('admin.maintenance.clear-views') }}" method="POST" class="inline">
+                        <form action="{{ route('programmer.maintenance.clear-views') }}" method="POST" class="inline">
                             @csrf
                             <button type="submit"
                                 class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-sm">
@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="space-y-3">
-                        <form action="{{ route('admin.maintenance.backup') }}" method="POST">
+                        <form action="{{ route('programmer.maintenance.backup') }}" method="POST">
                             @csrf
                             <button type="submit"
                                 class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm">
@@ -145,7 +145,7 @@
                     </div>
 
                     <div class="space-y-3">
-                        <form action="{{ route('admin.maintenance.clean-logs') }}" method="POST"
+                        <form action="{{ route('programmer.maintenance.clean-logs') }}" method="POST"
                             onsubmit="return confirm('¿Estás seguro de que deseas limpiar los logs antiguos?');">
                             @csrf
                             <button type="submit"
@@ -154,7 +154,7 @@
                             </button>
                         </form>
 
-                        <form action="{{ route('admin.maintenance.clean-sessions') }}" method="POST"
+                        <form action="{{ route('programmer.maintenance.clean-sessions') }}" method="POST"
                             onsubmit="return confirm('¿Estás seguro? Esto cerrará todas las sesiones activas.');">
                             @csrf
                             <button type="submit"

@@ -111,16 +111,8 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
         Route::get('/execution/{execution}/pdf/preview', [App\Http\Controllers\WorkflowPdfController::class, 'preview'])->name('execution.pdf.preview');
         Route::get('/execution/{execution}/pdf/download', [App\Http\Controllers\WorkflowPdfController::class, 'download'])->name('execution.pdf.download');
     });
-});
 
-Route::middleware(['auth', 'role:Super Admin|Manager'])->prefix('admin')->name('admin.')->group(function () {
-    // Panel de control del administrador
-    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-
-    // Gestión de usuarios
-    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
-
-    // Logs y mantenimiento
+    // Logs y Mantenimiento del Sistema (movido desde Admin)
     Route::get('/system-logs', [App\Http\Controllers\Admin\DashboardController::class, 'logs'])->name('logs');
     Route::get('/maintenance', [App\Http\Controllers\Admin\MaintenanceController::class, 'index'])->name('maintenance');
     Route::post('/maintenance/backup', [App\Http\Controllers\Admin\MaintenanceController::class, 'backup'])->name('maintenance.backup');
@@ -129,16 +121,14 @@ Route::middleware(['auth', 'role:Super Admin|Manager'])->prefix('admin')->name('
     Route::post('/maintenance/clear-views', [App\Http\Controllers\Admin\MaintenanceController::class, 'clearViews'])->name('maintenance.clear-views');
     Route::post('/maintenance/clean-logs', [App\Http\Controllers\Admin\MaintenanceController::class, 'cleanLogs'])->name('maintenance.clean-logs');
     Route::post('/maintenance/clean-sessions', [App\Http\Controllers\Admin\MaintenanceController::class, 'cleanSessions'])->name('maintenance.clean-sessions');
-    
-    // Email Settings
-    Route::get('/email-settings', [App\Http\Controllers\Admin\EmailSettingsController::class, 'index'])->name('email.settings');
-    Route::post('/email-settings/test', [App\Http\Controllers\Admin\EmailSettingsController::class, 'testEmail'])->name('email.test');
-    Route::get('/email-history', [App\Http\Controllers\Admin\EmailSettingsController::class, 'history'])->name('email.history');
-    Route::get('/email-stats', [App\Http\Controllers\Admin\EmailSettingsController::class, 'stats'])->name('email.stats');
+});
 
-    // Configuraciones del sistema
-    Route::get('/settings/email', [App\Http\Controllers\Admin\SettingsController::class, 'emailConfig'])->name('settings.email');
-    Route::post('/settings/email', [App\Http\Controllers\Admin\SettingsController::class, 'updateEmailConfig'])->name('settings.email.update');
+Route::middleware(['auth', 'role:Super Admin|Manager'])->prefix('admin')->name('admin.')->group(function () {
+    // Panel de control del administrador
+    Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    // Gestión de usuarios
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
 
     // Gestión de Servicios API
     Route::resource('api-services', App\Http\Controllers\Admin\ApiServiceController::class);

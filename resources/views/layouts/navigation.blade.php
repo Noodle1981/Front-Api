@@ -89,14 +89,6 @@
                         class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
                         Catálogo APIs
                     </a>
-                    <a href="{{ route('admin.email.settings') }}"
-                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
-                        <i class="fas fa-envelope mr-2"></i> Email Settings
-                    </a>
-                    <a href="{{ route('admin.email.history') }}"
-                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
-                        <i class="fas fa-history mr-2"></i> Historial Emails
-                    </a>
                 </div>
             </div>
             @endrole
@@ -119,6 +111,21 @@
                     class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
                     <i class="fas fa-code w-6 text-center mr-3"></i>
                     <span class="font-medium">Testing</span>
+                </x-nav-link>
+
+                {{-- Sistema - Logs y Mantenimiento (movido desde Admin) --}}
+                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mt-4 mb-1">Sistema</div>
+
+                <x-nav-link :href="route('programmer.maintenance')" :active="request()->routeIs('programmer.maintenance*')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-tools w-6 text-center mr-3"></i>
+                    <span class="font-medium">Mantenimiento</span>
+                </x-nav-link>
+
+                <x-nav-link :href="route('programmer.logs')" :active="request()->routeIs('programmer.logs')"
+                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-clipboard-list w-6 text-center mr-3"></i>
+                    <span class="font-medium">Logs</span>
                 </x-nav-link>
             @endrole
         </div>
