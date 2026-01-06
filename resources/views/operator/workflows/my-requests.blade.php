@@ -1,9 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-headings font-bold text-xl text-gray-800 leading-tight">
-                <i class="fas fa-history mr-2 text-brand-dark"></i> Mis Pedidos de Workflows
-            </h2>
+            <div>
+                <h2 class="font-headings font-bold text-xl text-gray-800 leading-tight">
+                    <i class="fas fa-history mr-2 text-brand-dark"></i> Mis Pedidos de Workflows
+                </h2>
+                <div class="flex items-center space-x-2 mt-2">
+                    <a href="{{ route('operator.workflows.my-requests') }}" 
+                       class="px-3 py-1.5 bg-brand-dark text-white text-xs font-bold rounded-md">
+                        <i class="fas fa-clipboard-list mr-1"></i> Mis Pedidos
+                    </a>
+                    <a href="{{ route('operator.workflows.history') }}" 
+                       class="px-3 py-1.5 bg-gray-200 text-gray-700 text-xs font-bold rounded-md hover:bg-gray-300 transition">
+                        <i class="fas fa-history mr-1"></i> Historial de Workflows
+                    </a>
+                </div>
+            </div>
             <a href="{{ route('operator.workflows.request') }}" 
                class="px-4 py-2 bg-brand-dark text-white text-sm font-bold rounded-lg hover:shadow-lg transition">
                 <i class="fas fa-plus mr-2"></i> Nuevo Pedido
