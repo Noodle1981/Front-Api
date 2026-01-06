@@ -107,11 +107,11 @@
                                             $execution = $request->batch->executions->first();
                                         @endphp
                                         @if($execution && $execution->status === 'success')
-                                            <a href="{{ route('programmer.workflows.execution.pdf.download', $execution) }}" 
+                                            <a href="{{ route('operator.workflows.execution.pdf.download', $execution) }}" 
                                                class="px-4 py-2 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 transition flex items-center">
                                                 <i class="fas fa-file-pdf mr-2"></i> Descargar PDF
                                             </a>
-                                            <a href="{{ route('programmer.workflows.execution.pdf.preview', $execution) }}" 
+                                            <a href="{{ route('operator.workflows.execution.pdf.preview', $execution) }}" 
                                                target="_blank"
                                                class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition flex items-center">
                                                 <i class="fas fa-eye mr-2"></i> Ver Resultado

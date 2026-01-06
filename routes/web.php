@@ -75,6 +75,10 @@ Route::middleware(['auth', 'role:Operador'])->prefix('operador')->name('operator
     })->name('workflows.request');
     Route::post('/workflows/request', [App\Http\Controllers\Operator\WorkflowRequestController::class, 'store'])->name('workflows.request.store');
     
+    // PDF Routes (acceso a resultados de workflows)
+    Route::get('/workflows/execution/{execution}/pdf/preview', [App\Http\Controllers\WorkflowPdfController::class, 'preview'])->name('workflows.execution.pdf.preview');
+    Route::get('/workflows/execution/{execution}/pdf/download', [App\Http\Controllers\WorkflowPdfController::class, 'download'])->name('workflows.execution.pdf.download');
+    
     // Estado de APIs (vista próximamente)
     Route::get('/api/status', function () {
         return view('operator.api-status');
