@@ -65,7 +65,7 @@
                             
                             @php
                                 $availableTypes = [
-                                    'conciliacion' => 'Conciliación Bancaria',
+                                    'conciliacion' => 'Conciliación',
                                     // Futuros tipos se agregarán aquí
                                     // 'facturacion' => 'Facturación',
                                     // 'reportes' => 'Generación de Reportes',
