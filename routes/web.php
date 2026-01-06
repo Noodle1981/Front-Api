@@ -66,6 +66,9 @@ Route::middleware(['auth', 'role:Operador'])->prefix('operador')->name('operator
     // Historial de Workflows (reutiliza el componente del programador pero filtrado por clientes del operador)
     Route::get('/workflows/history', App\Livewire\WorkflowHistoryTable::class)->name('workflows.history');
     
+    // Mis Pedidos de Workflows
+    Route::get('/workflows/my-requests', [App\Http\Controllers\Operator\WorkflowRequestController::class, 'index'])->name('workflows.my-requests');
+    
     // Solicitar Workflow (nuevo feature)
     Route::get('/workflows/request', function () {
         return view('operator.workflows.request');

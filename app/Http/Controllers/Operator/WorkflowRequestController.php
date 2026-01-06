@@ -9,6 +9,19 @@ use App\Models\WorkflowRequest;
 class WorkflowRequestController extends Controller
 {
     /**
+     * Show operator's workflow request history.
+     */
+    public function index()
+    {
+        $requests = WorkflowRequest::where('user_id', auth()->id())
+            ->with(['client', 'branch', 'batch.executions'])
+            ->latest()
+            ->get();
+
+        return view('operator.workflows.my-requests', compact('requests'));
+    }
+
+    /**
      * Store a new workflow request.
      */
     public function store(Request $request)
