@@ -81,11 +81,11 @@
 - [x] Actualizar navegación/menús por rol
 - [x] Verificar permisos actualizados
 
-### Sprint 3: Mejoras 🔧
+### Sprint 3: Mejoras 🔧 (EN PROGRESO)
 > **Objetivo:** Arreglar funcionalidades existentes
 
-- [ ] Arreglar preview PDF en Historial Workflows
-- [ ] Diseñar dashboard Admin con métricas de ahorro
+- [ ] Arreglar preview PDF en Historial Workflows (pendiente - se hará después)
+- [x] Diseñar dashboard Admin con métricas de ahorro (COMPLETADO - con datos de ejemplo)
 
 ### Sprint 4: Features Nuevos 🆕
 > **Objetivo:** Implementar nuevas funcionalidades
