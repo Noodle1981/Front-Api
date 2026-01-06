@@ -17,6 +17,7 @@ class WorkflowTypeSeeder extends Seeder
         // Crear workflow "Conciliación"
         $conciliacion = WorkflowType::create([
             'name' => 'Conciliación',
+            'code' => 'conciliacion',
             'description' => 'Workflow para procesar archivos de conciliación de datos de ventas',
             'is_active' => true,
             'expected_files_count' => 6,
