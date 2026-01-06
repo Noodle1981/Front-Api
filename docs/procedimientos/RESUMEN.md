@@ -73,13 +73,13 @@
 - [x] Limpiar Monitor APIs Operador
 - [x] Eliminar tabla `email_logs` de la base de datos
 
-### Sprint 2: Reorganización de Roles 🔄
+### Sprint 2: Reorganización de Roles 🔄 ✅ COMPLETADO
 > **Objetivo:** Asignar vistas al rol correcto
 
-- [ ] Mover Mantenimiento de Admin → Programador
-- [ ] Mover Logs de Admin → Programador
-- [ ] Actualizar navegación/menús por rol
-- [ ] Verificar permisos actualizados
+- [x] Mover Mantenimiento de Admin → Programador
+- [x] Mover Logs de Admin → Programador
+- [x] Actualizar navegación/menús por rol
+- [x] Verificar permisos actualizados
 
 ### Sprint 3: Mejoras 🔧
 > **Objetivo:** Arreglar funcionalidades existentes
