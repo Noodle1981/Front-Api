@@ -56,21 +56,47 @@
                             </p>
                         </div>
 
+
                         <!-- Tipo de Workflow -->
                         <div>
                             <label for="workflow_type" class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-project-diagram mr-1"></i> Tipo de Workflow
                             </label>
-                            <select name="workflow_type" id="workflow_type" required
-                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-brand-accent focus:border-brand-accent">
-                                <option value="">-- Selecciona un tipo --</option>
-                                <option value="conciliacion">Conciliación Bancaria</option>
-                                <option value="facturacion">Facturación</option>
-                                <option value="reportes">Generación de Reportes</option>
-                                <option value="importacion">Importación de Datos</option>
-                                <option value="otro">Otro</option>
-                            </select>
+                            
+                            @php
+                                $availableTypes = [
+                                    'conciliacion' => 'Conciliación Bancaria',
+                                    // Futuros tipos se agregarán aquí
+                                    // 'facturacion' => 'Facturación',
+                                    // 'reportes' => 'Generación de Reportes',
+                                ];
+                                $typeCount = count($availableTypes);
+                            @endphp
+                            
+                            @if($typeCount === 1)
+                                {{-- Solo un tipo disponible: auto-seleccionar y mostrar como readonly --}}
+                                @php
+                                    $singleType = array_key_first($availableTypes);
+                                    $singleTypeName = $availableTypes[$singleType];
+                                @endphp
+                                <input type="hidden" name="workflow_type" value="{{ $singleType }}">
+                                <div class="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    {{ $singleTypeName }}
+                                    <span class="text-xs text-gray-500 ml-2">(único disponible)</span>
+                                </div>
+                            @else
+                                {{-- Múltiples tipos: mostrar selector --}}
+                                <select name="workflow_type" id="workflow_type" required
+                                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-brand-accent focus:border-brand-accent">
+                                    <option value="">-- Selecciona un tipo --</option>
+                                    @foreach($availableTypes as $code => $name)
+                                        <option value="{{ $code }}">{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            @endif
                         </div>
+
 
                         <!-- Título de la solicitud -->
                         <div>
