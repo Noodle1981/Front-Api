@@ -63,15 +63,18 @@
                     <span class="font-medium">Clientes</span>
                 </x-nav-link>
 
-                <x-nav-link :href="route('operator.workflows.history')" :active="request()->routeIs('operator.workflows.*')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-history w-6 text-center mr-3"></i>
+                <x-nav-link :href="route('operator.workflows.history')" :active="request()->routeIs('operator.workflows.history')" class="flex items-center space-x-2">
+                    <i class="fas fa-history w-5"></i>
                     <span class="font-medium">Historial Workflows</span>
                 </x-nav-link>
 
-                <x-nav-link :href="route('operator.workflows.request')" :active="request()->routeIs('operator.workflows.request')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-paper-plane w-6 text-center mr-3"></i>
+                <x-nav-link :href="route('operator.workflows.my-requests')" :active="request()->routeIs('operator.workflows.my-requests')" class="flex items-center space-x-2">
+                    <i class="fas fa-clipboard-list w-5"></i>
+                    <span class="font-medium">Mis Pedidos</span>
+                </x-nav-link>
+
+                <x-nav-link :href="route('operator.workflows.request')" :active="request()->routeIs('operator.workflows.request')" class="flex items-center space-x-2">
+                    <i class="fas fa-paper-plane w-5"></i>
                     <span class="font-medium">Solicitar Workflow</span>
                 </x-nav-link>
 
