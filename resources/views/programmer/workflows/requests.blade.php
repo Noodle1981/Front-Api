@@ -57,9 +57,13 @@
                                             <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-gray-100 text-gray-600 border border-gray-200 uppercase tracking-wider">
                                                 <i class="fas fa-project-diagram mr-1"></i> {{ $request->workflow_type }}
                                             </span>
-                                            @if($request->status === 'accepted')
+                                            @if($request->status === 'in_progress')
                                                 <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-green-100 text-green-800 border border-green-200 uppercase tracking-wider">
                                                     <i class="fas fa-check mr-1"></i> ACEPTADO
+                                                </span>
+                                            @elseif($request->status === 'completed')
+                                                <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-blue-100 text-blue-800 border border-blue-200 uppercase tracking-wider">
+                                                    <i class="fas fa-check-double mr-1"></i> COMPLETADO
                                                 </span>
                                             @elseif($request->status === 'rejected')
                                                 <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-red-100 text-red-800 border border-red-200 uppercase tracking-wider">

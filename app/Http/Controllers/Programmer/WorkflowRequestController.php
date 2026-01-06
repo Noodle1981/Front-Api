@@ -19,7 +19,7 @@ class WorkflowRequestController extends Controller
 
     public function accept(WorkflowRequest $request)
     {
-        $request->update(['status' => 'accepted']);
+        $request->update(['status' => 'in_progress']);
         return back()->with('success', 'Pedido aceptado correctamente.');
     }
 
