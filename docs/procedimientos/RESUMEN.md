@@ -87,13 +87,13 @@
 - [ ] Arreglar preview PDF en Historial Workflows (pendiente - se hará después)
 - [x] Diseñar dashboard Admin con métricas de ahorro (COMPLETADO - con datos de ejemplo)
 
-### Sprint 4: Features Nuevos 🆕
+### Sprint 4: Features Nuevos 🆕 ✅ COMPLETADO (Parcial)
 > **Objetivo:** Implementar nuevas funcionalidades
 
-- [ ] Sistema de Solicitar Workflows (Operador → Programador)
-- [ ] Acceso a Historial Workflows para Operador
-- [ ] Vista "Próximamente" para Monitor APIs Operador
-- [ ] Editor de Reglas de Negocio configurable (requiere análisis)
+- [x] Sistema de Solicitar Workflows (Operador → Programador) - Formulario creado
+- [x] Acceso a Historial Workflows para Operador - Ruta y menú agregados
+- [x] Vista "Próximamente" para Monitor APIs Operador - Vista placeholder creada
+- [ ] Editor de Reglas de Negocio configurable (requiere análisis profundo - Sprint futuro)
 
 ---
 
