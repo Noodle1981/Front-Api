@@ -35,6 +35,27 @@
                             </select>
                         </div>
 
+                        <!-- Sede/Sucursal -->
+                        <div>
+                            <label for="branch_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-map-marker-alt mr-1"></i> Sede / Sucursal
+                            </label>
+                            <select name="branch_id" id="branch_id" required
+                                class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-brand-accent focus:border-brand-accent">
+                                <option value="">-- Selecciona una sede --</option>
+                                @foreach(auth()->user()->clients as $client)
+                                    @foreach($client->children as $branch)
+                                        <option value="{{ $branch->id }}" data-parent="{{ $client->id }}">
+                                            {{ $client->company }} - {{ $branch->branch_name }}
+                                        </option>
+                                    @endforeach
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Selecciona primero el cliente para filtrar las sedes disponibles
+                            </p>
+                        </div>
+
                         <!-- Tipo de Workflow -->
                         <div>
                             <label for="workflow_type" class="block text-sm font-medium text-gray-700 mb-2">
@@ -140,4 +161,34 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const clientSelect = document.getElementById('client_id');
+            const branchSelect = document.getElementById('branch_id');
+            const allBranches = Array.from(branchSelect.querySelectorAll('option[data-parent]'));
+
+            // Filter branches when client changes
+            clientSelect.addEventListener('change', function() {
+                const selectedClientId = this.value;
+                
+                // Reset branch select
+                branchSelect.value = '';
+                
+                // Show/hide branches based on selected client
+                allBranches.forEach(option => {
+                    if (!selectedClientId || option.dataset.parent === selectedClientId) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+            });
+
+            // Initialize on page load
+            clientSelect.dispatchEvent(new Event('change'));
+        });
+    </script>
+    @endpush
 </x-app-layout>

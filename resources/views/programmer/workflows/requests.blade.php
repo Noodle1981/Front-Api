@@ -74,6 +74,9 @@
                                         <div class="flex items-center text-xs text-gray-500 mt-1 space-x-3">
                                             <span class="flex items-center"><i class="fas fa-user-edit mr-1"></i> {{ $request->user->name }}</span>
                                             <span class="flex items-center"><i class="fas fa-building mr-1"></i> {{ $request->client->company }}</span>
+                                            @if($request->branch)
+                                                <span class="flex items-center"><i class="fas fa-map-marker-alt mr-1"></i> {{ $request->branch->branch_name }}</span>
+                                            @endif
                                             <span class="flex items-center"><i class="fas fa-calendar-alt mr-1"></i> Solicitado el {{ $request->created_at->format('d/m/Y') }}</span>
                                         </div>
                                     </div>

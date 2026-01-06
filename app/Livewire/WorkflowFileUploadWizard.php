@@ -34,6 +34,9 @@ class WorkflowFileUploadWizard extends Component
     public array $fileMatches = []; // Map uploaded files to definitions
     public array $validationErrors = [];
     
+    // Workflow Request (if executing from a request)
+    public ?int $workflowRequestId = null;
+    
     // Progress tracking
     public bool $isProcessing = false;
     public bool $showProgressModal = false;
@@ -42,6 +45,29 @@ class WorkflowFileUploadWizard extends Component
     public ?string $failedStep = null; // Track which step failed
     
     protected $listeners = ['fileUploaded' => 'handleFileUpload'];
+    
+    /**
+     * Mount component with optional workflow request
+     */
+    public function mount(?int $workflowRequestId = null): void
+    {
+        if ($workflowRequestId) {
+            $this->workflowRequestId = $workflowRequestId;
+            $request = \App\Models\WorkflowRequest::find($workflowRequestId);
+            
+            if ($request) {
+                $this->selectedClientId = $request->client_id;
+                $this->selectedBranchId = $request->branch_id;
+                
+                // Map workflow_type string to workflow_type_id
+                $workflowType = \App\Models\WorkflowType::where('code', $request->workflow_type)->first();
+                if ($workflowType) {
+                    $this->selectedWorkflowTypeId = $workflowType->id;
+                    $this->currentStep = 3; // Skip to file upload step
+                }
+            }
+        }
+    }
     
     /**
      * Navigate to next step
@@ -271,6 +297,7 @@ class WorkflowFileUploadWizard extends Component
                 'client_id' => $this->selectedClientId,
                 'branch_id' => $this->selectedBranchId,
                 'user_id' => auth()->id(),
+                'workflow_request_id' => $this->workflowRequestId,
                 'status' => 'pending',
                 'uploaded_at' => now(),
             ]);
@@ -333,6 +360,14 @@ class WorkflowFileUploadWizard extends Component
                     'completed_at' => now(),
                     'execution_time_ms' => now()->diffInMilliseconds($execution->started_at),
                 ]);
+
+                // Update workflow request status if this execution came from a request
+                if ($this->workflowRequestId) {
+                    $workflowRequest = \App\Models\WorkflowRequest::find($this->workflowRequestId);
+                    if ($workflowRequest) {
+                        $workflowRequest->update(['status' => 'completed']);
+                    }
+                }
 
                 $this->updateProgress('¡Completado!', 100);
                 

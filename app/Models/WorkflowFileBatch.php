@@ -15,6 +15,7 @@ class WorkflowFileBatch extends Model
         'client_id',
         'branch_id',
         'user_id',
+        'workflow_request_id',
         'batch_code',
         'status',
         'validation_errors',
@@ -75,6 +76,14 @@ class WorkflowFileBatch extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the workflow request that originated this batch
+     */
+    public function workflowRequest(): BelongsTo
+    {
+        return $this->belongsTo(WorkflowRequest::class);
     }
 
     /**

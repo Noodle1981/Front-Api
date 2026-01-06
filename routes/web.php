@@ -140,6 +140,7 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
         Route::get('/requests', [App\Http\Controllers\Programmer\WorkflowRequestController::class, 'index'])->name('requests');
         Route::post('/requests/{request}/accept', [App\Http\Controllers\Programmer\WorkflowRequestController::class, 'accept'])->name('requests.accept');
         Route::post('/requests/{request}/reject', [App\Http\Controllers\Programmer\WorkflowRequestController::class, 'reject'])->name('requests.reject');
+        Route::get('/requests/{request}/execute', [App\Http\Controllers\Programmer\WorkflowRequestController::class, 'execute'])->name('requests.execute');
     });
 
     // Logs y Mantenimiento del Sistema (movido desde Admin)

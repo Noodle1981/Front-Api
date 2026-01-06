@@ -15,6 +15,7 @@ class WorkflowRequestController extends Controller
     {
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
+            'branch_id' => 'required|exists:clients,id',
             'workflow_type' => 'required|string|max:50',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -25,6 +26,7 @@ class WorkflowRequestController extends Controller
         WorkflowRequest::create([
             'user_id' => auth()->id(),
             'client_id' => $validated['client_id'],
+            'branch_id' => $validated['branch_id'],
             'workflow_type' => $validated['workflow_type'],
             'title' => $validated['title'],
             'description' => $validated['description'],
