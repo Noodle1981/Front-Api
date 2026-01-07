@@ -289,39 +289,60 @@
                 <td colspan="7" style="background-color: #ffffff;"></td>
             </tr>
             
-            <tr style="height: 18px">
-                <td class="s25 valor-blanco" colspan="4" rowspan="6">
-                    {{-- Gráfico de ventas por hora --}}
+                <td class="s25 valor-blanco" colspan="4" rowspan="6" style="vertical-align: top;">
+                    {{-- Gráfico de ventas por hora - Refactorizado para Dompdf --}}
                     <div style="padding: 10px; text-align: center;">
                         <strong style="color: #1f3864;">Ventas por Hora</strong><br>
                         @php
-                            // Calcular el valor máximo para escalar las barras
                             $maxMonto = max(array_column($data['enviar_sucursal']['ventas_por_hora'], 'monto'));
-                            $maxHeight = 80; // Altura máxima en px
+                            $maxHeight = 80;
                         @endphp
-                        <div style="display: flex; align-items: flex-end; justify-content: center; height: 100px; margin-top: 10px;">
-                            @foreach($data['enviar_sucursal']['ventas_por_hora'] as $venta)
-                                @php
-                                    $altura = ($venta['monto'] / $maxMonto) * $maxHeight;
-                                @endphp
-                                <div style="display: flex; flex-direction: column; align-items: center; margin: 0 5px;">
-                                    <div style="font-size: 8pt; margin-bottom: 2px;">${{ number_format($venta['monto'], 0, ',', '.') }}</div>
-                                    <div style="width: 30px; height: {{ $altura }}px; background-color: #1f3864;"></div>
-                                    <div style="font-size: 8pt; margin-top: 2px;">{{ $venta['hora'] }}</div>
-                                </div>
-                            @endforeach
-                        </div>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                            <tr>
+                                @foreach($data['enviar_sucursal']['ventas_por_hora'] as $venta)
+                                    @php
+                                        $altura = ($venta['monto'] / $maxMonto) * $maxHeight;
+                                    @endphp
+                                    <td style="vertical-align: bottom; text-align: center; border: none; padding: 0 2px;">
+                                        <div style="font-size: 7pt; margin-bottom: 2px; color: #333;">${{ number_format($venta['monto'], 0, ',', '.') }}</div>
+                                        <div style="width: 25px; height: {{ $altura }}px; background-color: #1f3864; margin: 0 auto;"></div>
+                                        <div style="font-size: 7pt; margin-top: 2px; color: #333;">{{ $venta['hora'] }}h</div>
+                                    </td>
+                                @endforeach
+                            </tr>
+                        </table>
                     </div>
                 </td>
-                <td class="s25 valor-blanco" colspan="3" rowspan="4">
-                    {{-- Gráfico pastel facturación --}}
+                <td class="s25 valor-blanco" colspan="3" rowspan="4" style="vertical-align: top;">
+                    {{-- Resumen de facturación - Refactorizado para Dompdf --}}
                     <div style="padding: 10px; text-align: center;">
-                        <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(#1f3864 0% 53%, #bdbdbd 53% 100%); margin: 0 auto;"></div>
-                        <div style="margin-top: 10px;">
-                            <strong style="color: #1f3864;">FACTURACIÓN REAL</strong><br>
-                            <span style="font-size: 12pt;">${{ $data['enviar_sucursal']['facturacion']['real'] }}</span><br><br>
-                            <strong style="color: #bdbdbd;">FACTURACIÓN IDEAL</strong><br>
-                            <span style="font-size: 12pt;">${{ $data['enviar_sucursal']['facturacion']['ideal'] }}</span>
+                        <strong style="color: #1f3864; font-size: 11pt;">RESUMEN DE FACTURACIÓN</strong><br><br>
+                        
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <tr>
+                                <td style="width: 15px; height: 15px; background-color: #1f3864; border: 1px solid #1f3864;"></td>
+                                <td style="padding-left: 8px; font-size: 10pt;"><strong>REAL:</strong> ${{ $data['enviar_sucursal']['facturacion']['real'] }}</td>
+                            </tr>
+                            <tr><td style="height: 8px;" colspan="2"></td></tr>
+                            <tr>
+                                <td style="width: 15px; height: 15px; background-color: #bdbdbd; border: 1px solid #999;"></td>
+                                <td style="padding-left: 8px; font-size: 10pt;"><strong>IDEAL:</strong> ${{ $data['enviar_sucursal']['facturacion']['ideal'] }}</td>
+                            </tr>
+                        </table>
+
+                        @php
+                            $realVal = (float)str_replace(',', '', $data['enviar_sucursal']['facturacion']['real']);
+                            $idealVal = (float)str_replace(',', '', $data['enviar_sucursal']['facturacion']['ideal']);
+                            $porcentaje = $idealVal > 0 ? ($realVal / $idealVal) * 100 : 0;
+                            $porcentajeDisplay = min(100, $porcentaje);
+                        @endphp
+                        
+                        {{-- Barra de progreso horizontal (Reemplaza al círculo) --}}
+                        <div style="width: 100%; height: 25px; background-color: #bdbdbd; margin-top: 20px; border: 1px solid #999;">
+                            <div style="width: {{ $porcentajeDisplay }}%; height: 100%; background-color: #1f3864;"></div>
+                        </div>
+                        <div style="font-size: 9pt; margin-top: 5px; text-align: right; color: #1f3864; font-weight: bold;">
+                            EFICACIA: {{ round($porcentaje, 1) }}%
                         </div>
                     </div>
                 </td>
