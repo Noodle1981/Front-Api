@@ -21,22 +21,7 @@ class DatabaseSeeder extends Seeder
             WorkflowTypeSeeder::class,
         ]);
 
-        // 3. Servicios API básicos
-        \App\Models\ApiService::create([
-            'name' => 'Mercado Pago',
-            'slug' => 'mercado-pago',
-            'base_url' => 'https://api.mercadopago.com',
-            'required_fields' => ['public_key', 'access_token'],
-        ]);
-
-        \App\Models\ApiService::create([
-            'name' => 'AFIP Facturación',
-            'slug' => 'afip-wsfe',
-            'base_url' => 'https://wswhomo.afip.gov.ar/wsfev1/service.asmx',
-            'required_fields' => ['cuit_representada', 'certificado_crt', 'clave_privada_key'],
-        ]);
-
-        // 4. Usuarios básicos
+        // 3. Usuarios básicos
         \App\Models\User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',

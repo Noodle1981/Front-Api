@@ -35,28 +35,6 @@
                 <span class="font-medium">Usuarios</span>
             </x-nav-link>
 
-            <!-- Servicios API -->
-            <x-nav-link :href="route('admin.api-services.index')" :active="request()->routeIs('admin.api-services.*')"
-                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                <i class="fas fa-plug w-6 text-center mr-3"></i>
-                <span class="font-medium">Servicios API</span>
-            </x-nav-link>
-
-            <!-- Sistema Section -->
-            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mt-4 mb-1">Sistema</div>
-
-            <x-nav-link :href="route('programmer.workflows.upload')" :active="request()->routeIs('programmer.workflows.upload')"
-                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                <i class="fas fa-project-diagram w-6 text-center mr-3"></i>
-                <span class="font-medium">Ejecutar Workflow</span>
-            </x-nav-link>
-
-            <x-nav-link :href="route('programmer.workflows.history')" :active="request()->routeIs('programmer.workflows.history')"
-                class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                <i class="fas fa-history w-6 text-center mr-3"></i>
-                <span class="font-medium">Historial</span>
-            </x-nav-link>
-
         </div>
     </div>
 

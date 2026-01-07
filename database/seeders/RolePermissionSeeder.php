@@ -19,10 +19,6 @@ class RolePermissionSeeder extends Seeder
             // Usuarios
             'manage users',       // Crear/Editar usuarios
 
-            // Catálogo APIs
-            'manage api catalog', // Crear/Editar ApiServices
-            'view api catalog',   // Ver lista de ApiServices
-
             // Clientes
             'view clients',       // Ver listado y detalle
             'create clients',     // Crear clientes
@@ -54,9 +50,6 @@ class RolePermissionSeeder extends Seeder
             'delete clients',
             'restore clients',
             'reassign clients',
-            'view api catalog',
-            // No gestiona usuarios (ver roadmap opción "ver pero no crear")
-            // Para simplificar, le damos acceso básico a usuarios si se requiere, pero por ahora seguimos estrictos.
         ]);
 
         // C. PROGRAMADOR (Ex Analista)
@@ -65,24 +58,7 @@ class RolePermissionSeeder extends Seeder
             'view clients',
             'create clients',
             'edit clients',
-            'reassign clients', // Permiso Agregado for Programador
-            // NO puede borrar ('delete clients')
-            // NO puede restaurar ('restore clients')
-            'view api catalog',
-            'manage credentials',
-        ]);
-
-        // D. OPERADOR (Ex User - Contador)
-        // Gestiona sus propios clientes y credenciales día a día
-        $operador = Role::firstOrCreate(['name' => 'Operador']);
-        $operador->givePermissionTo([
-            'view clients',
-            'create clients',
-            'edit clients',
-            // NO puede borrar ('delete clients')
-            // NO puede restaurar ('restore clients')
-            // NO puede reasignar ('reassign clients')
-            'view api catalog',
+            'reassign clients',
             'manage credentials',
         ]);
 

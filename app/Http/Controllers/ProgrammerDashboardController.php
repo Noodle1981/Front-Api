@@ -18,9 +18,7 @@ class ProgrammerDashboardController extends Controller
     {
         // Global Stats
         $stats = [
-            'total_users' => User::role('Operador')->count(),
             'total_clients' => Client::count(),
-            'workflows_sent' => WorkflowFileBatch::count(),
             'pdf_reports' => WorkflowFileBatch::where('status', 'completed')->count(), 
         ];
 
@@ -39,27 +37,6 @@ class ProgrammerDashboardController extends Controller
             ->count();
         $stats['trend'] = $failedBatches < $lastWeekFailed ? 'improving' : 'declining';
 
-        // Workflow Requests (Pending for the Programmer to see)
-        $pendingRequests = \App\Models\WorkflowRequest::where('status', 'pending')
-            ->with(['user', 'client'])
-            ->latest()
-            ->get();
-
-        // Simplified Users List
-        $users = User::role('Operador')
-            ->withCount('clients')
-            ->get()
-            ->map(function($user) {
-                // Last activity (from batches)
-                $lastBatch = WorkflowFileBatch::where('user_id', $user->id)
-                    ->latest('uploaded_at')
-                    ->first();
-                $user->last_activity = $lastBatch ? $lastBatch->uploaded_at : null;
-                $user->days_inactive = $lastBatch ? now()->diffInDays($lastBatch->uploaded_at) : 999;
-                
-                return $user;
-            });
-
         // Recent Workflows
         $recentBatches = WorkflowFileBatch::with(['workflowType', 'client', 'user'])
             ->latest('uploaded_at')
@@ -68,8 +45,6 @@ class ProgrammerDashboardController extends Controller
 
         return view('programmer.dashboard', compact(
             'stats', 
-            'users', 
-            'pendingRequests',
             'recentBatches'
         ));
     }

@@ -20,101 +20,12 @@
                     <span class="font-medium">Panel Programador</span>
                 </x-nav-link>
 
-                <x-nav-link :href="route('programmer.enterprise.index')" :active="request()->routeIs('programmer.enterprise.*')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-server w-6 text-center mr-3"></i>
-                    <span class="font-medium">Enterprise</span>
-                </x-nav-link>
-
                 <x-nav-link :href="route('programmer.clients.index')" :active="request()->routeIs('programmer.clients.*')"
                     class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
                     <i class="fas fa-building w-6 text-center mr-3"></i>
                     <span class="font-medium">Clientes</span>
                 </x-nav-link>
 
-                <x-nav-link :href="route('programmer.api-dashboard')" :active="request()->routeIs('programmer.api-dashboard')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-tower-broadcast w-6 text-center mr-3"></i>
-                    <span class="font-medium">Monitor APIs</span>
-                </x-nav-link>
-
-                <x-nav-link :href="route('programmer.workflows.requests')" :active="request()->routeIs('programmer.workflows.requests*')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200 text-aurora-cyan">
-                    <i class="fas fa-envelope-open-text w-6 text-center mr-3"></i>
-                    <span class="font-medium">Pedidos de Workflows</span>
-                </x-nav-link>
-
-                <x-nav-link :href="route('programmer.business-rules.index')" :active="request()->routeIs('programmer.business-rules.*')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-code-branch w-6 text-center mr-3"></i>
-                    <span class="font-medium">Reglas de Negocio</span>
-                </x-nav-link>
-            @else
-                {{-- Rutas de OPERADOR (User) --}}
-                <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-chart-line w-6 text-center mr-3"></i>
-                    <span class="font-medium">Dashboard</span>
-                </x-nav-link>
-                
-                <x-nav-link :href="route('clients.index')" :active="request()->routeIs('clients.*')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-building w-6 text-center mr-3"></i>
-                    <span class="font-medium">Clientes</span>
-                </x-nav-link>
-
-                <x-nav-link :href="route('operator.workflows.history')" :active="request()->routeIs('operator.workflows.history')" class="flex items-center space-x-2">
-                    <i class="fas fa-history w-5"></i>
-                    <span class="font-medium">Historial Workflows</span>
-                </x-nav-link>
-
-                <x-nav-link :href="route('operator.workflows.my-requests')" :active="request()->routeIs('operator.workflows.my-requests')" class="flex items-center space-x-2">
-                    <i class="fas fa-clipboard-list w-5"></i>
-                    <span class="font-medium">Mis Pedidos</span>
-                </x-nav-link>
-
-                <x-nav-link :href="route('operator.workflows.request')" :active="request()->routeIs('operator.workflows.request')" class="flex items-center space-x-2">
-                    <i class="fas fa-paper-plane w-5"></i>
-                    <span class="font-medium">Solicitar Workflow</span>
-                </x-nav-link>
-
-                <x-nav-link :href="route('operator.api.status')" :active="request()->routeIs('operator.api.*')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-tower-broadcast w-6 text-center mr-3"></i>
-                    <span class="font-medium">Estado APIs</span>
-                </x-nav-link>
-            @endrole
-
-            <!-- Admin Access (Super Admin Only) -->
-            @role('Super Admin')
-            <div x-data="{ open: false }" class="mt-4">
-                <button @click="open = !open"
-                    class="w-full flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors duration-200 justify-between">
-                    <div class="flex items-center">
-                        <i class="fas fa-shield-alt w-6 text-center mr-3"></i>
-                        <span class="font-medium">Admin</span>
-                    </div>
-                    <i class="fas fa-chevron-down text-xs transform transition-transform"
-                        :class="{'rotate-180': open}"></i>
-                </button>
-                <div x-show="open" class="mt-2 pl-4 space-y-1">
-                    <a href="{{ route('admin.dashboard') }}"
-                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
-                        Dashboard Global
-                    </a>
-                    <a href="{{ route('admin.users.index') }}"
-                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
-                        Usuarios
-                    </a>
-                    <a href="{{ route('admin.api-services.index') }}"
-                        class="block px-4 py-2 text-sm text-gray-400 hover:text-white rounded-md hover:bg-white/5">
-                        Catálogo APIs
-                    </a>
-                </div>
-            </div>
-            @endrole
-
-            @role('Programador')
                 {{-- Workflows Links --}}
                 <x-nav-link :href="route('programmer.workflows.upload')" :active="request()->routeIs('programmer.workflows.upload')"
                     class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
@@ -126,27 +37,6 @@
                     class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
                     <i class="fas fa-history w-6 text-center mr-3"></i>
                     <span class="font-medium">Historial Workflows</span>
-                </x-nav-link>
-
-                <x-nav-link :href="route('programmer.workflows.test')" :active="request()->routeIs('programmer.workflows.test')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-code w-6 text-center mr-3"></i>
-                    <span class="font-medium">Testing</span>
-                </x-nav-link>
-
-                {{-- Sistema - Logs y Mantenimiento (movido desde Admin) --}}
-                <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mt-4 mb-1">Sistema</div>
-
-                <x-nav-link :href="route('programmer.maintenance')" :active="request()->routeIs('programmer.maintenance*')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-tools w-6 text-center mr-3"></i>
-                    <span class="font-medium">Mantenimiento</span>
-                </x-nav-link>
-
-                <x-nav-link :href="route('programmer.logs')" :active="request()->routeIs('programmer.logs')"
-                    class="w-full flex items-center px-4 py-3 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-clipboard-list w-6 text-center mr-3"></i>
-                    <span class="font-medium">Logs</span>
                 </x-nav-link>
             @endrole
         </div>

@@ -1,33 +1,87 @@
 # nuevos requerimientos
 
-## 1. cambio de flujo
+## ARMAR VERSION MÍNIMA EN ESTA RAMA
 
-en http://127.0.0.1:8000/programadores/workflows/upload 
+# Rol Operador
 
-vamos a cambiar
+Eleminar por completo el rol operador, tanto como sus vistas, rutas, web, etc.
 
-son 3 etapas y una etapa de finalizacion que seria la vista del resultado
+# Rol Programador
 
-la etapa 1 Cliente/Sede se mantiene
-la etapa 2 Workflow se mantiene
-la etapa 3 Archivos & Ejecución se hace modificaciones
-la etapa 4 es nueva
+# 1 Panel Programador 
+http://127.0.0.1:8000/programadores/dashboard
 
-Etapa 3 Archivos & Ejecución
+quitar la tarjeta "Pedidos de Workflows Pendientes" y su lógica
 
-Cargue los Archivos Requeridos, aqui se mantiene junto con los tarjetas que se muestran abajo, al momento de cargar el achivo, lo que hace es validar, y luego se puede ejecutar el workflow, cuando se ejecuta el workflow sale el modal con los procesos.
+quitar la tarjeta "Workflows Enviados" y su lógica
 
-lo que vamos a cambiar es que es que al momento de elegir los archivos, en vez de decir validando arhivos y que me muestre el siguiente resultado
+quitar la tabla "Operadores - Vista Detallada" y su lógica
 
-6 archivo(s) seleccionado(s)
-Arhivos correctos
-Campos obligatorios correctos
-Archivos validados.
+# 2 Enterprise
 
-Cuando esa verificación pase, recien se podrá ejecutar el workflow, y al momento de ejecutar el workflow sale el modal con los procesos. El modal debe decir conectando con Servidor de reglas de negocio, y una vez que se conecte, el servidor arroja los resultados y eso se mostrará en una vista nueva que es
+http://127.0.0.1:8000/programadores/enterprise
 
-http://127.0.0.1:8000/programadores/workflows/execution/21/pdf/preview
+quitar todo lo referido a esta vista, rutas, web, tablas, etc.
 
-# 2 cambio de link para acceder a esta funcion
 
-Se llama Cargar Workflows, debemos renombrar por Ejecutar Workflow, se deba cambiar ese nombre en el sidebar.
+# 3 Clientes
+
+http://127.0.0.1:8000/programadores/clientes
+
+Usuario con crud CRUD ( por ahora solo rol administrador y programador)
+
+# 4 Monitor APIs
+
+http://127.0.0.1:8000/programadores/api-dashboard
+
+quitar todo lo referido a esta vista, rutas, web, tablas, etc.
+
+# 5 Pedidos de Workflows
+
+http://127.0.0.1:8000/programadores/workflows/requests
+
+quitar todo lo referido a esta vista, rutas, web, tablas, etc.
+
+# 6 Reglas de Negocio
+
+http://127.0.0.1:8000/programadores/reglas
+
+quitar todo lo referido a esta vista, rutas, web, tablas, etc.
+
+# 7 Testing 
+
+http://127.0.0.1:8000/programadores/workflows/test
+
+quitar todo lo referido a esta vista, rutas, web, tablas, etc.
+
+# 8 Sistema 
+
+http://127.0.0.1:8000/programadores/sistema
+
+quitar todo lo referido a esta vista, rutas, web, tablas, etc.
+
+# 9 Mantenimiento
+
+quitar todo lo referido a esta vista, rutas, web, tablas, etc.
+
+## Rol Administrador
+
+# 1 Servicios Api
+http://127.0.0.1:8000/admin/api-services
+
+quitar todo lo referido a esta vista, rutas, web, tablas, etc.
+
+# 2 quitar link
+
+de Ejecutar Workflow y Historial Workflow
+
+# inicio
+
+http://127.0.0.1:8000/
+
+quitar las dos tarjetas de Administrador y Usuarios
+
+
+## Resolucion final
+
+Una vez que compile la version minima, eleminar documentaciones que no va (lo hago yo), realizar una auditoría total, actualizar documentacion y hacer testing
