@@ -42,9 +42,13 @@ class ResetDemoData extends Command
         $this->info('2️⃣  Seeding Roles & Permissions...');
         Artisan::call('db:seed', ['--class' => 'RolePermissionSeeder'], $this->output);
 
-        // 3. ApiServiceSeeder
-        $this->info('3️⃣  Seeding API Services...');
-        Artisan::call('db:seed', ['--class' => 'ApiServiceSeeder'], $this->output);
+        // 3. Workflow Types
+        $this->info('Seeding Workflow Types...');
+        Artisan::call('db:seed', ['--class' => 'WorkflowTypeSeeder'], $this->output);
+
+        // 3. ApiServiceSeeder - REMOVED (no longer needed in minimal version)
+        // $this->info('Seeding API Services...');
+        // Artisan::call('db:seed', ['--class' => 'ApiServiceSeeder'], $this->output);
 
         // 4. CompleteDemoSeeder
         $this->info('4️⃣  Generating Complete Demo Data (Users, Clients, transactions)...');

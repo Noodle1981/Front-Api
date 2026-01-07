@@ -82,11 +82,9 @@ class ClientController extends Controller
     {
         // 1. Seguridad: Solo el dueño puede ver los detalles.
 
+        $client->load(['parent', 'children']);
 
-        $client->load(['credentials.apiService', 'credentials.endpoints', 'parent', 'children']);
-        $apiServices = \App\Models\ApiService::with('endpoints')->get();
-
-        return view('clients.show', compact('client', 'apiServices'));
+        return view('clients.show', compact('client'));
     }
 
     public function edit(Client $client)
