@@ -81,20 +81,7 @@
                 </div>
 
                 <!-- Productividad -->
-                <div class="bg-white rounded-lg p-4 shadow-sm border border-purple-100">
-                    <div class="flex items-center justify-between">
-                        <div class="p-2 bg-purple-100 rounded-lg">
-                            <i class="fas fa-chart-line text-purple-600 text-xl"></i>
-                        </div>
-                        <span class="text-xs font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
-                            Por operador
-                        </span>
-                    </div>
-                    <div class="mt-3">
-                        <p class="text-3xl font-bold text-gray-900">{{ $stats['productivity'] ?? '15' }}<span class="text-lg text-gray-500">/día</span></p>
-                        <p class="text-sm text-gray-500">Promedio workflows</p>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Barra de comparación visual -->
@@ -142,18 +129,7 @@
                 </div>
             </div>
 
-            <!-- APIs Configuradas -->
-            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6 border-l-4 border-purple-500">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
-                        <i class="fas fa-plug text-xl"></i>
-                    </div>
-                    <div>
-                        <div class="text-gray-500 text-sm font-medium uppercase tracking-wide">APIs Disponibles</div>
-                        <div class="text-2xl font-bold text-gray-900">{{ $stats['totalApis'] ?? 0 }}</div>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Workflows Activos -->
             <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6 border-l-4 border-pink-500">
@@ -250,16 +226,7 @@
                         <span class="text-2xl font-bold text-red-600">{{ $stats['errorsToday'] ?? 2 }}</span>
                     </div>
                     
-                    <div class="flex items-center p-3 bg-blue-50 rounded-lg border border-blue-100">
-                        <div class="p-2 bg-blue-100 rounded-full mr-3">
-                            <i class="fas fa-users text-blue-600"></i>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-900">Operadores activos hoy</p>
-                            <p class="text-xs text-gray-500">Conectados al sistema</p>
-                        </div>
-                        <span class="text-2xl font-bold text-blue-600">{{ $stats['activeOperatorsToday'] ?? 4 }}</span>
-                    </div>
+
                 </div>
             </div>
         </div>
