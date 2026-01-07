@@ -16,12 +16,19 @@ class WorkflowPdfController extends Controller
     {
         // TODO: Replace with actual data from execution->response_data
         // For now, use mock data
-        $data = WorkflowMockService::getMockConciliacionData();
-        
+        $mockData = WorkflowMockService::getMockConciliacionData();
+        $data = $mockData['data'];
+
+        $logoPath = public_path('img/logo.png');
+        $logoData = base64_encode(file_get_contents($logoPath));
+        $logoBase64 = 'data:image/png;base64,' . $logoData;
+
         return view('pdfs.conciliacion.preview', [
             'execution' => $execution,
-            'data' => $data['data'],
-            'metadata' => $data['data']['metadata'],
+            'data' => $data,
+            'metadata' => $data['metadata'],
+            'is_pdf' => false,
+            'logo_base64' => $logoBase64,
         ]);
     }
 
@@ -35,17 +42,23 @@ class WorkflowPdfController extends Controller
         $mockData = WorkflowMockService::getMockConciliacionData();
         $data = $mockData['data'];
         
+        $logoPath = public_path('img/logo.png');
+        $logoData = base64_encode(file_get_contents($logoPath));
+        $logoBase64 = 'data:image/png;base64,' . $logoData;
+
         $pdf = Pdf::loadView('pdfs.conciliacion.main', [
             'execution' => $execution,
             'data' => $data,
             'metadata' => $data['metadata'],
+            'is_pdf' => true,
+            'logo_base64' => $logoBase64,
         ]);
         
-        // Configuración optimizada para Dompdf
+        // Dompdf configuration for better performance and reliability
         $pdf->setPaper('a4', 'portrait');
-        $pdf->setOption('isRemoteEnabled', true);  // Para imágenes/logos externos
-        $pdf->setOption('isHtml5ParserEnabled', true);  // Mejor renderizado HTML5
-        $pdf->setOption('isFontSubsettingEnabled', true);  // Optimizar fuentes
+        $pdf->getDomPDF()->set_option('isHtml5ParserEnabled', true);
+        $pdf->getDomPDF()->set_option('isRemoteEnabled', true);
+        $pdf->getDomPDF()->set_option('defaultFont', 'Arial');
         
         // Nombre de archivo dinámico
         $fecha = str_replace('/', '-', $data['metadata']['fecha']);
