@@ -2,37 +2,20 @@
 
 @section('content')
 <div class="container-fluid">
-    {{-- Header con botones de acción --}}
-    <div class="row mb-4">
+    {{-- Header con título y botón de descarga --}}
+    <div class="row mb-3">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center py-3 px-4 bg-white border-bottom">
                 <div>
-                    <h2 class="mb-0">Vista Previa: Arqueo de Caja</h2>
-                    <p class="text-muted mb-0">
-                        {{ $metadata['sucursal'] }} - {{ $metadata['fecha'] }} - {{ $metadata['turno'] }}
-                    </p>
+                    <h4 class="mb-0 fw-bold">Vista Previa de ARQUEO - {{ $execution->fileBatch->client->name ?? 'Cliente' }} - {{ $execution->fileBatch->branch->name ?? 'Sede' }}</h4>
                 </div>
                 
-                <div class="d-flex gap-2">
+                <div>
                     {{-- Botón: Descargar PDF --}}
                     <a href="{{ route('programmer.workflows.execution.pdf.download', $execution) }}" 
                        class="btn btn-primary">
                         <i class="fas fa-download me-2"></i>
                         Descargar PDF
-                    </a>
-                    
-                    {{-- Botón: Ejecutar Nuevo Workflow --}}
-                    <a href="{{ route('programmer.workflows.upload') }}" 
-                       class="btn btn-success">
-                        <i class="fas fa-play me-2"></i>
-                        Ejecutar Nuevo Workflow
-                    </a>
-                    
-                    {{-- Botón: Volver al Historial --}}
-                    <a href="{{ route('programmer.workflows.history') }}" 
-                       class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>
-                        Volver
                     </a>
                 </div>
             </div>
@@ -54,11 +37,16 @@
         max-width: 1400px;
     }
     
-    .gap-2 {
-        gap: 0.5rem;
+    /* Header limpio */
+    .bg-white {
+        background-color: white;
     }
     
-    /* Botones con iconos */
+    .border-bottom {
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    /* Botón con icono */
     .btn i {
         font-size: 14px;
     }
