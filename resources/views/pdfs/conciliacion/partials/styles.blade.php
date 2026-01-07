@@ -376,4 +376,18 @@
     .bg-blue { background-color: #1f3864; }
     .text-white { color: white; }
     .text-blue { color: #1f3864; }
+
+    /* Estilos para Logo */
+    .logo-container {
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 5px !important;
+    }
+    
+    .logo-img {
+        display: inline-block;
+        max-width: 100%;
+        max-height: 60px;
+        height: auto;
+    }
 </style>

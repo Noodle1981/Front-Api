@@ -37,8 +37,8 @@
             {{-- HEADER: ARQUEO DE CAJA + LOGO --}}
             <tr style="height: 76px">
                 <td class="s0" colspan="5" style="text-align: left; padding: 15px 3px;">ARQUEO DE CAJA</td>
-                <td class="s1" colspan="2">
-                    <img src="{{ asset('img/logo.png') }}" alt="Logo" style="max-height: 70px;">
+                <td class="s5 logo-container" colspan="2">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo" class="logo-img">
                 </td>
             </tr>
             

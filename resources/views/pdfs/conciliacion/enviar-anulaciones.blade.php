@@ -25,8 +25,8 @@
                 <td class="s3" style="background-color: #bdbdbd; color: #1f3864;">HS APERTURA</td>
                 <td class="s2" style="background-color: #1f3864; color: #ffffff;">{{ $metadata['hs_apertura'] }}</td>
                 <td class="s4" colspan="3" rowspan="2" style="background-color: #bdbdbd; color: #1f3864;">{{ $metadata['sucursal'] }}</td>
-                <td class="s5" rowspan="2">
-                    <img src="{{ asset('img/logo.png') }}" alt="Logo" style="max-height: 50px;">
+                <td class="s5 logo-container" rowspan="2">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo" class="logo-img">
                 </td>
             </tr>
             
