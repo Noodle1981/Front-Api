@@ -18,7 +18,7 @@ class WorkflowPdfController extends Controller
         // For now, use mock data
         $data = WorkflowMockService::getMockConciliacionData();
         
-        return view('pdfs.conciliacion.main', [
+        return view('pdfs.conciliacion.preview', [
             'execution' => $execution,
             'data' => $data['data'],
             'metadata' => $data['data']['metadata'],
