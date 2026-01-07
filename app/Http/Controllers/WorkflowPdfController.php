@@ -18,7 +18,7 @@ class WorkflowPdfController extends Controller
         // For now, use mock data
         $data = WorkflowMockService::getMockConciliacionData();
         
-        return view('pdfs.workflow-conciliacion-preview', [
+        return view('pdfs.conciliacion.main', [
             'execution' => $execution,
             'data' => $data['data'],
             'metadata' => $data['data']['metadata'],
@@ -35,15 +35,22 @@ class WorkflowPdfController extends Controller
         $mockData = WorkflowMockService::getMockConciliacionData();
         $data = $mockData['data'];
         
-        $pdf = Pdf::loadView('pdfs.workflow-conciliacion-pdf', [
+        $pdf = Pdf::loadView('pdfs.conciliacion.main', [
             'execution' => $execution,
             'data' => $data,
             'metadata' => $data['metadata'],
         ]);
         
+        // Configuración optimizada para Dompdf
         $pdf->setPaper('a4', 'portrait');
+        $pdf->setOption('isRemoteEnabled', true);  // Para imágenes/logos externos
+        $pdf->setOption('isHtml5ParserEnabled', true);  // Mejor renderizado HTML5
+        $pdf->setOption('isFontSubsettingEnabled', true);  // Optimizar fuentes
         
-        $filename = "conciliacion_{$execution->fileBatch->batch_code}.pdf";
+        // Nombre de archivo dinámico
+        $fecha = str_replace('/', '-', $data['metadata']['fecha']);
+        $sucursal = strtolower(str_replace(' ', '_', $data['metadata']['sucursal']));
+        $filename = "arqueo_caja_{$fecha}_{$sucursal}.pdf";
         
         return $pdf->download($filename);
     }
