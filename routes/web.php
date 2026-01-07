@@ -69,8 +69,8 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
         Route::get('/history', App\Livewire\WorkflowHistoryTable::class)->name('history');
         
         // PDF Routes
-        Route::get('/execution/{execution}/pdf/preview', [App\Http\Controllers\WorkflowPdfController::class, 'preview'])->name('workflows.execution.pdf.preview');
-        Route::get('/execution/{execution}/pdf/download', [App\Http\Controllers\WorkflowPdfController::class, 'download'])->name('workflows.execution.pdf.download');
+        Route::get('/execution/{execution}/pdf/preview', [App\Http\Controllers\WorkflowPdfController::class, 'preview'])->name('execution.pdf.preview');
+        Route::get('/execution/{execution}/pdf/download', [App\Http\Controllers\WorkflowPdfController::class, 'download'])->name('execution.pdf.download');
     });
 });
 

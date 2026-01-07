@@ -361,7 +361,7 @@ class WorkflowFileUploadWizard extends Component
                 \Illuminate\Support\Facades\Log::info('Workflow ejecutado con éxito');
                 
                 session()->flash('success', 'Workflow ejecutado con éxito.');
-                return redirect()->route('programmer.workflows.execution.pdf.preview', $execution);
+                $this->redirect(route('programmer.workflows.execution.pdf.preview', $execution), navigate: true);
             } else {
                 // Update execution with error
                 $execution->update([
