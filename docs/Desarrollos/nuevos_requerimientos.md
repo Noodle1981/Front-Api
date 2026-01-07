@@ -1,87 +1,67 @@
 # nuevos requerimientos
 
-## ARMAR VERSION MÍNIMA EN ESTA RAMA
-
-# Rol Operador
-
-Eleminar por completo el rol operador, tanto como sus vistas, rutas, web, etc.
-
-# Rol Programador
-
-# 1 Panel Programador 
-http://127.0.0.1:8000/programadores/dashboard
-
-quitar la tarjeta "Pedidos de Workflows Pendientes" y su lógica
-
-quitar la tarjeta "Workflows Enviados" y su lógica
-
-quitar la tabla "Operadores - Vista Detallada" y su lógica
-
-# 2 Enterprise
-
-http://127.0.0.1:8000/programadores/enterprise
-
-quitar todo lo referido a esta vista, rutas, web, tablas, etc.
+<tr style="height: 18px">
+                <td class="s2 header-azul">FECHA</td>
+                <td class="s2 header-azul">DIA</td>
+                <td class="s4" colspan="2" rowspan="4"></td>
+                <td class="s2 header-azul" colspan="3">TOTAL VENTAS</td>
+            </tr>
+<tr style="height: 18px">
+                <td class="s5 valor-blanco">12/02/2025</td>
+                <td class="s5 valor-blanco">Martes</td>
+                <td class="s6 valor-blanco large-indicator" colspan="3" rowspan="3">$816,500.00</td>
+            </tr>
+<tr style="height: 18px">
+                <td class="s2 header-azul">TURNO</td>
+                <td class="s2 header-azul">ENCARGADO</td>
+            </tr>
+<tr style="height: 18px">
+                <td class="s5 valor-blanco">MAÑANA</td>
+                <td class="s5 valor-blanco">Felipe</td>
+            </tr>
 
 
-# 3 Clientes
 
-http://127.0.0.1:8000/programadores/clientes
-
-Usuario con crud CRUD ( por ahora solo rol administrador y programador)
-
-# 4 Monitor APIs
-
-http://127.0.0.1:8000/programadores/api-dashboard
-
-quitar todo lo referido a esta vista, rutas, web, tablas, etc.
-
-# 5 Pedidos de Workflows
-
-http://127.0.0.1:8000/programadores/workflows/requests
-
-quitar todo lo referido a esta vista, rutas, web, tablas, etc.
-
-# 6 Reglas de Negocio
-
-http://127.0.0.1:8000/programadores/reglas
-
-quitar todo lo referido a esta vista, rutas, web, tablas, etc.
-
-# 7 Testing 
-
-http://127.0.0.1:8000/programadores/workflows/test
-
-quitar todo lo referido a esta vista, rutas, web, tablas, etc.
-
-# 8 Sistema 
-
-http://127.0.0.1:8000/programadores/sistema
-
-quitar todo lo referido a esta vista, rutas, web, tablas, etc.
-
-# 9 Mantenimiento
-
-quitar todo lo referido a esta vista, rutas, web, tablas, etc.
-
-## Rol Administrador
-
-# 1 Servicios Api
-http://127.0.0.1:8000/admin/api-services
-
-quitar todo lo referido a esta vista, rutas, web, tablas, etc.
-
-# 2 quitar link
-
-de Ejecutar Workflow y Historial Workflow
-
-# inicio
-
-http://127.0.0.1:8000/
-
-quitar las dos tarjetas de Administrador y Usuarios
+en el colspan quiero que sea blanco, pero el borde de arriba y el de abajo desasparecan, y quedaria las tablas separadas 
 
 
-## Resolucion final
+otro, este serian al princio y al final, significa sacar los bordes de arriba y abajo y externos
 
-Una vez que compile la version minima, eleminar documentaciones que no va (lo hago yo), realizar una auditoría total, actualizar documentacion y hacer testing
+<tr style="height: 18px; padding-top: 15px;">
+                <td class="s8" rowspan="2" style="background-color: #ffffff;"></td>
+                <td class="s9 header-azul">CANTIDAD DE TICKETS</td>
+                <td class="s9 header-azul">TICKET PROMEDIO</td>
+                <td class="s9 header-azul">CANTIDAD DE COMENSALES</td>
+                <td class="s9 header-azul" colspan="2">COMENSALES PROMEDIO</td>
+                <td class="s10" rowspan="2" style="background-color: #ffffff;"></td>
+            </tr>
+<tr style="height: 18px">
+                <td class="s5 valor-blanco valor-grande">9</td>
+                <td class="s5 valor-blanco valor-grande">$90,722.22</td>
+                <td class="s5 valor-blanco valor-grande">32</td>
+                <td class="s5 valor-blanco valor-grande" colspan="2">$25,515.63</td>
+            </tr>
+
+Esto es es cambiar el fondo azul y letras blancas
+
+<tr style="height: 28px">
+                <td class="s10" colspan="2">ID Comanda</td>
+                <td class="s10" colspan="2">Camarero Mesa</td>
+                <td class="s10" colspan="2">Producto</td>
+                <td class="s10" colspan="2">Comentario</td>
+                <td class="s11">Hora Anulación</td>
+                <td class="s10">Precio</td>
+            </tr>
+
+
+y esto poner fondo blando y letras negras
+
+
+<tr style="height: 19px">
+                <td class="s12" colspan="2">CMD-123</td>
+                <td class="s12" colspan="2">Juan - Mesa 5</td>
+                <td class="s12" colspan="2">Hamburguesa Completa</td>
+                <td class="s12" colspan="2">Cliente canceló pedido</td>
+                <td class="s12">15:30</td>
+                <td class="s13">$8,500.00</td>
+            </tr>

@@ -52,6 +52,7 @@ class WorkflowMockService
                             'sistema_no_conciliado' => '169,100.00',
                             'diferencia' => '-169,100.00',
                             'porcentaje' => '0.00',
+                            'porcentaje_conciliacion' => '0.00',
                         ],
                         'getnet' => [
                             'real' => '747,740.00',
@@ -60,6 +61,7 @@ class WorkflowMockService
                             'sistema_no_conciliado' => '0.00',
                             'diferencia' => '0.00',
                             'porcentaje' => '0.00',
+                            'porcentaje_conciliacion' => '0.00',
                         ],
                         'efectivo' => [
                             'apertura_caja' => '138,260.00',
@@ -68,6 +70,7 @@ class WorkflowMockService
                             'recuento_real' => '191,060.00',
                             'diferencia' => '191,060.00',
                             'porcentaje' => '0.00',
+                            'porcentaje_conciliacion' => '0.00',
                         ],
                         'cta_cte' => [
                             'sistema' => '0.00',
@@ -95,11 +98,14 @@ class WorkflowMockService
                     'mercado_pago' => [
                         ['importe' => '1,200.00', 'hora' => '16:20', 'detalle' => 'Devolución cliente'],
                     ],
+                    'total_caja_adicion' => '7,500.00',
+                    'total_mercado_pago' => '1,200.00',
                 ],
                 'enviar_no_conciliados' => [
                     'mercado_pago' => [
                         'total_real_no_conciliado' => '5,000.00',
                         'total_sistema_no_conciliado' => '3,500.00',
+                        'total_no_conciliado' => '8,500.00',
                         'items_real' => [
                             ['id_venta' => 'MP-001', 'hora' => '14:30', 'monto' => '2,500.00'],
                             ['id_venta' => 'MP-002', 'hora' => '15:45', 'monto' => '2,500.00'],
@@ -109,14 +115,20 @@ class WorkflowMockService
                         ],
                     ],
                     'getnet' => [
-                        'total_real_no_conciliado' => '0.00',
-                        'total_sistema_no_conciliado' => '0.00',
-                        'items_real' => [],
-                        'items_sistema' => [],
+                        'total_real_no_conciliado' => '100.00',
+                        'total_sistema_no_conciliado' => '100.00',
+                        'total_no_conciliado' => '200.00',
+                        'items_real' => [
+                            ['id_venta' => '1', 'hora' => '12:00', 'monto' => '100.00'],
+                        ],
+                        'items_sistema' => [
+                            ['id_venta' => '1', 'hora' => '12:00', 'monto' => '100.00'],
+                        ],
                     ],
                     'efectivo_cta_cte' => [
                         'total_real_no_conciliado' => '1,500.00',
                         'total_sistema_no_conciliado' => '1,500.00',
+                        'total_no_conciliado' => '3,000.00',
                         'items_real' => [
                             ['id_venta' => 'EF-001', 'hora' => '18:00', 'monto' => '1,500.00'],
                         ],

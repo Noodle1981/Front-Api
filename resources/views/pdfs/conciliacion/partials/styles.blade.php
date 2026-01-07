@@ -56,6 +56,21 @@
     table.waffle th {
         padding: 3px;
         vertical-align: middle;
+        border: none; /* Sin bordes por defecto */
+    }
+    
+    /* Bordes solo en celdas con contenido (clases específicas) */
+    table.waffle td[class^="s"],
+    table.waffle td.s0, table.waffle td.s1, table.waffle td.s2, table.waffle td.s3,
+    table.waffle td.s4, table.waffle td.s5, table.waffle td.s6, table.waffle td.s7,
+    table.waffle td.s8, table.waffle td.s9, table.waffle td.s10, table.waffle td.s11,
+    table.waffle td.s12, table.waffle td.s13, table.waffle td.s14, table.waffle td.s15,
+    table.waffle td.s16, table.waffle td.s17, table.waffle td.s18, table.waffle td.s19,
+    table.waffle td.s20, table.waffle td.s21, table.waffle td.s22, table.waffle td.s23,
+    table.waffle td.s28, table.waffle td.s29, table.waffle td.s30, table.waffle td.s31,
+    table.waffle td.s32, table.waffle td.s33, table.waffle td.s35, table.waffle td.s36,
+    table.waffle td.s38, table.waffle td.s39, table.waffle td.s40 {
+        border: 1px solid #000000;
     }
     
     /* ============================================

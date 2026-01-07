@@ -1,127 +1,131 @@
-{{-- PÁGINA 2: ENVIAR EGRESOS - Detalle de Egresos del Día --}}
+{{-- PÁGINA 2: ENVIAR EGRESOS - Detalle de Egresos --}}
 
 <div class="ritz grid-container" dir="ltr">
     <table class="waffle" cellspacing="0" cellpadding="0">
         <tbody>
-            {{-- HEADER --}}
             <tr style="height: 19px">
-                <td colspan="12"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
             
-            <tr style="height: 26px">
-                <td class="s0" rowspan="3">FECHA</td>
-                <td class="s1" rowspan="3"></td>
-                <td class="s0" rowspan="3">TURNO</td>
-                <td class="s1" rowspan="3"></td>
-                <td class="s2">HS APERTURA</td>
-                <td class="s1"> </td>
-                <td class="s3"></td>
-                <td class="s3 parador-title" colspan="3" rowspan="3">{{ $metadata['sucursal'] }}</td>
-                <td class="s4" colspan="3" rowspan="3"></td>
+            {{-- HEADER: FECHA, TURNO, HORARIOS --}}
+            <tr style="height: 31px">
+                <td class="s0" rowspan="2" style="background-color: #bdbdbd; color: #1f3864;">FECHA</td>
+                <td class="s1" rowspan="2" style="background-color: #1f3864; color: #ffffff;">{{ $metadata['fecha'] }}</td>
+                <td class="s0" rowspan="2" style="background-color: #bdbdbd; color: #1f3864;">TURNO</td>
+                <td class="s2" rowspan="2" style="background-color: #1f3864; color: #ffffff;">{{ $metadata['turno'] }}</td>
+                <td class="s3" style="background-color: #bdbdbd; color: #1f3864;">HS APERTURA</td>
+                <td class="s2" style="background-color: #1f3864; color: #ffffff;">{{ $metadata['hs_apertura'] }}</td>
+                <td class="s4" colspan="2" rowspan="2" style="background-color: #bdbdbd; color: #1f3864;">{{ $metadata['sucursal'] }}</td>
+                <td class="s5" rowspan="2">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo" style="max-height: 60px;">
+                </td>
             </tr>
             
-            <tr style="height: 6px">
-                <td class="s4" colspan="3"> </td>
-            </tr>
-            
-            <tr style="height: 26px">
-                <td class="s2">HS CIERRE</td>
-                <td class="s1"></td>
-                <td class="s3"></td>
+            <tr style="height: 33px">
+                <td class="s3" style="background-color: #bdbdbd; color: #1f3864;">HS CIERRE</td>
+                <td class="s2" style="background-color: #1f3864; color: #ffffff;">{{ $metadata['hs_cierre'] }}</td>
             </tr>
             
             <tr style="height: 1px">
-                <td colspan="12"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
             
-            {{-- TÍTULO: EGRESOS CAJA ADICIÓN --}}
-            <tr style="height: 19px">
-                <td class="s5" colspan="9" rowspan="2" style="font-size: 26pt;">EGRESOS CAJA ADICIÓN</td>
-                <td class="s1" colspan="3" rowspan="2"></td>
+            {{-- EGRESOS CAJA ADICIÓN --}}
+            <tr style="height: 57px">
+                <td class="s6" colspan="8" style="background-color: #bdbdbd; color: #1f3864; font-size: 14pt; font-weight: bold;">EGRESOS CAJA ADICIÓN</td>
+                <td class="s7" style="background-color: #1f3864; color: #ffffff;">${{ $data['enviar_egresos']['total_caja_adicion'] }}</td>
             </tr>
-            
-            <tr style="height: 19px"></tr>
             
             <tr style="height: 1px">
-                <td colspan="12"></td>
+                <td class="s8" colspan="9"></td>
             </tr>
             
-            {{-- HEADERS DE TABLA --}}
             <tr style="height: 19px">
-                <td class="s7" colspan="2">IMPORTE</td>
-                <td class="s7" colspan="2">HORA</td>
-                <td class="s7" colspan="8">DETALLE</td>
+                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">IMPORTE</td>
+                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">HORA</td>
+                <td class="s9" colspan="5" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">DETALLE</td>
             </tr>
             
-            {{-- FILAS DINÁMICAS DE EGRESOS CAJA ADICIÓN --}}
-            @if(isset($data['enviar_egresos']['caja_adicion']) && count($data['enviar_egresos']['caja_adicion']) > 0)
-                @foreach($data['enviar_egresos']['caja_adicion'] as $egreso)
-                <tr style="height: 19px">
-                    <td class="s8" colspan="2">${{ $egreso['importe'] }}</td>
-                    <td class="s8" colspan="2">{{ $egreso['hora'] }}</td>
-                    <td class="s8" colspan="8">{{ $egreso['detalle'] }}</td>
-                </tr>
-                @endforeach
-            @else
-                {{-- Filas vacías si no hay datos --}}
-                @for($i = 0; $i < 10; $i++)
-                <tr style="height: 19px">
-                    <td class="s8" colspan="2"></td>
-                    <td class="s8" colspan="2"></td>
-                    <td class="s8" colspan="8"></td>
-                </tr>
-                @endfor
-            @endif
+            {{-- Filas dinámicas de egresos caja adición --}}
+            @php
+                $maxRows = 10; // Número fijo de filas para mantener layout consistente
+                $itemCount = count($data['enviar_egresos']['caja_adicion']);
+            @endphp
+            
+            @foreach($data['enviar_egresos']['caja_adicion'] as $egreso)
+            <tr style="height: 19px">
+                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;">${{ $egreso['importe'] }}</td>
+                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $egreso['hora'] }}</td>
+                <td class="s10" colspan="5" style="background-color: #ffffff; color: #000000;">{{ $egreso['detalle'] }}</td>
+            </tr>
+            @endforeach
+            
+            {{-- Filas vacías para completar el layout --}}
+            @for($i = $itemCount; $i < $maxRows; $i++)
+            <tr style="height: 19px">
+                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
+                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
+                <td class="s10" colspan="5" style="background-color: #ffffff; color: #000000;"></td>
+            </tr>
+            @endfor
             
             <tr style="height: 1px">
-                <td colspan="12"></td>
+                <td colspan="9" style="background-color: #ffffff;"></td>
             </tr>
             
-            {{-- TÍTULO: EGRESOS MERCADO PAGO --}}
+            {{-- EGRESOS MERCADO PAGO --}}
             <tr style="height: 19px">
-                <td class="s5" colspan="9" rowspan="2" style="font-size: 26pt;">EGRESOS MERCADO PAGO</td>
-                <td class="s1" colspan="3" rowspan="2"></td>
+                <td class="s6" colspan="8" style="background-color: #bdbdbd; color: #1f3864; font-size: 14pt; font-weight: bold;">EGRESOS MERCADO PAGO</td>
+                <td class="s7" style="background-color: #1f3864; color: #ffffff;">${{ $data['enviar_egresos']['total_mercado_pago'] }}</td>
             </tr>
-            
-            <tr style="height: 19px"></tr>
             
             <tr style="height: 1px">
-                <td colspan="12"></td>
+                <td class="s8" colspan="9"></td>
             </tr>
             
-            {{-- HEADERS DE TABLA --}}
             <tr style="height: 19px">
-                <td class="s7" colspan="2">IMPORTE</td>
-                <td class="s7" colspan="2">HORA</td>
-                <td class="s7" colspan="8">DETALLE</td>
+                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">IMPORTE</td>
+                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">HORA</td>
+                <td class="s9" colspan="5" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">DETALLE</td>
             </tr>
             
-            {{-- FILAS DINÁMICAS DE EGRESOS MERCADO PAGO --}}
-            @if(isset($data['enviar_egresos']['mercado_pago']) && count($data['enviar_egresos']['mercado_pago']) > 0)
-                @foreach($data['enviar_egresos']['mercado_pago'] as $egreso)
-                <tr style="height: 19px">
-                    <td class="s8" colspan="2">${{ $egreso['importe'] }}</td>
-                    <td class="s8" colspan="2">{{ $egreso['hora'] }}</td>
-                    <td class="s8" colspan="8">{{ $egreso['detalle'] }}</td>
-                </tr>
-                @endforeach
-            @else
-                {{-- Filas vacías si no hay datos --}}
-                @for($i = 0; $i < 10; $i++)
-                <tr style="height: 19px">
-                    <td class="s8" colspan="2"></td>
-                    <td class="s8" colspan="2"></td>
-                    <td class="s8" colspan="8"></td>
-                </tr>
-                @endfor
-            @endif
+            {{-- Filas dinámicas de egresos mercado pago --}}
+            @php
+                $itemCountMP = count($data['enviar_egresos']['mercado_pago']);
+            @endphp
+            
+            @foreach($data['enviar_egresos']['mercado_pago'] as $egreso)
+            <tr style="height: 19px">
+                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;">${{ $egreso['importe'] }}</td>
+                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $egreso['hora'] }}</td>
+                <td class="s10" colspan="5" style="background-color: #ffffff; color: #000000;">{{ $egreso['detalle'] }}</td>
+            </tr>
+            @endforeach
+            
+            {{-- Filas vacías para completar el layout --}}
+            @for($i = $itemCountMP; $i < $maxRows; $i++)
+            <tr style="height: 19px">
+                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
+                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
+                <td class="s10" colspan="5" style="background-color: #ffffff; color: #000000;"></td>
+            </tr>
+            @endfor
         </tbody>
     </table>
 </div>
-
-{{-- Logo del parador (si existe) --}}
-@if(isset($metadata['logo_base64']))
-<div style="text-align: center; margin-top: 20px;">
-    <img src="{{ $metadata['logo_base64'] }}" style="width: 128px; height: 61px;" alt="Logo">
-</div>
-@endif

@@ -32,7 +32,8 @@
                 "sistema": "0.00",
                 "sistema_no_conciliado": "169,100.00",
                 "diferencia": "-169,100.00",
-                "porcentaje": "0.00"
+                "porcentaje": "0.00",
+                "porcentaje_conciliacion": "0.00"
             },
             "getnet": {
                 "real": "747,740.00",
@@ -40,7 +41,8 @@
                 "sistema": "747,740.00",
                 "sistema_no_conciliado": "0.00",
                 "diferencia": "0.00",
-                "porcentaje": "0.00"
+                "porcentaje": "0.00",
+                "porcentaje_conciliacion": "0.00"
             },
             "efectivo": {
                 "apertura_caja": "138,260.00",
@@ -48,7 +50,8 @@
                 "pagos": "91,100.00",
                 "recuento_real": "191,060.00",
                 "diferencia": "191,060.00",
-                "porcentaje": "0.00"
+                "porcentaje": "0.00",
+                "porcentaje_conciliacion": "0.00"
             },
             "cta_cte": {
                 "sistema": "0.00",
@@ -80,83 +83,89 @@
     "enviar_egresos": {
         "caja_adicion": [
             {
-                "importe": "",
-                "hora": "",
-                "detalle": ""
+                "importe": "100",
+                "hora": "12:00",
+                "detalle": "Detalle 1"
             }
         ],
         "mercado_pago": [
             {
-                "importe": "",
-                "hora": "",
-                "detalle": ""
+                "importe": "100",
+                "hora": "12:00",
+                "detalle": "Detalle 1"
             }
-        ]
+        ],
+        "total_caja_adicion": "100",
+        "total_mercado_pago": "100"
     },
     "enviar_no_conciliados": {
         "mercado_pago": {
-            "total_real_no_conciliado": "",
-            "total_sistema_no_conciliado": "",
+            "total_real_no_conciliado": "100",
+            "total_sistema_no_conciliado": "100",
+            "total_no_conciliado": "200",
             "items_real": [
                 {
-                    "id_venta": "",
-                    "hora": "",
-                    "monto": ""
+                    "id_venta": "1",
+                    "hora": "12:00",
+                    "monto": "100"
                 }
             ],
             "items_sistema": [
                 {
-                    "id_venta": "",
-                    "hora": "",
-                    "monto": ""
+                    "id_venta": "1",
+                    "hora": "12:00",
+                    "monto": "100"
                 }
             ]
         },
         "getnet": {
-            "total_real_no_conciliado": "",
-            "total_sistema_no_conciliado": "",
+            "total_real_no_conciliado": "100",
+            "total_sistema_no_conciliado": "100",
+            "total_no_conciliado": "200",
             "items_real": [
                 {
-                    "id_venta": "",
-                    "hora": "",
-                    "monto": ""
+                    "id_venta": "1",
+                    "hora": "12:00",
+                    "monto": "100"
                 }
             ],
             "items_sistema": [
                 {
-                    "id_venta": "",
-                    "hora": "",
-                    "monto": ""
+                    "id_venta": "1",
+                    "hora": "12:00",
+                    "monto": "100"
                 }
             ]
         },
         "efectivo_cta_cte": {
-            "total_real_no_conciliado": "",
-            "total_sistema_no_conciliado": "",
+            "total_real_no_conciliado": "100",
+            "total_sistema_no_conciliado": "100",
+            "total_no_conciliado": "200",
             "items_real": [
                 {
-                    "id_venta": "",
-                    "hora": "",
-                    "monto": ""
+                    "id_venta": "1",
+                    "hora": "12:00",
+                    "monto": "100"
                 }
             ],
             "items_sistema": [
                 {
-                    "id_venta": "",
-                    "hora": "",
-                    "monto": ""
+                    "id_venta": "1",
+                    "hora": "12:00",
+                    "monto": "100"
                 }
             ]
         }
     },
     "enviar_anulaciones": [
         {
-            "id_comanda": "",
-            "camarero_mesa": "",
-            "producto": "",
-            "comentario": "",
-            "hora_anulacion": "",
-            "precio": ""
+            "id_comanda": "1",
+            "camarero_mesa": "123",
+            "producto": "Producto 1",
+            "comentario": "Comentario 1",
+            "hora_anulacion": "12:00",
+            "precio": "100",
+            "total_anulaciones": "100"
         }
     ]
 }
