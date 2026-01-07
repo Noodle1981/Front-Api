@@ -15,21 +15,21 @@
                 
                 <div class="d-flex gap-2">
                     {{-- Botón: Descargar PDF --}}
-                    <a href="{{ route('programadores.workflows.execution.pdf.download', $execution) }}" 
+                    <a href="{{ route('programmer.workflows.execution.pdf.download', $execution) }}" 
                        class="btn btn-primary">
                         <i class="fas fa-download me-2"></i>
                         Descargar PDF
                     </a>
                     
                     {{-- Botón: Ejecutar Nuevo Workflow --}}
-                    <a href="{{ route('programadores.workflows.index') }}" 
+                    <a href="{{ route('programmer.workflows.upload') }}" 
                        class="btn btn-success">
                         <i class="fas fa-play me-2"></i>
                         Ejecutar Nuevo Workflow
                     </a>
                     
                     {{-- Botón: Volver al Historial --}}
-                    <a href="{{ route('programadores.workflows.history') }}" 
+                    <a href="{{ route('programmer.workflows.history') }}" 
                        class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-2"></i>
                         Volver
