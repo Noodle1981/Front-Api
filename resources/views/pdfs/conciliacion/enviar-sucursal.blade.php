@@ -6,28 +6,28 @@
         padding-top: 15px !important;
     }
     .large-indicator {
-        font-size: 28pt !important;
+        font-weight: bold !important;
         font-weight: bold !important;
     }
     .parador-destacado {
         background-color: #bdbdbd !important;
         font-weight: bold !important;
-        font-size: 20pt !important;
+        font-weight: bold !important;
         padding: 12px 3px !important;
         text-align: center !important;
     }
     .header-azul {
         background-color: #1f3864 !important;
         color: #ffffff !important;
-        font-size: 10pt !important;
+        font-weight: bold !important;
     }
     .valor-blanco {
         background-color: #ffffff !important;
         color: #000000 !important;
-        font-size: 12pt !important;
+        font-weight: bold !important;
     }
     .valor-grande {
-        font-size: 13pt !important;
+        font-weight: bold !important;
     }
 </style>
 
@@ -290,38 +290,60 @@
             </tr>
             
             <tr style="height: 18px">
-                <td class="s25 valor-blanco" colspan="4" rowspan="6">
-                    {{-- Gráfico de ventas por hora --}}
-                    <div style="padding: 10px; text-align: center;">
+                <td class="s25 valor-blanco" colspan="4" rowspan="6" style="vertical-align: top;">
+                    {{-- Gráfico de ventas por hora - Refactorizado para Dompdf --}}
+                    <div style="padding: 5px; text-align: center;">
                         <strong style="color: #1f3864;">Ventas por Hora</strong><br>
                         @php
-                            // Calcular el valor máximo para escalar las barras
                             $maxMonto = max(array_column($data['enviar_sucursal']['ventas_por_hora'], 'monto'));
-                            $maxHeight = 80; // Altura máxima en px
+                            $maxHeight = 40;
                         @endphp
-                        <div style="display: flex; align-items: flex-end; justify-content: center; height: 100px; margin-top: 10px;">
-                            @foreach($data['enviar_sucursal']['ventas_por_hora'] as $venta)
-                                @php
-                                    $altura = ($venta['monto'] / $maxMonto) * $maxHeight;
-                                @endphp
-                                <div style="display: flex; flex-direction: column; align-items: center; margin: 0 5px;">
-                                    <div style="font-size: 8pt; margin-bottom: 2px;">${{ number_format($venta['monto'], 0, ',', '.') }}</div>
-                                    <div style="width: 30px; height: {{ $altura }}px; background-color: #1f3864;"></div>
-                                    <div style="font-size: 8pt; margin-top: 2px;">{{ $venta['hora'] }}</div>
-                                </div>
-                            @endforeach
-                        </div>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                            <tr>
+                                @foreach($data['enviar_sucursal']['ventas_por_hora'] as $venta)
+                                    @php
+                                        $altura = ($venta['monto'] / $maxMonto) * $maxHeight;
+                                    @endphp
+                                    <td style="vertical-align: bottom; text-align: center; border: none; padding: 0 2px;">
+                                        <div style="margin-bottom: 2px; color: #333;">${{ number_format($venta['monto'], 0, ',', '.') }}</div>
+                                        <div style="width: 25px; height: {{ (int)$altura }}px; background-color: #1f3864; margin: 0 auto;"></div>
+                                        <div style="margin-top: 2px; color: #333;">{{ $venta['hora'] }}</div>
+                                    </td>
+                                @endforeach
+                            </tr>
+                        </table>
                     </div>
                 </td>
-                <td class="s25 valor-blanco" colspan="3" rowspan="4">
-                    {{-- Gráfico pastel facturación --}}
-                    <div style="padding: 10px; text-align: center;">
-                        <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(#1f3864 0% 53%, #bdbdbd 53% 100%); margin: 0 auto;"></div>
-                        <div style="margin-top: 10px;">
-                            <strong style="color: #1f3864;">FACTURACIÓN REAL</strong><br>
-                            <span style="font-size: 12pt;">${{ $data['enviar_sucursal']['facturacion']['real'] }}</span><br><br>
-                            <strong style="color: #bdbdbd;">FACTURACIÓN IDEAL</strong><br>
-                            <span style="font-size: 12pt;">${{ $data['enviar_sucursal']['facturacion']['ideal'] }}</span>
+                <td class="s25 valor-blanco" colspan="3" rowspan="4" style="vertical-align: top;">
+                    {{-- Resumen de facturación - Refactorizado para Dompdf --}}
+                    <div style="padding: 5px; text-align: center;">
+                        <strong style="color: #1f3864;">RESUMEN DE FACTURACIÓN</strong><br>
+                        
+                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                            <tr>
+                                <td style="width: 12px; height: 12px; background-color: #1f3864; border: 1px solid #1f3864;"></td>
+                                <td style="padding-left: 5px;"><strong>REAL:</strong> ${{ $data['enviar_sucursal']['facturacion']['real'] }}</td>
+                            </tr>
+                            <tr><td style="height: 5px;" colspan="2"></td></tr>
+                            <tr>
+                                <td style="width: 12px; height: 12px; background-color: #bdbdbd; border: 1px solid #999;"></td>
+                                <td style="padding-left: 5px;"><strong>IDEAL:</strong> ${{ $data['enviar_sucursal']['facturacion']['ideal'] }}</td>
+                            </tr>
+                        </table>
+
+                        @php
+                            $realVal = (float)str_replace(',', '', $data['enviar_sucursal']['facturacion']['real']);
+                            $idealVal = (float)str_replace(',', '', $data['enviar_sucursal']['facturacion']['ideal']);
+                            $porcentaje = $idealVal > 0 ? ($realVal / $idealVal) * 100 : 0;
+                            $porcentajeDisplay = min(100, $porcentaje);
+                        @endphp
+                        
+                        {{-- Barra de progreso horizontal --}}
+                        <div style="width: 100%; height: 12px; background-color: #bdbdbd; margin-top: 10px; border: 1px solid #999;">
+                            <div style="width: {{ (int)$porcentajeDisplay }}%; height: 100%; background-color: #1f3864;"></div>
+                        </div>
+                        <div style="margin-top: 5px; text-align: right; color: #1f3864; font-weight: bold;">
+                            EFICACIA: {{ round($porcentaje, 1) }}%
                         </div>
                     </div>
                 </td>

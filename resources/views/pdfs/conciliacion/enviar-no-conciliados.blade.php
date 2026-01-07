@@ -48,7 +48,7 @@
             
             {{-- MERCADO PAGO NO CONCILIADO --}}
             <tr style="height: 19px">
-                <td class="s6" colspan="8" style="background-color: #bdbdbd; color: #1f3864; font-size: 14pt; font-weight: bold;">MERCADO PAGO NO CONCILIADO</td>
+                <td class="s6" colspan="7" style="background-color: #bdbdbd; color: #1f3864; font-weight: bold;">MERCADO PAGO NO CONCILIADO</td>
                 <td class="s7" style="background-color: #1f3864; color: #ffffff;">${{ $data['enviar_no_conciliados']['mercado_pago']['total_no_conciliado'] }}</td>
             </tr>
             
@@ -95,9 +95,9 @@
             @for($i = 0; $i < $maxItems; $i++)
             <tr style="height: 19px">
                 @if(isset($data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]['id_venta'] }}</td>
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]['hora'] }}</td>
-                    <td class="s12" style="background-color: #ffffff; color: #000000; font-size: 10pt;">${{ $data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]['monto'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]['id_venta'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]['hora'] }}</td>
+                    <td class="s12" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
@@ -105,9 +105,9 @@
                 @endif
                 
                 @if(isset($data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]['id_venta'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]['hora'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000; font-size: 10pt;">${{ $data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]['monto'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]['id_venta'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]['hora'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" style="background-color: #ffffff; color: #000000;"></td>
@@ -130,7 +130,7 @@
             
             {{-- GETNET NO CONCILIADO --}}
             <tr style="height: 19px">
-                <td class="s6" colspan="8" style="background-color: #bdbdbd; color: #1f3864; font-size: 14pt; font-weight: bold;">GETNET NO CONCILIADO</td>
+                <td class="s6" colspan="7" style="background-color: #bdbdbd; color: #1f3864; font-weight: bold;">GETNET NO CONCILIADO</td>
                 <td class="s7" style="background-color: #1f3864; color: #ffffff;">${{ $data['enviar_no_conciliados']['getnet']['total_no_conciliado'] }}</td>
             </tr>
             
@@ -176,9 +176,9 @@
             @for($i = 0; $i < $maxItemsGN; $i++)
             <tr style="height: 19px">
                 @if(isset($data['enviar_no_conciliados']['getnet']['items_real'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['getnet']['items_real'][$i]['id_venta'] }}</td>
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['getnet']['items_real'][$i]['hora'] }}</td>
-                    <td class="s12" style="background-color: #ffffff; color: #000000; font-size: 10pt;">${{ $data['enviar_no_conciliados']['getnet']['items_real'][$i]['monto'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['getnet']['items_real'][$i]['id_venta'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['getnet']['items_real'][$i]['hora'] }}</td>
+                    <td class="s12" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['getnet']['items_real'][$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
@@ -186,9 +186,9 @@
                 @endif
                 
                 @if(isset($data['enviar_no_conciliados']['getnet']['items_sistema'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['getnet']['items_sistema'][$i]['id_venta'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['getnet']['items_sistema'][$i]['hora'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000; font-size: 10pt;">${{ $data['enviar_no_conciliados']['getnet']['items_sistema'][$i]['monto'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['getnet']['items_sistema'][$i]['id_venta'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['getnet']['items_sistema'][$i]['hora'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['getnet']['items_sistema'][$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" style="background-color: #ffffff; color: #000000;"></td>
@@ -211,7 +211,7 @@
             
             {{-- EFECTIVO Y CTA CTE CONCILIADO --}}
             <tr style="height: 19px">
-                <td class="s6" colspan="8" style="background-color: #bdbdbd; color: #1f3864; font-size: 14pt; font-weight: bold;">EFECTIVO Y CTA CTE CONCILIADO</td>
+                <td class="s6" colspan="7" style="background-color: #bdbdbd; color: #1f3864; font-weight: bold;">EFECTIVO Y CTA CTE CONCILIADO</td>
                 <td class="s7" style="background-color: #1f3864; color: #ffffff;">${{ $data['enviar_no_conciliados']['efectivo_cta_cte']['total_no_conciliado'] }}</td>
             </tr>
             
@@ -257,9 +257,9 @@
             @for($i = 0; $i < $maxItemsEF; $i++)
             <tr style="height: 19px">
                 @if(isset($data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]['id_venta'] }}</td>
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]['hora'] }}</td>
-                    <td class="s12" style="background-color: #ffffff; color: #000000; font-size: 10pt;">${{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]['monto'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]['id_venta'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]['hora'] }}</td>
+                    <td class="s12" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
@@ -267,9 +267,9 @@
                 @endif
                 
                 @if(isset($data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]['id_venta'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000; font-size: 10pt;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]['hora'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000; font-size: 10pt;">${{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]['monto'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]['id_venta'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]['hora'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" style="background-color: #ffffff; color: #000000;"></td>

@@ -28,8 +28,8 @@
         }
     </style>
 </head>
-<body style="background: #f5f5f5; padding: 20px 0;">
-    <div class="pdf-preview-container">
+<body style="background: {{ $is_pdf ? 'white' : '#f5f5f5' }}; padding: {{ $is_pdf ? '0' : '20px 0' }};">
+    <div class="pdf-preview-container" style="{{ $is_pdf ? 'padding: 5px; box-shadow: none; max-width: 100%;' : '' }}">
         {{-- ========================================
              PÁGINA 1 DE 4: ENVIAR SUCURSAL
              Resumen general del día

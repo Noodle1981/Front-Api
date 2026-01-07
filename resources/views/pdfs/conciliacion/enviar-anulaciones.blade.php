@@ -50,7 +50,7 @@
             
             {{-- ANULACIONES --}}
             <tr style="height: 31px">
-                <td class="s6" colspan="9" style="background-color: #bdbdbd; color: #1f3864; font-size: 14pt; font-weight: bold;">ANULACIONES</td>
+                <td class="s6" colspan="9" style="background-color: #bdbdbd; color: #1f3864; font-weight: bold;">ANULACIONES</td>
                 <td class="s7" style="background-color: #1f3864; color: #ffffff;">
                     @php
                         $totalAnulaciones = array_sum(array_column($data['enviar_anulaciones'], 'precio'));

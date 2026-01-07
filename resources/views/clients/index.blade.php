@@ -92,10 +92,7 @@
                 <div class="text-xs text-purple-700 uppercase mb-1">Sucursales</div>
                 <div class="text-2xl font-bold text-purple-700">{{ $stats['branches'] }}</div>
             </div>
-            <div class="bg-gradient-to-br from-orange-50 to-orange-100 shadow-lg rounded-lg p-4 border border-orange-200">
-                <div class="text-xs text-orange-700 uppercase mb-1">Con APIs</div>
-                <div class="text-2xl font-bold text-orange-700">{{ $stats['with_apis'] }}</div>
-            </div>
+
         </div>
 
         <div class="mb-6 flex gap-4">
@@ -176,8 +173,8 @@
                                 <td class="p-4 text-right text-base font-medium">
                                     <div class="flex items-center justify-end space-x-4">
                                         <a href="{{ route($routePrefix . '.show', $client) }}"
-                                            class="text-gray-600 hover:text-pink-500 transition" title="Gestionar Integraciones / Ver Detalles">
-                                            <i class="fas fa-plug"></i>
+                                            class="text-gray-600 hover:text-pink-500 transition" title="Ver Detalles">
+                                            <i class="fas fa-eye"></i>
                                         </a>
                                         <a href="{{ route($routePrefix . '.edit', $client) }}"
                                             class="text-gray-600 hover:text-pink-500 transition" title="Editar Cliente">

@@ -48,7 +48,7 @@
             
             {{-- EGRESOS CAJA ADICIÓN --}}
             <tr style="height: 57px">
-                <td class="s6" colspan="8" style="background-color: #bdbdbd; color: #1f3864; font-size: 14pt; font-weight: bold;">EGRESOS CAJA ADICIÓN</td>
+                <td class="s6" colspan="8" style="background-color: #bdbdbd; color: #1f3864; font-weight: bold;">EGRESOS CAJA ADICIÓN</td>
                 <td class="s7" style="background-color: #1f3864; color: #ffffff;">${{ $data['enviar_egresos']['total_caja_adicion'] }}</td>
             </tr>
             
@@ -57,9 +57,9 @@
             </tr>
             
             <tr style="height: 19px">
-                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">IMPORTE</td>
-                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">HORA</td>
-                <td class="s9" colspan="5" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">DETALLE</td>
+                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff;">IMPORTE</td>
+                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff;">HORA</td>
+                <td class="s9" colspan="5" style="background-color: #1f3864; color: #ffffff;">DETALLE</td>
             </tr>
             
             {{-- Filas dinámicas de egresos caja adición --}}
@@ -91,7 +91,7 @@
             
             {{-- EGRESOS MERCADO PAGO --}}
             <tr style="height: 19px">
-                <td class="s6" colspan="8" style="background-color: #bdbdbd; color: #1f3864; font-size: 14pt; font-weight: bold;">EGRESOS MERCADO PAGO</td>
+                <td class="s6" colspan="8" style="background-color: #bdbdbd; color: #1f3864; font-weight: bold;">EGRESOS MERCADO PAGO</td>
                 <td class="s7" style="background-color: #1f3864; color: #ffffff;">${{ $data['enviar_egresos']['total_mercado_pago'] }}</td>
             </tr>
             
@@ -100,9 +100,9 @@
             </tr>
             
             <tr style="height: 19px">
-                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">IMPORTE</td>
-                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">HORA</td>
-                <td class="s9" colspan="5" style="background-color: #1f3864; color: #ffffff; font-size: 10pt;">DETALLE</td>
+                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff;">IMPORTE</td>
+                <td class="s9" colspan="2" style="background-color: #1f3864; color: #ffffff;">HORA</td>
+                <td class="s9" colspan="5" style="background-color: #1f3864; color: #ffffff;">DETALLE</td>
             </tr>
             
             {{-- Filas dinámicas de egresos mercado pago --}}

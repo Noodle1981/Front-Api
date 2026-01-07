@@ -6,8 +6,8 @@
     
     /* Reset y configuración de página */
     @page {
-        margin: 15mm;
-        size: A4 portrait;
+        margin: 1cm;
+        size: legal portrait;
     }
     
     * {
@@ -18,9 +18,9 @@
     
     body {
         font-family: 'Calibri', 'Arial', sans-serif;
-        font-size: 11pt;
+        font-size: 9.5pt;
         color: #000;
-        line-height: 1.2;
+        line-height: 1.15;
     }
     
     /* Page breaks */
@@ -85,7 +85,7 @@
         font-weight: bold;
         text-align: center;
         vertical-align: middle;
-        padding: 8px 3px;
+        padding: 5px 3px;
     }
     
     /* Encabezados secundarios - Gris claro */
@@ -95,7 +95,7 @@
         font-weight: bold;
         text-align: center;
         vertical-align: middle;
-        padding: 8px 3px;
+        padding: 5px 3px;
     }
     
     /* Celdas de datos - Fondo gris */
@@ -132,28 +132,24 @@
     
     /* Títulos grandes */
     .s1, .s4 {
-        font-size: 20pt;
         font-weight: bold;
     }
     
     /* Subtítulos */
     .s11 {
         background-color: #bdbdbd;
-        font-size: 17pt;
         font-weight: bold;
         text-align: center;
     }
     
     /* Valores numéricos grandes */
     .s9 {
-        font-size: 24pt;
         font-weight: normal;
     }
     
     /* Parador - Título muy grande */
     .s3.parador-title {
         background-color: #bdbdbd;
-        font-size: 33pt;
         font-weight: bold;
         text-align: center;
         color: #1f3864;
@@ -172,7 +168,6 @@
     }
     
     .header-bar h1 {
-        font-size: 24pt;
         font-weight: bold;
         margin: 0;
     }
@@ -199,7 +194,6 @@
         font-weight: bold;
         padding: 8px;
         text-align: center;
-        font-size: 9pt;
     }
     
     .info-cell-value {
@@ -207,7 +201,6 @@
         color: black;
         padding: 8px;
         text-align: center;
-        font-size: 9pt;
     }
     
     .total-ventas-label {
@@ -216,7 +209,6 @@
         font-weight: bold;
         padding: 8px;
         text-align: center;
-        font-size: 9pt;
     }
     
     .total-ventas-value {
@@ -224,14 +216,12 @@
         color: black;
         padding: 8px;
         text-align: center;
-        font-size: 14pt;
         font-weight: bold;
     }
     
     .parador-cell {
         background: #bdbdbd;
         color: black;
-        font-size: 20pt;
         font-weight: bold;
         text-align: center;
         padding: 8px;
@@ -247,7 +237,6 @@
         font-weight: bold;
         text-align: center;
         padding: 8px;
-        font-size: 9pt;
         border: 1px solid #fff;
     }
     
@@ -257,7 +246,6 @@
         font-weight: bold;
         text-align: center;
         padding: 8px;
-        font-size: 9pt;
         border: 1px solid #fff;
     }
     
@@ -271,7 +259,6 @@
         font-weight: bold;
         text-align: center;
         padding: 10px;
-        font-size: 16pt;
         border: 1px solid #fff;
     }
     
@@ -279,7 +266,6 @@
         background-color: #1f3864;
         color: white;
         padding: 10px;
-        font-size: 12pt;
         font-weight: bold;
         margin-top: 15px;
         margin-bottom: 10px;
@@ -295,7 +281,6 @@
         padding: 6px;
         border: 1px solid #ddd;
         text-align: center;
-        font-size: 8pt;
     }
     
     .data-cell-gray {
@@ -303,7 +288,6 @@
         padding: 6px;
         border: 1px solid #999;
         text-align: center;
-        font-size: 8pt;
     }
     
     /* ============================================
@@ -316,7 +300,6 @@
         font-weight: bold;
         padding: 6px;
         text-align: center;
-        font-size: 8pt;
     }
     
     .stat-cell-value {
@@ -324,7 +307,6 @@
         color: black;
         padding: 8px;
         text-align: center;
-        font-size: 12pt;
         font-weight: bold;
     }
     
@@ -336,7 +318,6 @@
         background: #1f3864;
         color: white;
         padding: 5px;
-        font-size: 8pt;
         font-weight: bold;
         text-align: center;
     }
@@ -345,7 +326,6 @@
         background: white;
         color: black;
         padding: 6px;
-        font-size: 10pt;
         font-weight: bold;
         text-align: center;
     }

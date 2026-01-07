@@ -5,10 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Client;
-use App\Models\ClientCredential;
-use App\Models\ApiService;
-use App\Models\ApiLog;
-use App\Models\Transaction;
 use App\Models\EmailLog;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -455,36 +451,7 @@ class CompleteDemoSeeder extends Seeder
 
             $this->command->info("  📍 Cliente creado: {$headquarters->company}");
 
-            // Crear credencial AFIP
-            if ($afip) {
-                ClientCredential::create([
-                    'client_id' => $headquarters->id,
-                    'api_service_id' => $afip->id,
-                    'credentials' => [
-                        'cuit' => $clientData['cuit'],
-                        'certificate' => 'demo_cert_' . $headquarters->id,
-                        'private_key' => 'demo_key_' . $headquarters->id,
-                    ],
-                    'is_active' => true,
-                    'execution_frequency' => 'daily',
-                    'alert_email' => $clientData['email'],
-                ]);
-            }
 
-            // Crear credencial Mercado Pago (para algunos clientes)
-            if ($mercadoPago && rand(0, 1)) {
-                ClientCredential::create([
-                    'client_id' => $headquarters->id,
-                    'api_service_id' => $mercadoPago->id,
-                    'credentials' => [
-                        'access_token' => 'APP_USR_' . uniqid(),
-                        'public_key' => 'APP_' . uniqid(),
-                    ],
-                    'is_active' => true,
-                    'execution_frequency' => rand(0, 1) ? 'daily' : 'weekly',
-                    'alert_email' => null,
-                ]);
-            }
 
             // Crear sucursales si existen
             if (isset($clientData['branches'])) {
@@ -512,8 +479,7 @@ class CompleteDemoSeeder extends Seeder
                 }
             }
 
-            // Generar logs y transacciones para este cliente
-            $this->generateLogsAndTransactions($headquarters, $afip, $mercadoPago);
+
         }
 
         $this->command->info('');
@@ -553,35 +519,7 @@ class CompleteDemoSeeder extends Seeder
 
                 $this->command->info("  📍 Sede creada: {$headquarters->company}");
 
-                // Crear credenciales API para la sede
-                if ($afip) {
-                    ClientCredential::create([
-                        'client_id' => $headquarters->id,
-                        'api_service_id' => $afip->id,
-                        'credentials' => [
-                            'cuit' => $clientData['cuit'],
-                            'certificate' => 'demo_cert_' . $headquarters->id,
-                            'private_key' => 'demo_key_' . $headquarters->id,
-                        ],
-                        'is_active' => true,
-                        'execution_frequency' => 'daily',
-                        'alert_email' => $clientData['email'],
-                    ]);
-                }
 
-                if ($mercadoPago && rand(0, 1)) {
-                    ClientCredential::create([
-                        'client_id' => $headquarters->id,
-                        'api_service_id' => $mercadoPago->id,
-                        'credentials' => [
-                            'access_token' => 'APP_USR_' . uniqid(),
-                            'public_key' => 'APP_' . uniqid(),
-                        ],
-                        'is_active' => rand(0, 1),
-                        'execution_frequency' => rand(0, 1) ? 'daily' : 'weekly',
-                        'alert_email' => null,
-                    ]);
-                }
 
                 // Crear sucursales si existen
                 if (isset($clientData['branches'])) {
@@ -609,8 +547,7 @@ class CompleteDemoSeeder extends Seeder
                     }
                 }
 
-                // Generar logs y transacciones para los últimos 30 días
-                $this->generateLogsAndTransactions($headquarters, $afip, $mercadoPago);
+
             }
         }
 
@@ -619,7 +556,7 @@ class CompleteDemoSeeder extends Seeder
         $this->command->info("👥 Total de usuarios: " . User::role('Operador')->count());
         $this->command->info("🏢 Total de clientes (sedes): " . Client::whereNull('parent_id')->count());
         $this->command->info("🏪 Total de sucursales: " . Client::whereNotNull('parent_id')->count());
-        $this->command->info("🔑 Total de credenciales: " . ClientCredential::count());
+
         
         $this->command->info("\n🔐 CREDENCIALES DE ACCESO:");
         $this->command->info("📧 user@example.com / password (Operador con 5 sedes + 4 sucursales)");
@@ -628,55 +565,5 @@ class CompleteDemoSeeder extends Seeder
         $this->command->info("📧 maria.gonzalez@demo.com / password123 (Operador)");
     }
 
-    /**
-     * Generar logs y transacciones de prueba
-     */
-    private function generateLogsAndTransactions($client, $afip, $mercadoPago)
-    {
-        $credentials = $client->credentials;
 
-        foreach ($credentials as $credential) {
-            // Generar logs de los últimos 30 días
-            for ($i = 0; $i < 30; $i++) {
-                $date = Carbon::now()->subDays($i);
-                $logsPerDay = rand(1, 5);
-
-                for ($j = 0; $j < $logsPerDay; $j++) {
-                    $isSuccess = rand(1, 100) > 15; // 85% éxito, 15% error
-                    
-                    $eventTypes = [
-                        'AFIP' => ['Consulta Comprobantes', 'Autorización CAE', 'Consulta Padrón', 'Token Refresh'],
-                        'Mercado Pago' => ['Crear Pago', 'Consultar Pago', 'Webhook Recibido', 'Reembolso'],
-                    ];
-                    
-                    $serviceName = $credential->apiService->name;
-                    $eventType = $eventTypes[$serviceName][array_rand($eventTypes[$serviceName])];
-
-                    $log = ApiLog::create([
-                        'client_id' => $client->id,
-                        'api_service_id' => $credential->api_service_id,
-                        'status' => $isSuccess ? 'success' : (rand(0, 1) ? 'error' : 'warning'),
-                        'event_type' => $eventType,
-                        'details' => $isSuccess ? null : 'Error de conexión: Timeout después de 30 segundos',
-                        'happened_at' => $date->copy()->addHours(rand(8, 18))->addMinutes(rand(0, 59)),
-                    ]);
-
-                    // Crear transacción si fue exitoso
-                    if ($isSuccess && rand(1, 100) > 30) {
-                        Transaction::create([
-                            'client_id' => $client->id,
-                            'api_service_id' => $credential->api_service_id,
-                            'type' => $credential->apiService->name === 'AFIP' ? 'invoice' : 'payment',
-                            'amount' => rand(1000, 50000),
-                            'currency' => 'ARS',
-                            'status' => 'completed',
-                            'description' => 'Transacción de demo generada automáticamente',
-                            'raw_data' => ['demo' => true, 'external_id' => 'TXN_' . uniqid()],
-                            'date_at' => $log->happened_at,
-                        ]);
-                    }
-                }
-            }
-        }
-    }
 }
