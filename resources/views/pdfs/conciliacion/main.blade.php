@@ -10,17 +10,17 @@
     <style>
         /* Container para preview en navegador */
         .pdf-preview-container {
-            width: {{ $is_pdf ? '100%' : '800px' }};
-            margin: {{ $is_pdf ? '0' : '0 auto' }};
-            padding: {{ $is_pdf ? '0' : '20px' }};
+            max-width: 900px;  /* Ancho máximo del PDF */
+            margin: 0 auto;    /* Centrado */
+            padding: 20px;
             background: white;
-            box-shadow: {{ $is_pdf ? 'none' : '0 0 10px rgba(0,0,0,0.1)' }};
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         
         /* Para impresión/PDF, usar todo el ancho */
         @media print {
             .pdf-preview-container {
-                width: 100%;
+                max-width: 100%;
                 margin: 0;
                 padding: 0;
                 box-shadow: none;
@@ -28,7 +28,7 @@
         }
     </style>
 </head>
-<body style="background: {{ $is_pdf ? '#ffffff' : '#f5f5f5' }}; padding: {{ $is_pdf ? '0' : '20px 0' }};">
+<body style="background: #f5f5f5; padding: 20px 0;">
     <div class="pdf-preview-container">
         {{-- ========================================
              PÁGINA 1 DE 4: ENVIAR SUCURSAL
