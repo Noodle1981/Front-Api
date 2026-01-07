@@ -2,24 +2,20 @@
 
 @section('content')
 <div class="container-fluid">
-    {{-- Header con título y botón de descarga --}}
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center py-3 px-4 bg-white border-bottom">
-                <div>
-                    <h4 class="mb-0 fw-bold">Vista Previa de ARQUEO - {{ $execution->fileBatch->client->name ?? 'Cliente' }} - {{ $execution->fileBatch->branch->name ?? 'Sede' }}</h4>
-                </div>
-                
-                <div>
-                    {{-- Botón: Descargar PDF --}}
-                    <a href="{{ route('programmer.workflows.execution.pdf.download', $execution) }}" 
-                       class="btn btn-primary">
-                        <i class="fas fa-download me-2"></i>
-                        Descargar PDF
-                    </a>
-                </div>
-            </div>
-        </div>
+    {{-- Header con título estilo wizard --}}
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            Vista Previa de Arqueo - {{ $execution->fileBatch->client->company ?? 'Cliente' }} - {{ $execution->fileBatch->branch->branch_name ?? 'Sede' }}
+        </h1>
+    </div>
+    
+    {{-- Botón de descarga flotante en la esquina --}}
+    <div class="fixed top-20 right-8 z-50">
+        <a href="{{ route('programmer.workflows.execution.pdf.download', $execution) }}" 
+           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-lg text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200">
+            <i class="fas fa-download mr-2"></i>
+            Descargar PDF
+        </a>
     </div>
     
     {{-- Contenido del PDF (iframe o inclusión directa) --}}
