@@ -19,8 +19,6 @@ class DashboardController extends Controller
         $stats = [
             'activeUsers' => User::where('is_active', true)->count(),
             'totalClients' => Client::count(),
-            'totalApis' => \App\Models\ApiService::count(),
-            // 'activeScripts' => \App\Models\ClientCredential::whereNotNull('execution_time')->count(), // Future Stage 8
             'activeScripts' => 0, // Placeholder
         ];
 
