@@ -94,94 +94,85 @@
 
         </div>
 
-        <!-- Simple File Counter -->
+
+        <!-- Validation Feedback -->
         @if(!empty($uploadedFiles))
-            <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                <div class="flex items-center justify-between">
+            @php
+                $expectedCount = $selectedWorkflow->expected_files_count ?? 0;
+                $uploadedCount = count($uploadedFiles);
+                $hasErrors = !empty($validationErrors);
+                $isValid = !$hasErrors && $uploadedCount === $expectedCount;
+            @endphp
+            
+            <div class="rounded-lg p-4 border {{ $isValid ? 'bg-green-50 border-green-200' : ($hasErrors ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200') }}">
+                <div class="space-y-2">
+                    <!-- File Count -->
                     <div class="flex items-center">
-                        <svg class="w-5 h-5 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
-                        </svg>
-                        <span class="text-sm font-medium text-purple-900">
-                            {{ count($uploadedFiles) }} archivo(s) seleccionado(s)
+                        @if($isValid)
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        @elseif($hasErrors)
+                            <svg class="w-5 h-5 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                        @else
+                            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        @endif
+                        <span class="text-sm font-medium {{ $isValid ? 'text-green-900' : ($hasErrors ? 'text-red-900' : 'text-yellow-900') }}">
+                            {{ $uploadedCount }}/{{ $expectedCount }} archivo(s) cargado(s)
                         </span>
                     </div>
-                    <span class="text-xs text-purple-600">
-                        La validación se realizará al ejecutar el workflow
-                    </span>
-                </div>
-            </div>
-        @endif
-
-        <!-- Detailed Progress Bar (shown during processing) -->
-        @if($isProcessing)
-            <div class="mt-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <svg class="animate-spin h-5 w-5 text-purple-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Procesando Workflow
-                </h3>
-
-                <!-- Progress Bar -->
-                <div class="mb-4">
-                    <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 h-3 rounded-full transition-all duration-500 ease-out"
-                             style="width: {{ $progressPercentage }}%">
-                        </div>
-                    </div>
-                    <div class="text-right mt-1">
-                        <span class="text-sm font-medium text-purple-700">{{ $progressPercentage }}%</span>
-                    </div>
-                </div>
-
-                <!-- Progress Steps -->
-                <div class="space-y-2">
-                    @php
-                        $steps = [
-                            ['label' => 'Validando archivos...', 'threshold' => 5],
-                            ['label' => 'Verificando estructura de archivos...', 'threshold' => 10],
-                            ['label' => 'Analizando tipo de archivo...', 'threshold' => 15],
-                            ['label' => 'Analizando archivos...', 'threshold' => 25],
-                            ['label' => 'Analizando contenido...', 'threshold' => 45],
-                            ['label' => 'Ejecutando workflow...', 'threshold' => 55],
-                            ['label' => 'Esperando respuesta del servidor...', 'threshold' => 75],
-                            ['label' => 'Generando reporte...', 'threshold' => 95],
-                        ];
-                    @endphp
-
-                    @foreach($steps as $step)
-                        @php
-                            $isComplete = $progressPercentage > $step['threshold'];
-                            $isCurrent = $currentProgress === $step['label'];
-                            $isFailed = $failedStep === $step['label'];
-                        @endphp
-                        
-                        @if($isComplete || $isCurrent || $isFailed)
-                            <div class="flex items-center space-x-2 py-2 px-3 rounded-md transition-all duration-300
-                                {{ $isCurrent ? 'bg-white shadow-sm' : '' }}
-                                {{ $isFailed ? 'bg-red-50' : '' }}">
-                                @if($isFailed)
-                                    <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                    </svg>
-                                @elseif($isComplete)
-                                    <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                    </svg>
-                                @elseif($isCurrent)
-                                    <svg class="animate-spin w-5 h-5 text-purple-600 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                @endif
-                                <span class="text-sm {{ $isFailed ? 'font-semibold text-red-700' : ($isCurrent ? 'font-semibold text-purple-700' : 'text-gray-600') }}">
-                                    {{ $step['label'] }}
-                                </span>
-                            </div>
+                    
+                    <!-- Validation Status -->
+                    <div class="flex items-center">
+                        @if($isValid)
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-green-900">Archivos correctos</span>
+                        @elseif($hasErrors)
+                            <svg class="w-5 h-5 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-red-900">Errores de validación</span>
+                        @else
+                            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-yellow-900">Validando archivos...</span>
                         @endif
-                    @endforeach
+                    </div>
+                    
+                    <!-- Required Columns Status -->
+                    @if($isValid)
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-green-900">Campos obligatorios correctos</span>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-green-900">Archivos validados</span>
+                        </div>
+                    @endif
+                    
+                    <!-- Error Details -->
+                    @if($hasErrors)
+                        <div class="mt-2 pt-2 border-t border-red-300">
+                            <ul class="text-xs text-red-700 space-y-1">
+                                @foreach($validationErrors as $error)
+                                    <li>• {{ $error['message'] }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif

@@ -243,12 +243,12 @@ class WorkflowFileUploadWizard extends Component
     }
     
     /**
-     * When files are uploaded, just store them (validation happens on submit)
+     * When files are uploaded, validate them immediately
      */
     public function updatedUploadedFiles(): void
     {
-        // Validation will happen when executing the workflow
-        // This allows the modal to show the validation process
+        // Validate files immediately to provide feedback
+        $this->validateFiles();
     }
     
     /**
@@ -260,13 +260,15 @@ class WorkflowFileUploadWizard extends Component
             $this->isProcessing = true;
             $this->showProgressModal = true; // Open modal
             
-            // Step 1: Validate files
-            $this->updateProgress('Validando archivos...', 5);
+            // Show single progress message
+            $this->updateProgress('Conectando con Servidor de Reglas de Negocio...', 50);
+            
+            // Step 1: Validate files (silently, without progress updates)
             $this->validateFiles();
             
             // Check for validation errors
             if (!empty($this->validationErrors)) {
-                $this->failedStep = 'Validando archivos...';
+                $this->failedStep = 'Validación de archivos';
                 $this->isProcessing = false;
                 // Keep modal open to show the error
                 
@@ -277,17 +279,13 @@ class WorkflowFileUploadWizard extends Component
                 return;
             }
             
-            $this->updateProgress('Verificando estructura de archivos...', 10);
-            
             // Final step validation
             if (!$this->validateCurrentStep()) {
-                $this->failedStep = 'Verificando estructura de archivos...';
+                $this->failedStep = 'Validación de archivos';
                 $this->isProcessing = false;
                 // Keep modal open to show the error
                 return;
             }
-            
-            $this->updateProgress('Analizando tipo de archivo...', 15);
             
             \Illuminate\Support\Facades\Log::info('Iniciando submitBatch para workflow');
             
@@ -302,13 +300,10 @@ class WorkflowFileUploadWizard extends Component
                 'uploaded_at' => now(),
             ]);
             
-            $this->updateProgress('Analizando archivos...', 25);
             \Illuminate\Support\Facades\Log::info('Batch creado: ' . $batch->batch_code);
             
             // 3. Save uploaded files to database with metadata
             $this->saveUploadedFilesToDatabase($batch);
-            
-            $this->updateProgress('Analizando contenido...', 45);
             
             // 4. Update batch status
             $batch->update([
@@ -323,8 +318,6 @@ class WorkflowFileUploadWizard extends Component
                 'status' => 'processing',
                 'started_at' => now(),
             ]);
-
-            $this->updateProgress('Ejecutando workflow...', 55);
 
             // 6. Prepare files for Python API (from uploaded files, not from storage)
             $pythonService = app(WorkflowPythonApiService::class);
@@ -341,16 +334,12 @@ class WorkflowFileUploadWizard extends Component
                     }
                 }
             }
-
-            $this->updateProgress('Esperando respuesta del servidor...', 75);
             
             $result = $pythonService->processFiles(
                 $filesForApi,
                 $workflowType->code ?? 'conciliacion',
                 $execution->id
             );
-
-            $this->updateProgress('Generando reporte...', 95);
 
             if ($result['success']) {
                 // Update execution with success
@@ -368,13 +357,11 @@ class WorkflowFileUploadWizard extends Component
                         $workflowRequest->update(['status' => 'completed']);
                     }
                 }
-
-                $this->updateProgress('¡Completado!', 100);
                 
                 \Illuminate\Support\Facades\Log::info('Workflow ejecutado con éxito');
                 
                 session()->flash('success', 'Workflow ejecutado con éxito.');
-                return redirect()->route('programmer.workflows.history');
+                return redirect()->route('programmer.workflows.execution.pdf.preview', $execution);
             } else {
                 // Update execution with error
                 $execution->update([
@@ -383,14 +370,14 @@ class WorkflowFileUploadWizard extends Component
                     'logs_json' => ['error' => $result['error']],
                 ]);
 
-                $this->failedStep = 'Esperando respuesta del servidor...';
+                $this->failedStep = 'Error en el servidor';
                 $this->isProcessing = false;
                 // Keep modal open to show the error
                 $this->addError('submit', 'Error al procesar: ' . $result['error']);
             }
             
         } catch (\Exception $e) {
-            $this->failedStep = $this->currentProgress ?: 'Error desconocido';
+            $this->failedStep = 'Error desconocido';
             $this->isProcessing = false;
             // Keep modal open to show the error
             \Illuminate\Support\Facades\Log::error('Error en submitBatch: ' . $e->getMessage());

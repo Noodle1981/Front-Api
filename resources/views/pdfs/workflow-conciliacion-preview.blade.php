@@ -69,6 +69,24 @@
         
         .download-btn:hover { background: #218838; }
         
+        .return-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            position: absolute;
+            right: -180px;
+            top: 85px;
+            width: 160px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+        
+        .return-btn:hover { background: #0056b3; }
+        
         .content {
             padding: 30px;
             background: #E7E6E6;
@@ -159,7 +177,12 @@
         /* Responsive */
         @media (max-width: 900px) {
             body { padding-right: 20px; }
-            .download-btn { position: static; width: 100%; margin-bottom: 15px; }
+            .download-btn, .return-btn { 
+                position: static; 
+                width: 100%; 
+                margin-bottom: 15px; 
+                display: block;
+            }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .timeline-row, .timeline-icons-row { grid-template-columns: repeat(2, 1fr); }
             .timeline-bottom-row { grid-template-columns: 1fr; }
@@ -273,6 +296,10 @@
         
         <a href="{{ route('programmer.workflows.execution.pdf.download', $execution) }}" class="download-btn">
             ⬇️ Descargar PDF
+        </a>
+        
+        <a href="{{ route('programmer.workflows.upload') }}" class="return-btn">
+            ← Ejecutar Nuevo Workflow
         </a>
 
         <div class="container">

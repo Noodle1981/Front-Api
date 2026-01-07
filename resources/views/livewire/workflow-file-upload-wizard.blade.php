@@ -90,7 +90,7 @@
                 <button wire:click="submitBatch" type="button"
                     class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     wire:loading.attr="disabled"
-                    @if($isProcessing) disabled @endif>
+                    @if($isProcessing || empty($uploadedFiles)) disabled @endif>
                     @if($isProcessing)
                         <span class="flex items-center">
                             <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
