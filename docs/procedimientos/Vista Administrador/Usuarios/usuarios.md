@@ -1,11 +1,91 @@
 # Gestión de Usuarios
 
-> **Estado:** ✅ OK  
-> **Última actualización:** 2026-01-06
+> **Ruta:** `/admin/users`  
+> **Acceso:** Super Admin, Manager  
+> **Última actualización:** 2026-01-08
+
+---
 
 ## Descripción
 
-Vista para que el administrador gestione usuarios del sistema: programadores y operadores. Permite crear, editar, activar/desactivar usuarios.
+Módulo para gestionar todos los usuarios del sistema: crear, editar, asignar roles y activar/desactivar cuentas.
+
+---
+
+## Acceso
+
+1. Iniciar sesión como **Super Admin** o **Manager**
+2. Menú lateral → **Usuarios**
+
+---
+
+## Funcionalidades
+
+### 1. Lista de Usuarios
+
+| Columna | Descripción |
+|---------|-------------|
+| Nombre | Nombre completo del usuario |
+| Email | Correo electrónico |
+| Rol | Super Admin / Manager / Programador / Operador |
+| Estado | Activo / Inactivo |
+| Clientes | Cantidad de clientes asignados |
+| Acciones | Ver, Editar, Desactivar |
+
+### 2. Crear Usuario
+
+**Ruta:** `/admin/users/create`
+
+Campos:
+- Nombre completo
+- Email
+- Contraseña
+- Rol (selector)
+- Estado activo (checkbox)
+
+### 3. Editar Usuario
+
+**Ruta:** `/admin/users/{id}/edit`
+
+Permite modificar:
+- Datos personales
+- Rol asignado
+- Estado activo/inactivo
+- Reiniciar contraseña
+
+### 4. Ver Detalle
+
+**Ruta:** `/admin/users/{id}`
+
+Muestra:
+- Información del usuario
+- Clientes asignados (si es Operador/Programador)
+- Historial de actividad
+
+---
+
+## Rutas CRUD
+
+| Acción | Ruta | Método |
+|--------|------|--------|
+| Listar | `/admin/users` | GET |
+| Crear | `/admin/users/create` | GET |
+| Guardar | `/admin/users` | POST |
+| Ver | `/admin/users/{id}` | GET |
+| Editar | `/admin/users/{id}/edit` | GET |
+| Actualizar | `/admin/users/{id}` | PUT |
+| Eliminar | `/admin/users/{id}` | DELETE |
+
+---
+
+## Roles del Sistema
+
+| Rol | Descripción | Acceso Principal |
+|-----|-------------|------------------|
+| **Super Admin** | Control total del sistema | `/admin/*` |
+| **Manager** | Administración sin config técnica | `/admin/*` |
+| **Programador** | Crea y ejecuta workflows | `/programadores/*` |
+| **Operador** | Gestiona sus clientes | `/clients` |
 
 ---
 
@@ -13,76 +93,15 @@ Vista para que el administrador gestione usuarios del sistema: programadores y o
 
 | Elemento | Valor |
 |----------|-------|
-| **URL** | `/admin/users` |
-| **Ruta nombrada** | `admin.users.index` |
-| **Controlador** | `App\Http\Controllers\Admin\UserController` |
-| **Vista** | `resources/views/admin/users/index.blade.php` |
-| **Layout** | `layouts/admin` |
-| **Middleware** | `auth`, `role:Super Admin\|Manager` |
+| Controlador | `Admin\UserController` |
+| Modelo | `User` |
+| Sistema de Roles | Spatie Permission |
 
 ---
 
-## Funcionalidades CRUD
+## Reglas de Negocio
 
-| Acción | Ruta | Método | Descripción |
-|--------|------|--------|-------------|
-| Listar | `/admin/users` | GET | Tabla de usuarios |
-| Crear | `/admin/users/create` | GET | Formulario nuevo usuario |
-| Guardar | `/admin/users` | POST | Crear usuario |
-| Ver | `/admin/users/{id}` | GET | Detalle de usuario |
-| Editar | `/admin/users/{id}/edit` | GET | Formulario edición |
-| Actualizar | `/admin/users/{id}` | PUT | Guardar cambios |
-| Eliminar | `/admin/users/{id}` | DELETE | Eliminar usuario |
-
----
-
-## Modelo Relacionado
-
-**Tabla:** `users`
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| `id` | bigint | PK |
-| `name` | string | Nombre completo |
-| `email` | string | Correo electrónico (único) |
-| `password` | string | Contraseña hasheada |
-| `is_active` | boolean | Estado activo/inactivo |
-| `email_verified_at` | timestamp | Verificación de email |
-| `created_at` | timestamp | Fecha de creación |
-| `updated_at` | timestamp | Última modificación |
-
----
-
-## Roles del Sistema
-
-Usando **Spatie Permission**:
-
-| Rol | Descripción |
-|-----|-------------|
-| `Super Admin` | Acceso total al sistema |
-| `Manager` | Administrador con acceso al panel admin |
-| `Programador` | Crea workflows y reglas de negocio |
-| `Operador` | Gestiona clientes y ejecuta workflows |
-
----
-
-## Relaciones
-
-- `User hasMany Client` - Clientes asignados (para Operadores)
-- `User hasMany WorkflowFileBatch` - Lotes de workflows creados
-- `User belongsToMany Role` - Roles asignados (Spatie)
-
----
-
-## Permisos Requeridos
-
-- Rol: `Super Admin` o `Manager`
-- Acceso: Menú "Usuarios" en navegación de administrador
-
----
-
-## Notas
-
-- Al crear un usuario, se debe asignar un rol
-- Los usuarios desactivados no pueden iniciar sesión
+- Un usuario debe tener exactamente un rol asignado
+- Los usuarios inactivos no pueden iniciar sesión
 - No se pueden eliminar usuarios con clientes o workflows asociados
+- Cambiar contraseña requiere confirmación

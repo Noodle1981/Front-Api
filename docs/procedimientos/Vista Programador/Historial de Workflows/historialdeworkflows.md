@@ -1,11 +1,64 @@
-# Historial de Workflows (Programador)
+# Historial de Workflows
 
-> **Estado:** 🔧 MEJORAR (Sprint 3)  
-> **Última actualización:** 2026-01-06
+> **Ruta:** `/programadores/workflows/history`  
+> **Acceso:** Programador, Super Admin
+
+---
 
 ## Descripción
 
-Centro de gestión de todos los workflows ejecutados en el sistema. Permite a los programadores auditar los resultados, ver batches y descargar reportes PDF.
+Centro de gestión de todos los workflows ejecutados. Permite auditar resultados, ver batches y descargar reportes PDF.
+
+---
+
+## Acceso
+
+1. Iniciar sesión como **Programador**
+2. Menú lateral → **Historial de Workflows**
+
+---
+
+## Funcionalidades
+
+### 1. Tabla de Ejecuciones
+
+| Columna | Descripción |
+|---------|-------------|
+| Cliente | Nombre del cliente |
+| Sucursal | Sede/sucursal procesada |
+| Tipo | Tipo de workflow (ej: Conciliación) |
+| Fecha | Fecha de ejecución |
+| Estado | Pendiente / Completado / Error |
+| Acciones | Ver Batch, Preview PDF, Descargar PDF |
+
+### 2. Ver Batch
+
+- **Ruta:** `/programadores/workflows/batch/{id}`
+- Muestra el detalle del batch de archivos cargados
+- Lista archivos procesados con sus metadatos
+- Estado de validación de cada archivo
+
+### 3. Preview PDF
+
+- **Ruta:** `/programadores/workflows/execution/{id}/pdf/preview`
+- Vista previa del reporte en navegador
+- Muestra el PDF completo antes de descargar
+- Botón "Descargar PDF" disponible
+
+### 4. Descargar PDF
+
+- **Ruta:** `/programadores/workflows/execution/{id}/pdf/download`
+- Descarga directa del archivo PDF
+- Nombre formato: `arqueo_caja_{fecha}_{sucursal}.pdf`
+
+---
+
+## Flujo de Uso
+
+```
+Historial → Seleccionar Ejecución → Ver Batch (opcional)
+                                  → Preview PDF → Descargar PDF
+```
 
 ---
 
@@ -13,32 +66,14 @@ Centro de gestión de todos los workflows ejecutados en el sistema. Permite a lo
 
 | Elemento | Valor |
 |----------|-------|
-| **URL** | `/programadores/workflows/history` |
-| **Ruta nombrada** | `programmer.workflows.history` |
-| **Controlador** | `App\Http\Controllers\WorkflowHistoryController@index` |
-| **Componente Livewire** | `App\Livewire\WorkflowHistoryTable` |
-| **Vista** | `resources/views/programmer/workflows/history.blade.php` |
-| **Layout** | `layouts/programmer` |
-| **Middleware** | `auth`, `role:Programador\|Super Admin` |
+| Componente Livewire | `WorkflowHistoryTable` |
+| Controlador Batch | `WorkflowBatchController@show` |
+| Controlador PDF | `WorkflowPdfController@preview/download` |
 
 ---
 
-## Funcionalidades
+## Tablas Relacionadas
 
-- **Auditoría:** Revisión línea por línea de los resultados procesados en cada lote (batch).
-- **Reportes:** Generación de PDF con el resumen de la ejecución.
-- **Preview del PDF:** (Actualmente en proceso de mejora debido a problemas de visualización).
-
----
-
-## Modelo Relacionado
-
-**Tabla:** `workflow_file_batches`
-**Tabla Relacionada:** `workflow_file_results`
-
----
-
-## Permisos Requeridos
-
-- Rol: `Programador` o `Super Admin`.
-- Acceso: Menú "Historial de Workflows".
+- `workflow_file_batches` - Batches de archivos
+- `workflow_executions` - Ejecuciones de workflows
+- `workflow_uploaded_files` - Archivos individuales

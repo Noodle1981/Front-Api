@@ -1,11 +1,58 @@
 # Dashboard Administrador
 
-> **Estado:** ✅ OK (Mejorado en Sprint 3)  
-> **Última actualización:** 2026-01-06
+> **Ruta:** `/admin/dashboard`  
+> **Acceso:** Super Admin, Manager  
+> **Última actualización:** 2026-01-08
+
+---
 
 ## Descripción
 
-Panel principal para administradores/dueños de la consultoría. Muestra una visión global del sistema con énfasis en los **beneficios y ahorros** que genera la plataforma.
+Panel principal para administradores. Visión global del sistema con métricas de usuarios, clientes y workflows.
+
+---
+
+## Acceso
+
+1. Iniciar sesión como **Super Admin** o **Manager**
+2. Redirección automática desde `/dashboard`
+3. O menú lateral → **Dashboard**
+
+---
+
+## Secciones de la Vista
+
+### 1. Métricas Principales (Cards)
+
+| Métrica | Descripción |
+|---------|-------------|
+| **Usuarios Activos** | Total de usuarios con acceso |
+| **Clientes** | Total de clientes en el sistema |
+| **Workflows Ejecutados** | Total de ejecuciones completadas |
+| **Tipos de Workflow** | Cantidad de workflows configurados |
+
+### 2. Distribución por Rol
+
+Gráfico o tabla mostrando:
+- Cantidad de Super Admins
+- Cantidad de Managers
+- Cantidad de Programadores
+- Cantidad de Operadores
+
+### 3. Carga de Clientes por Usuario
+
+Tabla con:
+- Nombre del usuario
+- Rol asignado
+- Cantidad de clientes asignados
+- Última actividad
+
+### 4. Actividad Reciente
+
+Últimos eventos del sistema:
+- Nuevos usuarios creados
+- Workflows ejecutados
+- Clientes agregados
 
 ---
 
@@ -13,66 +60,16 @@ Panel principal para administradores/dueños de la consultoría. Muestra una vis
 
 | Elemento | Valor |
 |----------|-------|
-| **URL** | `/admin/dashboard` |
-| **Ruta nombrada** | `admin.dashboard` |
-| **Controlador** | `App\Http\Controllers\Admin\DashboardController@index` |
-| **Vista** | `resources/views/admin/dashboard.blade.php` |
-| **Layout** | `layouts/admin` |
-| **Middleware** | `auth`, `role:Super Admin\|Manager` |
+| Controlador | `Admin\DashboardController@index` |
+| Vista | `admin/dashboard.blade.php` |
+| Middleware | `auth`, `role:Super Admin|Manager` |
 
 ---
 
-## Secciones de la Vista
+## Navegación Disponible
 
-### 1. Beneficios del Sistema (Nuevo)
-Sección destacada que muestra:
-- ⏱️ **Tiempo ahorrado** - Horas vs trabajo manual
-- 📊 **Workflows ejecutados** - Cantidad del mes
-- 💰 **Costo evitado** - Estimación en $
-- 📈 **Productividad** - Promedio por operador
-- 📊 **Barra de eficiencia** - % más rápido vs manual
-
-### 2. Métricas Básicas
-- Usuarios activos
-- Clientes totales
-- APIs disponibles
-- Tipos de Workflow
-
-### 3. Carga de Clientes por Usuario
-Tabla con usuarios y cantidad de clientes asignados.
-
-### 4. Actividad Reciente
-- Workflows exitosos hoy
-- Errores del día
-- Operadores activos
-
----
-
-## Datos del Controlador
-
-El controlador pasa las siguientes variables a la vista:
-
-```php
-$stats = [
-    'activeUsers' => User::where('is_active', true)->count(),
-    'totalClients' => Client::count(),
-    'totalApis' => ApiService::count(),
-    // ... otras estadísticas
-];
-
-$usersWithClients = User::withCount('clients')->get();
-```
-
----
-
-## Permisos Requeridos
-
-- Rol: `Super Admin` o `Manager`
-- Acceso: Navegación lateral de administrador
-
----
-
-## Notas
-
-- Los datos de "Beneficios del Sistema" actualmente usan valores de ejemplo (`?? valor`)
-- En futuro se conectarán a estadísticas reales basadas en workflows ejecutados
+| Destino | Ruta |
+|---------|------|
+| Dashboard | `/admin/dashboard` |
+| Usuarios | `/admin/users` |
+| Perfil | `/profile` |

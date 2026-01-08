@@ -1,5 +1,26 @@
 # Sistema Configurable de Workflows
 
+> **Estado:** 📋 PROPUESTA DE IMPLEMENTACIÓN FUTURA  
+> **Prioridad:** Media  
+> **Última actualización:** 2026-01-08
+
+---
+
+## Resumen Ejecutivo
+
+Este documento propone un sistema para configurar workflows **sin tocar código**, permitiendo a administradores definir tipos de workflows, archivos requeridos y columnas desde una interfaz web.
+
+### Estado Actual vs Propuesto
+
+| Aspecto | Estado Actual | Propuesta |
+|---------|---------------|-----------|
+| Tipos de workflow | Hardcoded (solo Conciliación) | Configurable desde UI |
+| Archivos requeridos | Definidos en código | Definidos en BD |
+| Columnas | En tablas de BD | CRUD desde admin panel |
+| Agregar workflow | Requiere desarrollo | Sin código, desde UI |
+
+---
+
 ## Análisis: ¿Generador de Workflows vs Reglas de Negocio?
 
 ### Diferencias Clave
@@ -28,100 +49,30 @@
 
 ---
 
-## Concepto del Sistema
-
-El sistema permite configurar workflows **sin tocar código**, definiendo:
-
-1. ✅ Tipos de workflows disponibles
-2. ✅ Archivos requeridos por workflow
-3. ✅ Columnas necesarias por archivo
-4. ✅ Columnas obligatorias vs opcionales
-5. ✅ Todo desde interfaz web
-
-### Flujo Completo
-
-```mermaid
-graph TD
-    A[Admin configura Workflow en UI] --> B[Define archivos necesarios]
-    B --> C[Define columnas por archivo]
-    C --> D[Guarda en BD]
-    
-    E[Usuario carga archivos] --> F[Laravel valida estructura]
-    F --> G{¿Estructura válida?}
-    G -->|No| H[Mostrar errores]
-    G -->|Sí| I[Enviar a Servidor Python]
-    
-    I --> J[Python aplica reglas de negocio]
-    J --> K[Devuelve resultados]
-    K --> L[Laravel genera PDF]
-```
-
----
-
 ## Arquitectura de Base de Datos
 
-### Tabla: `workflow_types`
+### Tablas Existentes (Ya Implementadas)
 
-Define los tipos de workflows disponibles:
-
-```php
-Schema::create('workflow_types', function (Blueprint $table) {
-    $table->id();
-    $table->string('name')->unique(); // "Conciliación", "Inventario"
-    $table->string('slug')->unique(); // "conciliacion", "inventario"
-    $table->text('description')->nullable();
-    $table->boolean('is_active')->default(true);
-    $table->string('python_endpoint')->nullable(); // URL del servidor Python
-    $table->timestamps();
-});
+```
+✅ workflow_types           - Tipos de workflow
+✅ workflow_file_definitions - Definición de archivos por workflow
+✅ workflow_required_columns - Columnas requeridas por archivo
+✅ workflow_file_batches     - Batches de archivos cargados
+✅ workflow_uploaded_files   - Archivos individuales
+✅ workflow_executions       - Ejecuciones de workflows
 ```
 
-### Tabla: `workflow_file_definitions`
+### Lo que Falta: Interfaz de Administración
 
-Define qué archivos se esperan para cada workflow:
-
-```php
-Schema::create('workflow_file_definitions', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('workflow_type_id')->constrained()->onDelete('cascade');
-    $table->string('file_key'); // "turnos", "reporte_ventas"
-    $table->string('display_name'); // "Turnos", "Reporte de Ventas"
-    $table->text('description')->nullable();
-    $table->integer('order')->default(0);
-    $table->boolean('is_required')->default(true);
-    $table->timestamps();
-    
-    $table->unique(['workflow_type_id', 'file_key']);
-});
-```
-
-### Tabla: `workflow_required_columns`
-
-Define las columnas requeridas para cada archivo:
-
-```php
-Schema::create('workflow_required_columns', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('file_definition_id')
-        ->constrained('workflow_file_definitions')
-        ->onDelete('cascade');
-    $table->string('column_name'); // "Fecha Apertura"
-    $table->string('column_name_normalized'); // "fecha apertura"
-    $table->boolean('is_required')->default(true);
-    $table->integer('order')->default(0);
-    $table->text('description')->nullable();
-    $table->enum('data_type', ['string', 'number', 'date', 'boolean'])->nullable();
-    $table->timestamps();
-});
-```
+Actualmente las tablas existen pero se gestionan solo por seeders/código. La propuesta es crear una UI para administrarlas.
 
 ---
 
-## Interfaz de Administración
+## Interfaz de Administración (Propuesta)
 
 ### Vista Principal: Gestión de Workflows
 
-**Ruta:** `/admin/workflows/generator`
+**Ruta propuesta:** `/admin/workflows/generator`
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -132,7 +83,6 @@ Schema::create('workflow_required_columns', function (Blueprint $table) {
 │                                                              │
 │ ▼ Conciliación                          ✅ Activo [Editar] │
 │   Descripción: Conciliación de datos financieros            │
-│   Servidor Python: http://python:5000/api/workflow/execute │
 │   Archivos requeridos: 6                                     │
 │                                                              │
 │   ┌──────────────────────────────────────────────┐          │
@@ -152,153 +102,26 @@ Schema::create('workflow_required_columns', function (Blueprint $table) {
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Editor de Archivo
+### Editor de Columnas
 
-**Ruta:** `/admin/workflows/generator/{workflow}/files/{file}/edit`
+**Ruta propuesta:** `/admin/workflows/generator/{workflow}/files/{file}/edit`
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ ✏️ Editar Definición: Turnos (Conciliación)                 │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│ Clave del archivo: [turnos                ]                │
-│ Nombre visible:    [Turnos                ]                │
-│ Descripción:       [Archivo de turnos de caja]             │
-│ ☑️ Archivo obligatorio                                       │
-│                                                              │
 │ ── Columnas Requeridas ──────────────────────────────────   │
 │                                                              │
-│ 1. ✅ Fecha Apertura                                         │
-│    Tipo: Fecha          Obligatoria ☑️    [🗑️]             │
-│                                                              │
-│ 2. ✅ Hs Ap. Caja                                            │
-│    Tipo: Texto          Obligatoria ☑️    [🗑️]             │
-│                                                              │
-│ 3. ✅ Fecha Cierre                                           │
-│    Tipo: Fecha          Obligatoria ☑️    [🗑️]             │
-│                                                              │
-│ 4. ✅ TURNO                                                  │
-│    Tipo: Número         Obligatoria ☑️    [🗑️]             │
-│                                                              │
-│ 5. ✅ Encargado                                              │
-│    Tipo: Texto          Obligatoria ☑️    [🗑️]             │
-│                                                              │
-│ 6. ⚪ Supervisor                                             │
-│    Tipo: Texto          Opcional ☐        [🗑️]             │
-│    Desc: Supervisor del turno (si aplica)                   │
+│ 1. ✅ Fecha Apertura       [Obligatoria ☑️]    [🗑️]        │
+│ 2. ✅ Hs Ap. Caja          [Obligatoria ☑️]    [🗑️]        │
+│ 3. ✅ TURNO                [Obligatoria ☑️]    [🗑️]        │
+│ 4. ⚪ Supervisor           [Opcional ☐]        [🗑️]        │
 │                                                              │
 │ [+ Agregar Columna]                                         │
 │                                                              │
-│ ┌────────────────────────────────────────────┐              │
-│ │ 💡 Tip: Las columnas obligatorias deben   │              │
-│ │ estar presentes para validación exitosa.  │              │
-│ └────────────────────────────────────────────┘              │
-│                                                              │
 │ [Cancelar]                          [Guardar Cambios]       │
 └─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Integración con Sistema Actual
-
-### 1. Wizard de Carga
-
-El wizard debe consultar workflows disponibles:
-
-```php
-// WorkflowFileUploadWizard.php
-public function mount()
-{
-    // Cargar workflows activos desde BD
-    $this->availableWorkflows = WorkflowType::where('is_active', true)
-        ->with('fileDefinitions.requiredColumns')
-        ->get();
-}
-
-public function selectWorkflow($workflowId)
-{
-    $this->selectedWorkflow = WorkflowType::with('fileDefinitions.requiredColumns')
-        ->findOrFail($workflowId);
-    
-    // Mostrar archivos requeridos dinámicamente
-    $this->requiredFiles = $this->selectedWorkflow->fileDefinitions()
-        ->where('is_required', true)
-        ->get();
-}
-```
-
-### 2. Validación Dinámica
-
-```php
-// FileValidationService.php
-public function validateBatch(WorkflowType $workflowType, array $uploadedFiles): array
-{
-    $fileDefinitions = $workflowType->fileDefinitions()
-        ->with('requiredColumns')
-        ->where('is_required', true)
-        ->get();
-    
-    $results = [
-        'valid' => true,
-        'matched_files' => [],
-        'errors' => []
-    ];
-    
-    foreach ($uploadedFiles as $file) {
-        $columns = $this->extractColumns($file);
-        $matchedDef = $this->matchFileDefinition($columns, $fileDefinitions);
-        
-        if (!$matchedDef) {
-            $results['valid'] = false;
-            $results['errors'][] = "Archivo no identificado: {$file->getClientOriginalName()}";
-            continue;
-        }
-        
-        // Validar columnas obligatorias
-        $missingColumns = $this->checkRequiredColumns($columns, $matchedDef);
-        if (!empty($missingColumns)) {
-            $results['valid'] = false;
-            $results['errors'][] = "Faltan columnas en {$matchedDef->display_name}: " . implode(', ', $missingColumns);
-        }
-    }
-    
-    return $results;
-}
-```
-
-### 3. Envío a Servidor Python
-
-```php
-// WorkflowExecutionService.php
-public function executeWorkflow(WorkflowFileBatch $batch): WorkflowExecution
-{
-    $workflowType = $batch->workflowType;
-    
-    // Preparar datos para Python
-    $payload = [
-        'workflow_type' => $workflowType->slug,
-        'batch_id' => $batch->id,
-        'files' => $this->prepareFilesData($batch),
-        'client' => [
-            'id' => $batch->client_id,
-            'company' => $batch->client->company
-        ]
-    ];
-    
-    // Llamar al endpoint configurado
-    $response = Http::post($workflowType->python_endpoint, $payload);
-    
-    // Guardar respuesta
-    $execution = WorkflowExecution::create([
-        'file_batch_id' => $batch->id,
-        'executed_by' => auth()->id(),
-        'status' => $response->successful() ? 'success' : 'failed',
-        'response_data' => $response->json()
-    ]);
-    
-    return $execution;
-}
 ```
 
 ---
@@ -307,263 +130,76 @@ public function executeWorkflow(WorkflowFileBatch $batch): WorkflowExecution
 
 ### Caso 1: Crear Workflow "Inventario"
 
-**Pasos:**
+**Tiempo estimado:** 15-20 minutos
 
 1. Ir a `/admin/workflows/generator`
 2. Click "Crear Nuevo Workflow"
-3. Completar:
-   - Nombre: "Inventario"
-   - Slug: "inventario"
-   - Descripción: "Control mensual de inventario"
-   - Endpoint Python: `http://python:5000/api/workflow/inventario`
-4. Guardar
+3. Completar: Nombre, Slug, Descripción
+4. Agregar archivos con sus columnas
+5. Guardar
 
-5. Agregar archivos:
-   - **Stock Actual**
-     - Columnas: Código, Producto, Cantidad, Ubicación
-   - **Movimientos**
-     - Columnas: Fecha, Tipo, Código, Cantidad
-   - **Ajustes**
-     - Columnas: Código, Cantidad_Anterior, Cantidad_Nueva, Motivo
-
-6. Guardar configuración
-
-**Resultado:** El workflow "Inventario" aparece en el wizard de carga
-
-**Tiempo:** 15-20 minutos
-
----
+**Resultado:** El workflow aparece en el wizard de carga sin código.
 
 ### Caso 2: Agregar Columna a Workflow Existente
 
-**Situación:** Necesitas validar "Supervisor" en Turnos
+**Tiempo estimado:** 2 minutos
 
-**Pasos:**
-
-1. Ir a `/admin/workflows/generator`
-2. Expandir "Conciliación"
-3. Click "Editar" en "Turnos"
-4. Click "+ Agregar Columna"
-5. Completar:
-   - Nombre: "Supervisor"
-   - Tipo: Texto
-   - ☑️ Obligatoria
-   - Descripción: "Supervisor del turno"
-6. Guardar
-
-**Resultado:** Próximas cargas validarán la columna "Supervisor"
-
-**Tiempo:** 2 minutos
-
----
-
-### Caso 3: Hacer Columna Opcional
-
-**Situación:** "Cantidad de comensales" no siempre está presente
-
-**Pasos:**
-
-1. Editar "Turnos"
-2. Encontrar "Cantidad de comensales"
-3. Desmarcar "Obligatoria"
+1. Editar archivo existente
+2. Click "+ Agregar Columna"
+3. Definir nombre y si es obligatoria
 4. Guardar
 
-**Resultado:** El archivo es válido con o sin esta columna
-
-**Tiempo:** 1 minuto
-
----
-
-## Diferencia con Reglas de Negocio
-
-### Generador de Workflows (Este Sistema)
-
-```
-Responsabilidad: VALIDACIÓN ESTRUCTURAL
-
-Input:  Archivos Excel cargados
-Output: ✅ Archivos válidos / ❌ Errores de estructura
-
-Ejemplo:
-- ✅ "Turnos.xlsx tiene todas las columnas requeridas"
-- ❌ "Falta columna 'Encargado' en Turnos.xlsx"
-```
-
-### Reglas de Negocio (Servidor Python)
-
-```
-Responsabilidad: LÓGICA DE NEGOCIO
-
-Input:  JSON con datos validados
-Output: JSON con resultados calculados
-
-Ejemplo:
-- Calcular diferencias de caja
-- Detectar descuadres
-- Generar estadísticas
-- Aplicar fórmulas complejas
-```
-
-### Separación Clara
-
-```mermaid
-graph LR
-    A[Usuario carga archivos] --> B[Generador de Workflows]
-    B -->|Valida estructura| C{¿Válido?}
-    C -->|No| D[Mostrar errores]
-    C -->|Sí| E[Enviar a Python]
-    E --> F[Reglas de Negocio]
-    F -->|Procesa datos| G[Devuelve resultados]
-    G --> H[Laravel genera PDF]
-```
-
----
-
-## Implementación Recomendada
-
-### Fase 1: Migración de Datos (Actual → Configurable)
-
-```php
-// Migrar configuración hardcodeada a BD
-public function migrateCurrentWorkflow()
-{
-    $conciliacion = WorkflowType::create([
-        'name' => 'Conciliación',
-        'slug' => 'conciliacion',
-        'description' => 'Conciliación de datos financieros',
-        'python_endpoint' => env('PYTHON_WORKFLOW_URL'),
-        'is_active' => true
-    ]);
-    
-    // Migrar definiciones de archivos actuales
-    $this->migrateFileDefinitions($conciliacion);
-}
-```
-
-### Fase 2: Interfaz de Administración
-
-```php
-// Livewire Component
-class WorkflowGenerator extends Component
-{
-    public $workflows;
-    public $selectedWorkflow;
-    
-    public function mount()
-    {
-        $this->workflows = WorkflowType::with('fileDefinitions')->get();
-    }
-    
-    public function createWorkflow()
-    {
-        // Modal para crear workflow
-    }
-    
-    public function editWorkflow($workflowId)
-    {
-        $this->selectedWorkflow = WorkflowType::find($workflowId);
-    }
-}
-```
-
-### Fase 3: Validación Dinámica
-
-```php
-// Actualizar FileValidationService
-public function validateBatch(WorkflowFileBatch $batch): array
-{
-    $workflowType = $batch->workflowType;
-    
-    // Cargar configuración desde BD
-    $fileDefinitions = $workflowType->fileDefinitions()
-        ->with('requiredColumns')
-        ->get();
-    
-    // Validar dinámicamente
-    return $this->validateAgainstDefinitions($batch->files, $fileDefinitions);
-}
-```
-
----
-
-## Ventajas del Sistema
-
-### Para Programadores
-
-✅ **Sin deploys** - Cambios inmediatos desde UI
-✅ **Flexible** - Agregar/quitar columnas fácilmente
-✅ **Documentado** - Cada columna con descripción
-✅ **Versionado** - Historial de cambios (futuro)
-
-### Para el Negocio
-
-✅ **Escalable** - Agregar workflows sin desarrollo
-✅ **Adaptable** - Responde rápido a cambios
-✅ **Auditable** - Registro de modificaciones
-✅ **Mantenible** - No requiere programador para ajustes
-
-### Para el Sistema
-
-✅ **Separación de responsabilidades** - Laravel valida, Python procesa
-✅ **Modular** - Cada workflow es independiente
-✅ **Extensible** - Fácil agregar funcionalidades
-✅ **Testeable** - Validación separada de lógica
+**Resultado:** Próximas cargas validan la nueva columna.
 
 ---
 
 ## Roadmap de Implementación
 
-### Corto Plazo (1-2 semanas)
+### ✅ Fase 0: Fundación (COMPLETADO)
+- [x] Migraciones de tablas workflow_*
+- [x] Modelos con relaciones
+- [x] Seeder de workflow "Conciliación"
+- [x] Wizard de carga funcionando
+- [x] Validación por columnas
 
-- [ ] Crear migraciones de tablas
-- [ ] Migrar configuración actual a BD
-- [ ] Crear componente Livewire básico
-- [ ] Implementar validación dinámica
+### 📋 Fase 1: UI de Administración (PENDIENTE)
+- [ ] Componente Livewire `WorkflowGenerator`
+- [ ] CRUD de tipos de workflow
+- [ ] CRUD de archivos por workflow
+- [ ] CRUD de columnas por archivo
 
-### Mediano Plazo (1 mes)
+### 📋 Fase 2: Validación Dinámica (PENDIENTE)
+- [ ] Migrar hardcoded → consulta BD
+- [ ] Actualizar `FileValidationService`
+- [ ] Tests de integración
 
-- [ ] Interfaz completa de administración
-- [ ] CRUD de workflows
-- [ ] CRUD de archivos
-- [ ] CRUD de columnas
-
-### Largo Plazo (2-3 meses)
-
+### 📋 Fase 3: Mejoras (FUTURO)
 - [ ] Versionado de configuraciones
-- [ ] Importar/exportar configuraciones
-- [ ] Templates de workflows
+- [ ] Importar/exportar workflows
+- [ ] Templates predefinidos
 - [ ] Validaciones avanzadas (regex, rangos)
+
+---
+
+## Ventajas del Sistema
+
+### Para el Negocio
+- ✅ **Escalable** - Agregar workflows sin desarrollo
+- ✅ **Adaptable** - Responde rápido a cambios del cliente
+- ✅ **Auditable** - Registro de modificaciones
+
+### Para el Equipo Técnico
+- ✅ **Sin deploys** - Cambios inmediatos desde UI
+- ✅ **Separación clara** - Laravel valida, Python procesa
+- ✅ **Modular** - Cada workflow es independiente
 
 ---
 
 ## Conclusión
 
-### ✅ Recomendación Final
+### ✅ Recomendación
 
-**SÍ, implementar como sistema separado:**
+Este sistema es **100% implementable** porque la fundación ya existe (tablas, modelos, relaciones). Solo falta construir la interfaz de administración.
 
-1. **Generador de Workflows** (Laravel)
-   - Configura estructura de archivos
-   - Valida columnas presentes
-   - Interfaz de administración
+**Prioridad sugerida:** Después de estabilizar el MVP actual, implementar cuando se necesite agregar un segundo tipo de workflow.
 
-2. **Reglas de Negocio** (Servidor Python)
-   - Recibe datos validados
-   - Aplica lógica compleja
-   - Devuelve resultados
-
-### Beneficios de la Separación
-
-- ✅ Cada sistema hace lo que mejor sabe hacer
-- ✅ Laravel no se mete con lógica de negocio
-- ✅ Python no se preocupa por validación estructural
-- ✅ Fácil de mantener y escalar
-- ✅ Responsabilidades claras
-
-### Implementación Futura
-
-Este sistema es **100% implementable** y se recomienda para:
-- Agregar nuevos workflows rápidamente
-- Adaptar workflows existentes sin código
-- Escalar el sistema sin límites técnicos
-- Mantener configuración centralizada y auditable

@@ -74,11 +74,6 @@
             </tr>
             
             {{-- Filas dinámicas de anulaciones --}}
-            @php
-                $maxRows = 10; // Número fijo de filas para mantener layout consistente
-                $itemCount = count($data['enviar_anulaciones']);
-            @endphp
-            
             @foreach($data['enviar_anulaciones'] as $anulacion)
             <tr style="height: 19px">
                 <td class="s12" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $anulacion['id_comanda'] }}</td>
@@ -89,18 +84,6 @@
                 <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $anulacion['precio'] }}</td>
             </tr>
             @endforeach
-            
-            {{-- Filas vacías para completar el layout --}}
-            @for($i = $itemCount; $i < $maxRows; $i++)
-            <tr style="height: 19px">
-                <td class="s12" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
-                <td class="s12" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
-                <td class="s12" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
-                <td class="s12" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
-                <td class="s12" style="background-color: #ffffff; color: #000000;"></td>
-                <td class="s12" style="background-color: #ffffff; color: #000000;"></td>
-            </tr>
-            @endfor
         </tbody>
     </table>
 </div>

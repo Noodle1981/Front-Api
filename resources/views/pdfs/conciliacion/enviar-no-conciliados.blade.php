@@ -86,28 +86,27 @@
             
             {{-- Filas dinámicas Mercado Pago --}}
             @php
-                $maxRows = 7;
-                $realCount = count($data['enviar_no_conciliados']['mercado_pago']['items_real']);
-                $sistemaCount = count($data['enviar_no_conciliados']['mercado_pago']['items_sistema']);
-                $maxItems = max($realCount, $sistemaCount, $maxRows);
+                $realItems = $data['enviar_no_conciliados']['mercado_pago']['items_real'];
+                $sistemaItems = $data['enviar_no_conciliados']['mercado_pago']['items_sistema'];
+                $maxItems = max(count($realItems), count($sistemaItems));
             @endphp
             
             @for($i = 0; $i < $maxItems; $i++)
             <tr style="height: 19px">
-                @if(isset($data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]['id_venta'] }}</td>
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]['hora'] }}</td>
-                    <td class="s12" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['mercado_pago']['items_real'][$i]['monto'] }}</td>
+                @if(isset($realItems[$i]))
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $realItems[$i]['id_venta'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $realItems[$i]['hora'] }}</td>
+                    <td class="s12" style="background-color: #ffffff; color: #000000;">${{ $realItems[$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" style="background-color: #ffffff; color: #000000;"></td>
                 @endif
                 
-                @if(isset($data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]['id_venta'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]['hora'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['mercado_pago']['items_sistema'][$i]['monto'] }}</td>
+                @if(isset($sistemaItems[$i]))
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $sistemaItems[$i]['id_venta'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">{{ $sistemaItems[$i]['hora'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $sistemaItems[$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" style="background-color: #ffffff; color: #000000;"></td>
@@ -168,27 +167,27 @@
             
             {{-- Filas dinámicas Getnet --}}
             @php
-                $realCountGN = count($data['enviar_no_conciliados']['getnet']['items_real']);
-                $sistemaCountGN = count($data['enviar_no_conciliados']['getnet']['items_sistema']);
-                $maxItemsGN = max($realCountGN, $sistemaCountGN, $maxRows);
+                $realItemsGN = $data['enviar_no_conciliados']['getnet']['items_real'];
+                $sistemaItemsGN = $data['enviar_no_conciliados']['getnet']['items_sistema'];
+                $maxItemsGN = max(count($realItemsGN), count($sistemaItemsGN));
             @endphp
             
             @for($i = 0; $i < $maxItemsGN; $i++)
             <tr style="height: 19px">
-                @if(isset($data['enviar_no_conciliados']['getnet']['items_real'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['getnet']['items_real'][$i]['id_venta'] }}</td>
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['getnet']['items_real'][$i]['hora'] }}</td>
-                    <td class="s12" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['getnet']['items_real'][$i]['monto'] }}</td>
+                @if(isset($realItemsGN[$i]))
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $realItemsGN[$i]['id_venta'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $realItemsGN[$i]['hora'] }}</td>
+                    <td class="s12" style="background-color: #ffffff; color: #000000;">${{ $realItemsGN[$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" style="background-color: #ffffff; color: #000000;"></td>
                 @endif
                 
-                @if(isset($data['enviar_no_conciliados']['getnet']['items_sistema'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['getnet']['items_sistema'][$i]['id_venta'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['getnet']['items_sistema'][$i]['hora'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['getnet']['items_sistema'][$i]['monto'] }}</td>
+                @if(isset($sistemaItemsGN[$i]))
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $sistemaItemsGN[$i]['id_venta'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">{{ $sistemaItemsGN[$i]['hora'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $sistemaItemsGN[$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" style="background-color: #ffffff; color: #000000;"></td>
@@ -249,27 +248,27 @@
             
             {{-- Filas dinámicas Efectivo/Cta Cte --}}
             @php
-                $realCountEF = count($data['enviar_no_conciliados']['efectivo_cta_cte']['items_real']);
-                $sistemaCountEF = count($data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema']);
-                $maxItemsEF = max($realCountEF, $sistemaCountEF, $maxRows);
+                $realItemsEF = $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'];
+                $sistemaItemsEF = $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'];
+                $maxItemsEF = max(count($realItemsEF), count($sistemaItemsEF));
             @endphp
             
             @for($i = 0; $i < $maxItemsEF; $i++)
             <tr style="height: 19px">
-                @if(isset($data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]['id_venta'] }}</td>
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]['hora'] }}</td>
-                    <td class="s12" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_real'][$i]['monto'] }}</td>
+                @if(isset($realItemsEF[$i]))
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $realItemsEF[$i]['id_venta'] }}</td>
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $realItemsEF[$i]['hora'] }}</td>
+                    <td class="s12" style="background-color: #ffffff; color: #000000;">${{ $realItemsEF[$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" style="background-color: #ffffff; color: #000000;"></td>
                 @endif
                 
-                @if(isset($data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]))
-                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]['id_venta'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000;">{{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]['hora'] }}</td>
-                    <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $data['enviar_no_conciliados']['efectivo_cta_cte']['items_sistema'][$i]['monto'] }}</td>
+                @if(isset($sistemaItemsEF[$i]))
+                    <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;">{{ $sistemaItemsEF[$i]['id_venta'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">{{ $sistemaItemsEF[$i]['hora'] }}</td>
+                    <td class="s13" style="background-color: #ffffff; color: #000000;">${{ $sistemaItemsEF[$i]['monto'] }}</td>
                 @else
                     <td class="s11" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
                     <td class="s11" style="background-color: #ffffff; color: #000000;"></td>

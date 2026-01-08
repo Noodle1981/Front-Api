@@ -4,8 +4,8 @@ description: Contexto completo del proyecto Front-API para cualquier IA o desarr
 
 # 🚀 Front-API - Contexto del Proyecto
 
-> **Sistema SaaS de Gestión de Clientes, Integraciones API y Automatización de Workflows**  
-> Última actualización: Enero 2026 | Versión: 2.1.0
+> **Sistema SaaS de Gestión de Clientes y Automatización de Workflows**  
+> Última actualización: Enero 2026 | Versión: 2.2.0
 
 ---
 
@@ -139,29 +139,24 @@ Front-Api/
 ### Públicas
 - `/` - Landing page
 - `/login` - Inicio de sesión
-- `/register` - Registro
-
-### Operador (Usuarios)
-- `/dashboard` - Dashboard principal
-- `/clients` - Gestión de clientes (CRUD)
-- `/api-dashboard` - Monitor de APIs
 
 ### Programador
 - `/programadores/dashboard` - Dashboard KPIs
-- `/programadores/enterprise` - Gestión de integraciones API
-- `/programadores/services/{id}/endpoints` - Gestor de endpoints
-- `/programadores/clients` - Clientes (vista avanzada)
-- `/programadores/reglas` - Reglas de negocio ETL
-- `/programadores/reglas/create` - Workflow Builder (Python + Monaco)
-- `/programadores/api-dashboard` - Monitor de APIs
+- `/programadores/clients` - Clientes (vista lectura)
+- `/programadores/clients/{id}/transfer` - Transferir cliente
+- `/programadores/workflows/upload` - Wizard de carga de archivos
+- `/programadores/workflows/batch/{id}` - Detalle de batch
+- `/programadores/workflows/history` - Historial de ejecuciones
+- `/programadores/workflows/execution/{id}/pdf/preview` - Preview PDF
+- `/programadores/workflows/execution/{id}/pdf/download` - Descargar PDF
 
 ### Administrador
 - `/admin/dashboard` - Panel administrativo
 - `/admin/users` - Gestión de usuarios
-- `/admin/api-services` - Catálogo de APIs
-- `/admin/email-settings` - Configuración SMTP
-- `/admin/email-history` - Historial de emails
-- `/admin/maintenance` - Mantenimiento del sistema
+
+### Compartidas
+- `/profile` - Editar perfil de usuario
+- `/clients` - Gestión de clientes (CRUD)
 
 ---
 
@@ -171,20 +166,13 @@ Front-Api/
 |--------|-------|-------------|
 | `User` | `users` | Usuarios del sistema |
 | `Client` | `clients` | Clientes (sedes/sucursales con `parent_id`) |
-| `ClientCredential` | `client_credentials` | Credenciales API por cliente |
-| `ApiService` | `api_services` | Catálogo de servicios API |
-| `Endpoint` | `endpoints` | Endpoints por servicio API |
-| `ApiLog` | `api_logs` | Registro de ejecuciones API |
-| `Transaction` | `transactions` | Transacciones exitosas |
-| `BusinessRule` | `business_rules` | Reglas de negocio ETL |
-| `Workflow` | `workflows` | Workflows compuestos |
+| `Branch` | `branches` | Sucursales de clientes |
 | `WorkflowType` | `workflow_types` | Tipos de workflow (Conciliación, etc.) |
 | `WorkflowFileDefinition` | `workflow_file_definitions` | Definiciones de archivos por workflow |
 | `WorkflowRequiredColumn` | `workflow_required_columns` | Columnas requeridas por archivo |
 | `WorkflowFileBatch` | `workflow_file_batches` | Batches de archivos cargados |
 | `WorkflowUploadedFile` | `workflow_uploaded_files` | Archivos individuales cargados |
 | `WorkflowExecution` | `workflow_executions` | Ejecuciones de workflows |
-| `EmailLog` | `email_logs` | Historial de emails enviados |
 
 ---
 

@@ -63,11 +63,6 @@
             </tr>
             
             {{-- Filas dinámicas de egresos caja adición --}}
-            @php
-                $maxRows = 10; // Número fijo de filas para mantener layout consistente
-                $itemCount = count($data['enviar_egresos']['caja_adicion']);
-            @endphp
-            
             @foreach($data['enviar_egresos']['caja_adicion'] as $egreso)
             <tr style="height: 19px">
                 <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;">${{ $egreso['importe'] }}</td>
@@ -75,15 +70,6 @@
                 <td class="s10" colspan="5" style="background-color: #ffffff; color: #000000;">{{ $egreso['detalle'] }}</td>
             </tr>
             @endforeach
-            
-            {{-- Filas vacías para completar el layout --}}
-            @for($i = $itemCount; $i < $maxRows; $i++)
-            <tr style="height: 19px">
-                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
-                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
-                <td class="s10" colspan="5" style="background-color: #ffffff; color: #000000;"></td>
-            </tr>
-            @endfor
             
             <tr style="height: 1px">
                 <td colspan="9" style="background-color: #ffffff;"></td>
@@ -106,10 +92,6 @@
             </tr>
             
             {{-- Filas dinámicas de egresos mercado pago --}}
-            @php
-                $itemCountMP = count($data['enviar_egresos']['mercado_pago']);
-            @endphp
-            
             @foreach($data['enviar_egresos']['mercado_pago'] as $egreso)
             <tr style="height: 19px">
                 <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;">${{ $egreso['importe'] }}</td>
@@ -117,15 +99,6 @@
                 <td class="s10" colspan="5" style="background-color: #ffffff; color: #000000;">{{ $egreso['detalle'] }}</td>
             </tr>
             @endforeach
-            
-            {{-- Filas vacías para completar el layout --}}
-            @for($i = $itemCountMP; $i < $maxRows; $i++)
-            <tr style="height: 19px">
-                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
-                <td class="s10" colspan="2" style="background-color: #ffffff; color: #000000;"></td>
-                <td class="s10" colspan="5" style="background-color: #ffffff; color: #000000;"></td>
-            </tr>
-            @endfor
         </tbody>
     </table>
 </div>

@@ -65,35 +65,7 @@
                         Accede a tu información financiera, reportes y gestión administrativa en un solo lugar.
                     </p>
 
-                    <!-- Role Cards -->
-                    <div class="grid md:grid-cols-2 gap-8 mb-12 max-w-4xl mx-auto">
 
-                        {{-- Admin Card --}}
-                        <a href="{{ route('login') }}"
-                            class="group block bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-brand-accent/50 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1">
-                            <div
-                                class="text-4xl mb-4 text-brand-accent group-hover:scale-110 transition-transform duration-300">
-                                <i class="fas fa-user-shield"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold mb-3 text-white">Administrador</h3>
-                            <p class="text-sm text-gray-400 group-hover:text-gray-200 transition-colors">
-                                Control total del sistema, gestión de usuarios y métricas globales.
-                            </p>
-                        </a>
-
-                        {{-- User Card --}}
-                        <a href="{{ route('login') }}"
-                            class="group block bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 hover:border-brand-accent/50 hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1">
-                            <div
-                                class="text-4xl mb-4 text-brand-accent group-hover:scale-110 transition-transform duration-300">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold mb-3 text-white">Usuario</h3>
-                            <p class="text-sm text-gray-400 group-hover:text-gray-200 transition-colors">
-                                Consulta tus estados de cuenta, servicios y actualizaciones.
-                            </p>
-                        </a>
-                    </div>
 
                     {{-- CTA Button --}}
                     <a href="{{ route('login') }}" class="inline-block">
