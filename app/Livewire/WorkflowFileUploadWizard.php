@@ -342,13 +342,20 @@ class WorkflowFileUploadWizard extends Component
             );
 
             if ($result['success']) {
-                // Update execution with success
+                // Get mock data to save to json_response (simulating what Python API will return)
+                $mockData = \App\Services\WorkflowMockService::getMockConciliacionData();
+
+                // Update execution with success AND json_response
                 $execution->update([
                     'status' => 'success',
+                    'json_response' => $mockData['data'], // SAVE THE DATA HERE!
                     'excel_response_path' => $result['excel_path'],
                     'completed_at' => now(),
                     'execution_time_ms' => now()->diffInMilliseconds($execution->started_at),
                 ]);
+
+                // Update batch status to completed
+                $batch->update(['status' => 'completed']);
 
                 // Update workflow request status if this execution came from a request
                 if ($this->workflowRequestId) {

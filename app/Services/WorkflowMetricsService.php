@@ -12,20 +12,35 @@ use Illuminate\Support\Collection;
 class WorkflowMetricsService
 {
     /**
-     * Get summary metrics for the dashboard
+     * Get summary metrics for the dashboard with filtering
      */
-    public function getDashboardMetrics(): array
+    public function getDashboardMetrics(array $filters = []): array
     {
-        $executions = WorkflowExecution::where('status', 'completed')
-            ->whereNotNull('json_response')
-            ->get();
+        $query = WorkflowExecution::whereIn('status', ['completed', 'success'])
+            ->whereNotNull('json_response');
+
+        // Apply filters
+        if (!empty($filters['month'])) {
+            $query->whereMonth('completed_at', $filters['month']);
+        }
+        if (!empty($filters['year'])) {
+            $query->whereYear('completed_at', $filters['year']);
+        }
+
+        $executions = $query->get();
 
         if ($executions->isEmpty()) {
             return $this->getEmptyMetrics();
         }
 
+        $totalExecutions = $executions->count();
+        
+        // Settings for "Hours Saved" calculation
+        $manualTimePerHourPerWorkflow = 2.5; // 2.5 hours saved per workflow
+        $hourlyRate = 15.0; // Estimated cost per hour saved (USD)
+
         return [
-            'total_executions' => $executions->count(),
+            'total_executions' => $totalExecutions,
             'total_tickets' => $this->sumFromExecutions($executions, 'enviar_sucursal.parador.cantidad_tickets'),
             'total_ventas' => $this->sumMoneyFromExecutions($executions, 'enviar_sucursal.total_ventas'),
             'total_comensales' => $this->sumFromExecutions($executions, 'enviar_sucursal.parador.cantidad_comensales'),
@@ -34,6 +49,11 @@ class WorkflowMetricsService
             'avg_conciliacion_getnet' => $this->avgFromExecutions($executions, 'enviar_sucursal.diferencias_caja.getnet.porcentaje_conciliacion'),
             'avg_conciliacion_efectivo' => $this->avgFromExecutions($executions, 'enviar_sucursal.diferencias_caja.efectivo.porcentaje_conciliacion'),
             'last_execution' => $executions->sortByDesc('completed_at')->first(),
+            
+            // Benefits / ROI Metrics
+            'hours_saved' => round($totalExecutions * $manualTimePerHourPerWorkflow, 1),
+            'cost_saved' => round($totalExecutions * $manualTimePerHourPerWorkflow * $hourlyRate, 2),
+            'efficiency_gain' => 95, // System takes seconds vs 2.5 hours
         ];
     }
 
@@ -42,7 +62,7 @@ class WorkflowMetricsService
      */
     public function getMetricsByPeriod(string $period = 'month'): array
     {
-        $query = WorkflowExecution::where('status', 'completed')
+        $query = WorkflowExecution::whereIn('status', ['completed', 'success'])
             ->whereNotNull('json_response');
 
         switch ($period) {
@@ -159,6 +179,9 @@ class WorkflowMetricsService
             'avg_conciliacion_getnet' => 0,
             'avg_conciliacion_efectivo' => 0,
             'last_execution' => null,
+            'hours_saved' => 0,
+            'cost_saved' => 0,
+            'efficiency_gain' => 0,
         ];
     }
 

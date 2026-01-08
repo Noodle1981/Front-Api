@@ -64,12 +64,6 @@
                     <i class="fas fa-user-edit mr-2"></i> Mi Perfil
                 </a>
 
-                {{-- Toggle to User View (Optional, nice to have for Admins) --}}
-                <a href="{{ route('dashboard') }}"
-                    class="block px-4 py-3 text-sm text-green-400 hover:text-green-300 hover:bg-white/5 border-b border-white/5">
-                    <i class="fas fa-exchange-alt mr-2"></i> Vista Usuario
-                </a>
-
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"

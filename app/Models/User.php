@@ -51,4 +51,9 @@ class User extends Authenticatable
         return $this->hasMany(Client::class);
     }
 
+    public function workflowBatches(): HasMany
+    {
+        return $this->hasMany(WorkflowFileBatch::class);
+    }
+
 }

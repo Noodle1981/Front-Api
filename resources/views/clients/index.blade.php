@@ -1,23 +1,29 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <span>{{ __('Clientes') }}</span>
-            <a href="{{ route('clients.create') }}">
-                <x-primary-button>
-                    <i class="fas fa-user-plus mr-2"></i>
-                    Crear Nuevo Cliente
-                </x-primary-button>
-            </a>
-        </div>
-    </x-slot>
-
     @if (session('success'))
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-4">
             <x-auth-session-status :status="session('success')" />
         </div>
     @endif
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 pt-6">
+        <!-- Premium Header -->
+        <div class="bg-gradient-to-r from-brand-dark to-brand-light rounded-2xl shadow-xl p-8 text-white overflow-hidden relative border-b-4 border-brand-accent/30 mb-6">
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <h2 class="text-3xl font-black mb-1 flex items-center">
+                        <i class="fas fa-users mr-3 text-brand-accent"></i> GESTIÓN DE CLIENTES
+                    </h2>
+                    <p class="text-blue-100 opacity-80 font-medium">Administración centralizada de base de datos, sedes y estados operativos.</p>
+                </div>
+                
+                <a href="{{ route('clients.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-brand-accent to-yellow-400 hover:from-white hover:to-white text-brand-dark rounded-xl font-black text-xs uppercase tracking-widest shadow-lg transition-all transform hover:scale-105">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Crear Nuevo Cliente
+                </a>
+            </div>
+            <!-- Decoración de fondo -->
+            <i class="fas fa-address-book absolute right-[-20px] top-[-10px] text-white/5 text-9xl rotate-12"></i>
+        </div>
         {{-- Determine Route Prefix for Role-Based Navigation --}}
         @php
             $routePrefix = auth()->user()->hasRole('Programador') ? 'programmer.clients' : 'clients';

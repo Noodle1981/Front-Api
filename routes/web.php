@@ -75,9 +75,6 @@ Route::middleware(['auth', 'role:Super Admin|Manager'])->prefix('admin')->name('
 
     // Gestión de usuarios
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
-
-    // Gestión de Servicios API
-    Route::resource('api-services', App\Http\Controllers\Admin\ApiServiceController::class);
 });
 
 require __DIR__ . '/auth.php';
