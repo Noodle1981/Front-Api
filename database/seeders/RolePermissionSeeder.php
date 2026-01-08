@@ -62,6 +62,14 @@ class RolePermissionSeeder extends Seeder
             'manage credentials',
         ]);
 
+        // D. OPERADOR (Usuario básico)
+        $operador = Role::firstOrCreate(['name' => 'Operador']);
+        $operador->givePermissionTo([
+            'view clients',
+            'create clients',
+            'edit clients',
+        ]);
+
         // 4. Asignar Super Admin al primer usuario (si existe)
         $user = User::first();
         if ($user) {
