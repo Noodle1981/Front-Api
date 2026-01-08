@@ -12,8 +12,8 @@ trait BelongsToUser
      */
     public function scopeForCurrentUser($query)
     {
-        // Si es Admin o Analista (Inspector), ve todo.
-        if (auth()->user()->isAdmin() || auth()->user()->hasRole('Analista')) {
+        // Si es Admin o Programador (Ex Analista), ve todo.
+        if (auth()->user()->isAdmin() || auth()->user()->hasRole(['Analista', 'Programador'])) {
             return $query;
         }
         // Si es Usuario normal, solo lo suyo
@@ -39,7 +39,7 @@ trait BelongsToUser
      */
     public function scopeForUserStats($query)
     {
-        if (!auth()->user()->isAdmin()) {
+        if (!auth()->user()->isAdmin() && !auth()->user()->hasRole(['Analista', 'Programador'])) {
             return $query->where('user_id', auth()->id());
         }
         return $query;

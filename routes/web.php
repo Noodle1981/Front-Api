@@ -32,9 +32,7 @@ Route::middleware(['auth', 'role:Super Admin|Manager|Programador'])->group(funct
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Rutas de Configuración personal
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+
 
     // Rutas para Clientes
     Route::resource('clients', ClientController::class);
@@ -44,10 +42,7 @@ Route::middleware(['auth', 'role:Super Admin|Manager|Programador'])->group(funct
     Route::post('/clients/{client}/deactivate', [ClientController::class, 'deactivate'])->name('clients.deactivate');
     Route::post('/clients/{client}/activate', [ClientController::class, 'activate'])->name('clients.activate');
 
-    // Rutas Credenciales
-    Route::post('/clients/{client}/credentials', [App\Http\Controllers\ClientCredentialController::class, 'store'])->name('clients.credentials.store');
-    Route::put('/credentials/{credential}', [App\Http\Controllers\ClientCredentialController::class, 'update'])->name('credentials.update');
-    Route::delete('/credentials/{credential}', [App\Http\Controllers\ClientCredentialController::class, 'destroy'])->name('credentials.destroy');
+
 });
 
 // --- RUTAS PARA PROGRAMADORES (Ex Analistas) ---
@@ -80,9 +75,6 @@ Route::middleware(['auth', 'role:Super Admin|Manager'])->prefix('admin')->name('
 
     // Gestión de usuarios
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
-
-    // Gestión de Servicios API
-    Route::resource('api-services', App\Http\Controllers\Admin\ApiServiceController::class);
 });
 
 require __DIR__ . '/auth.php';

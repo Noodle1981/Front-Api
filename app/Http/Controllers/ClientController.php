@@ -39,18 +39,13 @@ class ClientController extends Controller
             $query = $query->where('active', true);
         }
 
-        // Estadísticas completas
-        $baseStatsQuery = $selectedUser ? Client::where('user_id', $selectedUser->id) : Client::forCurrentUser();
-        
+        // Estadísticas completas (Calculadas de forma independiente para evitar acumulación de filtros)
         $stats = [
-            'total_clients' => $baseStatsQuery->count(),
-            'active_clients' => $baseStatsQuery->where('active', true)->count(),
-            'inactive_clients' => $baseStatsQuery->where('active', false)->count(),
-            'headquarters' => $baseStatsQuery->whereNull('parent_id')->count(),
-            'branches' => $baseStatsQuery->whereNotNull('parent_id')->count(),
-            'with_apis' => $baseStatsQuery->whereHas('credentials', function($q) {
-                $q->where('is_active', true);
-            })->count(),
+            'total_clients'    => ($selectedUser ? Client::where('user_id', $selectedUser->id) : Client::forCurrentUser())->count(),
+            'active_clients'   => ($selectedUser ? Client::where('user_id', $selectedUser->id) : Client::forCurrentUser())->where('active', true)->count(),
+            'inactive_clients' => ($selectedUser ? Client::where('user_id', $selectedUser->id) : Client::forCurrentUser())->where('active', false)->count(),
+            'headquarters'     => ($selectedUser ? Client::where('user_id', $selectedUser->id) : Client::forCurrentUser())->whereNull('parent_id')->count(),
+            'branches'         => ($selectedUser ? Client::where('user_id', $selectedUser->id) : Client::forCurrentUser())->whereNotNull('parent_id')->count(),
         ];
 
         $clients = $query->latest()->paginate(10)->appends($request->except('page'));

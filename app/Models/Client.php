@@ -93,20 +93,7 @@ class Client extends Model
         return !is_null($this->parent_id);
     }
 
-    public function credentials(): HasMany
-    {
-        return $this->hasMany(ClientCredential::class);
-    }
 
-    public function transactions(): HasMany
-    {
-        return $this->hasMany(Transaction::class);
-    }
-
-    public function apiLogs(): HasMany
-    {
-        return $this->hasMany(ApiLog::class);
-    }
 
     /**
      * Boot the model.
