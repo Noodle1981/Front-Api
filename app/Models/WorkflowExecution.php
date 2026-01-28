@@ -2,8 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Conciliation\ConciliationSummary;
+use App\Models\Conciliation\ConciliationGetnetTransaction;
+use App\Models\Conciliation\ConciliationMpTransaction;
+use App\Models\Conciliation\ConciliationSystemSale;
+use App\Models\Conciliation\ConciliationCashMovement;
+use App\Models\Conciliation\ConciliationShift;
+use App\Models\Conciliation\ConciliationRefund;
+use App\Models\Conciliation\ConciliationMpNegative;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WorkflowExecution extends Model
 {
@@ -63,5 +72,79 @@ class WorkflowExecution extends Model
     public function hasExcelResponse(): bool
     {
         return $this->excel_response_path && \Storage::disk('public')->exists($this->excel_response_path);
+    }
+
+    // ==================== CONCILIATION RELATIONS ====================
+
+    /**
+     * Get conciliation summaries
+     */
+    public function conciliationSummaries(): HasMany
+    {
+        return $this->hasMany(ConciliationSummary::class);
+    }
+
+    /**
+     * Get Getnet transactions
+     */
+    public function conciliationGetnetTransactions(): HasMany
+    {
+        return $this->hasMany(ConciliationGetnetTransaction::class);
+    }
+
+    /**
+     * Get MercadoPago transactions
+     */
+    public function conciliationMpTransactions(): HasMany
+    {
+        return $this->hasMany(ConciliationMpTransaction::class);
+    }
+
+    /**
+     * Get system sales
+     */
+    public function conciliationSystemSales(): HasMany
+    {
+        return $this->hasMany(ConciliationSystemSale::class);
+    }
+
+    /**
+     * Get cash movements
+     */
+    public function conciliationCashMovements(): HasMany
+    {
+        return $this->hasMany(ConciliationCashMovement::class);
+    }
+
+    /**
+     * Get shifts
+     */
+    public function conciliationShifts(): HasMany
+    {
+        return $this->hasMany(ConciliationShift::class);
+    }
+
+    /**
+     * Get refunds
+     */
+    public function conciliationRefunds(): HasMany
+    {
+        return $this->hasMany(ConciliationRefund::class);
+    }
+
+    /**
+     * Get MP negatives
+     */
+    public function conciliationMpNegatives(): HasMany
+    {
+        return $this->hasMany(ConciliationMpNegative::class);
+    }
+
+    /**
+     * Check if this execution has conciliation data
+     */
+    public function hasConciliationData(): bool
+    {
+        return $this->conciliationSummaries()->exists();
     }
 }

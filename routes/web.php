@@ -42,7 +42,9 @@ Route::middleware(['auth', 'role:Super Admin|Manager|Programador'])->group(funct
     Route::post('/clients/{client}/deactivate', [ClientController::class, 'deactivate'])->name('clients.deactivate');
     Route::post('/clients/{client}/activate', [ClientController::class, 'activate'])->name('clients.activate');
 
-
+    // Transferir/Reasignar Clientes
+    Route::get('/clients/{client}/transfer', [App\Http\Controllers\ClientTransferController::class, 'edit'])->name('clients.transfer');
+    Route::put('/clients/{client}/transfer', [App\Http\Controllers\ClientTransferController::class, 'update'])->name('clients.transfer.update');
 });
 
 // --- RUTAS PARA PROGRAMADORES (Ex Analistas) ---
@@ -62,10 +64,19 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
         Route::get('/upload', App\Livewire\WorkflowFileUploadWizard::class)->name('upload');
         Route::get('/batch/{batch}', [App\Http\Controllers\WorkflowBatchController::class, 'show'])->name('batch.show');
         Route::get('/history', App\Livewire\WorkflowHistoryTable::class)->name('history');
-        
+
         // PDF Routes
         Route::get('/execution/{execution}/pdf/preview', [App\Http\Controllers\WorkflowPdfController::class, 'preview'])->name('execution.pdf.preview');
         Route::get('/execution/{execution}/pdf/download', [App\Http\Controllers\WorkflowPdfController::class, 'download'])->name('execution.pdf.download');
+    });
+
+    // Conciliación - Dashboard y detalle de datos
+    Route::prefix('conciliacion')->name('conciliacion.')->group(function () {
+        // Dashboard: listado de empresas con conciliaciones
+        Route::get('/', App\Livewire\Conciliation\ConciliationDashboard::class)->name('index');
+        Route::get('/dashboard', App\Livewire\Conciliation\ConciliationDashboard::class)->name('dashboard');
+        Route::get('/{execution}', App\Livewire\Conciliation\ConciliationDetail::class)->name('show');
+        Route::get('/{execution}/export/{type}', [App\Http\Controllers\ConciliationExportController::class, 'export'])->name('export');
     });
 });
 

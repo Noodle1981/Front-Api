@@ -91,7 +91,7 @@
                 <div class="text-2xl font-bold text-red-700">{{ $stats['inactive_clients'] }}</div>
             </div>
             <div class="bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg rounded-lg p-4 border border-blue-200">
-                <div class="text-xs text-blue-700 uppercase mb-1">Sedes</div>
+                <div class="text-xs text-blue-700 uppercase mb-1">Sedes centrales</div>
                 <div class="text-2xl font-bold text-blue-700">{{ $stats['headquarters'] }}</div>
             </div>
             <div class="bg-gradient-to-br from-purple-50 to-purple-100 shadow-lg rounded-lg p-4 border border-purple-200">
@@ -116,6 +116,7 @@
                         <tr>
                             <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Razón Social y
                                 CUIT</th>
+                            <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Tipo</th>
                             <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Condición
                                 Fiscal</th>
                             <th class="p-4 text-left font-bold text-brand-dark uppercase tracking-wider">Contacto</th>
@@ -134,6 +135,20 @@
                                     <div class="text-sm text-gray-500">{{ $client->cuit }}</div>
                                     @if($client->fantasy_name)
                                         <div class="text-xs text-gray-400 mt-1">{{ $client->fantasy_name }}</div>
+                                    @endif
+                                </td>
+                                <td class="p-4">
+                                    @if($client->parent_id)
+                                        <span class="px-2 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            <i class="fas fa-code-branch mr-1"></i> Sede
+                                        </span>
+                                        @if($client->parent)
+                                            <div class="text-xs text-gray-500 mt-1">de {{ $client->parent->company }}</div>
+                                        @endif
+                                    @else
+                                        <span class="px-2 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                            <i class="fas fa-building mr-1"></i> Central
+                                        </span>
                                     @endif
                                 </td>
                                 <td class="p-4 text-black">{{ $client->tax_condition ?? 'N/A' }}</td>
@@ -233,7 +248,7 @@
                                         @endcan
 
                                         @can('reassign clients')
-                                            <a href="{{ route('programmer.clients.transfer', $client) }}"
+                                            <a href="{{ route($routePrefix . '.transfer', $client) }}"
                                                 class="text-sm text-blue-500 hover:text-blue-700 transition ml-2"
                                                 title="Reasignar (Transferir)">
                                                 <i class="fas fa-exchange-alt"></i>
@@ -244,7 +259,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-gray-500 py-16">
+                                <td colspan="7" class="text-center text-gray-500 py-16">
                                     <i class="fas fa-users-slash text-4xl mb-3 text-brand-dark"></i>
                                     <p class="text-lg">No se encontraron clientes.</p>
                                 </td>

@@ -14,6 +14,18 @@ class WorkflowPythonApiService
     protected int $timeout;
     protected bool $mockMode;
 
+    /**
+     * Map file identifiers from database to API field names for conciliation workflow
+     */
+    protected array $conciliationFileMapping = [
+        'Turnos' => 'turnos',
+        'Reporte_Ventas' => 'ventas',
+        'Reporte_getnet' => 'getnet',
+        'Prueba_MP' => 'mercado_pago',
+        'Devoluciones' => 'devoluciones',
+        'Caja_Adicion' => 'caja_adicion',
+    ];
+
     public function __construct()
     {
         $this->apiUrl = config('services.workflow_python_api.url');
@@ -23,8 +35,8 @@ class WorkflowPythonApiService
 
     /**
      * Send files to Python API for processing
-     * 
-     * @param array $files Array of UploadedFile instances
+     *
+     * @param array $files Array of UploadedFile instances keyed by file_identifier
      * @param string $workflowType Type of workflow (e.g., 'conciliacion')
      * @param int $executionId Execution ID for storage path
      * @return array ['success' => bool, 'excel_path' => string|null, 'error' => string|null]
@@ -36,19 +48,34 @@ class WorkflowPythonApiService
         }
 
         try {
+            // Determine if this is a conciliation workflow
+            $isConciliation = str_contains(strtolower($workflowType), 'concilia');
+
             // Prepare multipart form data
             $multipart = [];
-            foreach ($files as $key => $file) {
+            foreach ($files as $fileIdentifier => $file) {
+                // Map file identifier to API field name for conciliation workflows
+                $fieldName = $fileIdentifier;
+                if ($isConciliation && isset($this->conciliationFileMapping[$fileIdentifier])) {
+                    $fieldName = $this->conciliationFileMapping[$fileIdentifier];
+                }
+
                 $multipart[] = [
-                    'name' => $key,
+                    'name' => $fieldName,
                     'contents' => fopen($file->getRealPath(), 'r'),
                     'filename' => $file->getClientOriginalName(),
                 ];
+
+                Log::info("Archivo mapeado: {$fileIdentifier} -> {$fieldName}");
             }
 
-            Log::info("Enviando archivos a Python API: {$this->apiUrl}");
+            Log::info("Enviando archivos a Python API: {$this->apiUrl}", [
+                'workflow_type' => $workflowType,
+                'files_count' => count($multipart),
+                'field_names' => array_column($multipart, 'name'),
+            ]);
 
-            // Send to Python API
+            // Send to Python API as multipart/form-data
             $response = Http::asMultipart()
                 ->timeout($this->timeout)
                 ->post($this->apiUrl, $multipart);
@@ -89,6 +116,25 @@ class WorkflowPythonApiService
     protected function mockProcessFiles(array $files, string $workflowType, int $executionId): array
     {
         try {
+            // Determine if this is a conciliation workflow
+            $isConciliation = str_contains(strtolower($workflowType), 'concilia');
+
+            // Log the files that would be sent (with correct mapping)
+            $mappedFiles = [];
+            foreach ($files as $fileIdentifier => $file) {
+                $fieldName = $fileIdentifier;
+                if ($isConciliation && isset($this->conciliationFileMapping[$fileIdentifier])) {
+                    $fieldName = $this->conciliationFileMapping[$fileIdentifier];
+                }
+                $mappedFiles[$fieldName] = $file->getClientOriginalName();
+            }
+
+            Log::info("MODO MOCK: Archivos que se enviarían a la API", [
+                'workflow_type' => $workflowType,
+                'is_conciliation' => $isConciliation,
+                'mapped_files' => $mappedFiles,
+            ]);
+
             Log::info("MODO MOCK: Generando Excel de respuesta simulado");
 
             // Create a mock Excel with 4 sheets matching arqueo.xlsm structure

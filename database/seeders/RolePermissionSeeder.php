@@ -58,6 +58,7 @@ class RolePermissionSeeder extends Seeder
             'view clients',
             'create clients',
             'edit clients',
+            'delete clients',
             'reassign clients',
             'manage credentials',
         ]);

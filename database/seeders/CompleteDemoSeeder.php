@@ -19,8 +19,8 @@ class CompleteDemoSeeder extends Seeder
         $this->command->info('🚀 Generando Datos Completos de Demo...');
 
         // Obtener servicios API existentes
-        $afip = ApiService::where('name', 'AFIP')->first();
-        $mercadoPago = ApiService::where('name', 'Mercado Pago')->first();
+        // $afip = ApiService::where('name', 'AFIP')->first();
+        // $mercadoPago = ApiService::where('name', 'Mercado Pago')->first();
 
         // Datos realistas de contadores
         $contadores = [

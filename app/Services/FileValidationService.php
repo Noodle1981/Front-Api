@@ -7,8 +7,9 @@ use App\Models\WorkflowFileDefinition;
 use App\Models\WorkflowUploadedFile;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\HeadingRowImport;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class FileValidationService
 {
@@ -102,55 +103,146 @@ class FileValidationService
     }
     
     /**
-     * Get headers from an Excel file
+     * Get headers from an Excel file using PhpSpreadsheet directly
      */
     protected function getFileHeaders(WorkflowUploadedFile $uploadedFile): array
     {
         $filePath = $uploadedFile->getFullPath();
-        
-        // Read only the first row (headers)
-        $import = new HeadingRowImport();
-        $data = Excel::toArray($import, $filePath);
-        
-        return $data[0][0] ?? [];
+
+        return $this->readHeadersFromFile($filePath);
     }
-    
+
+    /**
+     * Read headers from first row of Excel file using PhpSpreadsheet
+     */
+    protected function readHeadersFromFile(string $filePath): array
+    {
+        $headers = [];
+
+        try {
+            $spreadsheet = IOFactory::load($filePath);
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $highestColumn = $sheet->getHighestColumn();
+            $highestColumnIndex = Coordinate::columnIndexFromString($highestColumn);
+
+            for ($col = 1; $col <= $highestColumnIndex; $col++) {
+                $cellValue = $sheet->getCellByColumnAndRow($col, 1)->getValue();
+                if ($cellValue !== null && $cellValue !== '') {
+                    $headers[] = (string) $cellValue;
+                }
+            }
+
+            $spreadsheet->disconnectWorksheets();
+            unset($spreadsheet);
+
+        } catch (\Exception $e) {
+            Log::error('Error reading Excel headers', [
+                'file' => $filePath,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+
+        return $headers;
+    }
+
     /**
      * Match an uploaded file to its definition based on column structure
+     * Uses PhpSpreadsheet directly for better compatibility with shared hosting
      */
     public function matchFileDefinition(UploadedFile $file, Collection $definitions): ?WorkflowFileDefinition
     {
+        $filePath = $file->getRealPath();
+        $fileName = $file->getClientOriginalName();
+
+        Log::info('Attempting to match file definition', [
+            'filename' => $fileName,
+            'path' => $filePath,
+            'exists' => file_exists($filePath),
+            'readable' => is_readable($filePath),
+            'size' => $file->getSize(),
+        ]);
+
+        // Verify file exists and is readable
+        if (!file_exists($filePath) || !is_readable($filePath)) {
+            Log::error('File not accessible for matching', [
+                'filename' => $fileName,
+                'path' => $filePath,
+            ]);
+            return null;
+        }
+
         try {
-            // Get file headers
-            $import = new HeadingRowImport();
-            $data = Excel::toArray($import, $file->getRealPath());
-            $headers = $data[0][0] ?? [];
-            
+            // Read headers using PhpSpreadsheet directly
+            $headers = $this->readHeadersFromFile($filePath);
+
+            Log::info('Headers extracted from file', [
+                'filename' => $fileName,
+                'headers_count' => count($headers),
+                'headers' => array_slice($headers, 0, 10), // Log first 10 headers
+            ]);
+
+            if (empty($headers)) {
+                Log::warning('No headers found in file', ['filename' => $fileName]);
+                return null;
+            }
+
             // Normalize headers
             $normalizedHeaders = $this->normalizeColumnNames($headers);
-            
+
+            Log::info('Normalized headers for matching', [
+                'filename' => $fileName,
+                'normalized_headers' => $normalizedHeaders,
+            ]);
+
             // Try to match with each definition
+            $matchAttempts = [];
             foreach ($definitions as $definition) {
                 $requiredColumns = $definition->requiredColumns()
                     ->where('is_required', true)
                     ->pluck('column_name')
                     ->toArray();
-                
+
                 $normalizedRequired = $this->normalizeColumnNames($requiredColumns);
-                
+
                 // Check if all required columns are present
                 $missingColumns = array_diff($normalizedRequired, $normalizedHeaders);
-                
+
+                // Log each attempt for debugging
+                $matchAttempts[] = [
+                    'definition' => $definition->display_name,
+                    'required' => $normalizedRequired,
+                    'missing' => array_values($missingColumns),
+                    'matched' => empty($missingColumns),
+                ];
+
                 if (empty($missingColumns)) {
+                    Log::info('File matched to definition', [
+                        'filename' => $fileName,
+                        'definition' => $definition->display_name,
+                    ]);
                     return $definition;
                 }
             }
-            
+
+            // Log detailed mismatch information
+            Log::warning('No definition matched for file - detailed analysis', [
+                'filename' => $fileName,
+                'file_headers' => $headers,
+                'normalized_headers' => $normalizedHeaders,
+                'match_attempts' => $matchAttempts,
+            ]);
+
         } catch (\Exception $e) {
-            // If we can't read the file, return null
+            Log::error('Exception matching file definition', [
+                'filename' => $fileName,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return null;
         }
-        
+
         return null;
     }
     
@@ -188,10 +280,55 @@ class FileValidationService
     
     /**
      * Normalize a single column name
+     * Handles accents, special characters, and encoding differences
      */
     protected function normalizeColumnName(string $name): string
     {
-        return strtolower(trim(preg_replace('/\s+/', '_', $name)));
+        // Trim whitespace
+        $name = trim($name);
+
+        // Convert to lowercase
+        $name = mb_strtolower($name, 'UTF-8');
+
+        // Remove accents/diacritics
+        $name = $this->removeAccents($name);
+
+        // Replace spaces and special chars with underscore
+        $name = preg_replace('/[\s\-\.]+/', '_', $name);
+
+        // Remove any remaining non-alphanumeric characters except underscore
+        $name = preg_replace('/[^a-z0-9_]/', '', $name);
+
+        // Remove multiple consecutive underscores
+        $name = preg_replace('/_+/', '_', $name);
+
+        // Trim underscores from start/end
+        $name = trim($name, '_');
+
+        return $name;
+    }
+
+    /**
+     * Remove accents from string (á -> a, ñ -> n, etc.)
+     */
+    protected function removeAccents(string $string): string
+    {
+        $accents = [
+            'á' => 'a', 'à' => 'a', 'ä' => 'a', 'â' => 'a', 'ã' => 'a',
+            'é' => 'e', 'è' => 'e', 'ë' => 'e', 'ê' => 'e',
+            'í' => 'i', 'ì' => 'i', 'ï' => 'i', 'î' => 'i',
+            'ó' => 'o', 'ò' => 'o', 'ö' => 'o', 'ô' => 'o', 'õ' => 'o',
+            'ú' => 'u', 'ù' => 'u', 'ü' => 'u', 'û' => 'u',
+            'ñ' => 'n', 'ç' => 'c',
+            'Á' => 'a', 'À' => 'a', 'Ä' => 'a', 'Â' => 'a', 'Ã' => 'a',
+            'É' => 'e', 'È' => 'e', 'Ë' => 'e', 'Ê' => 'e',
+            'Í' => 'i', 'Ì' => 'i', 'Ï' => 'i', 'Î' => 'i',
+            'Ó' => 'o', 'Ò' => 'o', 'Ö' => 'o', 'Ô' => 'o', 'Õ' => 'o',
+            'Ú' => 'u', 'Ù' => 'u', 'Ü' => 'u', 'Û' => 'u',
+            'Ñ' => 'n', 'Ç' => 'c',
+        ];
+
+        return strtr($string, $accents);
     }
     
     /**

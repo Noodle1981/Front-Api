@@ -48,7 +48,7 @@ class ClientController extends Controller
             'branches'         => ($selectedUser ? Client::where('user_id', $selectedUser->id) : Client::forCurrentUser())->whereNotNull('parent_id')->count(),
         ];
 
-        $clients = $query->latest()->paginate(10)->appends($request->except('page'));
+        $clients = $query->with('parent')->latest()->paginate(10)->appends($request->except('page'));
         
         
         // User context selector data

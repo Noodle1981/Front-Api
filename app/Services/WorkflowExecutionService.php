@@ -10,10 +10,14 @@ use Illuminate\Support\Facades\Log;
 class WorkflowExecutionService
 {
     protected WorkflowJsonGeneratorService $jsonGenerator;
-    
-    public function __construct(WorkflowJsonGeneratorService $jsonGenerator)
-    {
+    protected ConciliationDataService $conciliationService;
+
+    public function __construct(
+        WorkflowJsonGeneratorService $jsonGenerator,
+        ConciliationDataService $conciliationService
+    ) {
         $this->jsonGenerator = $jsonGenerator;
+        $this->conciliationService = $conciliationService;
     }
     
     /**
@@ -45,11 +49,16 @@ class WorkflowExecutionService
             
             // Save execution
             $execution = $this->saveExecution($batch, $jsonData, $response, $executionTime);
-            
+
+            // Process conciliation data if applicable
+            if ($this->isConciliationWorkflow($batch)) {
+                $this->processConciliationResponse($execution, $response);
+            }
+
             // Update batch status based on response
             $status = ($response['status'] ?? 'failed') === 'success' ? 'completed' : 'failed';
             $this->updateBatchStatus($batch, $status);
-            
+
             return $execution;
             
         } catch (\Exception $e) {
@@ -161,9 +170,61 @@ class WorkflowExecutionService
     public function updateBatchStatus(WorkflowFileBatch $batch, string $status): void
     {
         $batch->update(['status' => $status]);
-        
+
         if ($status === 'completed' || $status === 'failed') {
             $batch->update(['validated_at' => now()]);
+        }
+    }
+
+    /**
+     * Check if the workflow is a conciliation workflow
+     */
+    protected function isConciliationWorkflow(WorkflowFileBatch $batch): bool
+    {
+        // Check by workflow type name
+        $workflowType = $batch->workflowType;
+        if ($workflowType && str_contains(strtolower($workflowType->name), 'concilia')) {
+            return true;
+        }
+
+        // Check by configured type ID
+        $conciliationTypeId = config('workflows.conciliation_type_id');
+        if ($conciliationTypeId && $batch->workflow_type_id === $conciliationTypeId) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Process and save conciliation response data
+     */
+    protected function processConciliationResponse(WorkflowExecution $execution, array $response): void
+    {
+        // Validate response status
+        if (!$this->conciliationService->validateResponse($response)) {
+            Log::warning('Conciliation response invalid or failed', [
+                'execution_id' => $execution->id,
+                'status' => $response['status'] ?? 'unknown',
+                'message' => $response['message'] ?? 'No message',
+            ]);
+            return;
+        }
+
+        // Save conciliation data (with duplicate filtering via upsert)
+        try {
+            $stats = $this->conciliationService->processAndSave($execution, $response);
+
+            Log::info('Conciliation data saved successfully', [
+                'execution_id' => $execution->id,
+                'total_processed' => $stats['total_processed'] ?? 0,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to save conciliation data', [
+                'execution_id' => $execution->id,
+                'error' => $e->getMessage(),
+            ]);
+            // Don't throw - JSON data is already saved as backup in json_response
         }
     }
 }

@@ -11,9 +11,11 @@ use App\Models\WorkflowFileDefinition;
 use App\Services\FileValidationService;
 use App\Services\WorkflowJsonGeneratorService;
 use App\Services\WorkflowPythonApiService;
+use App\Services\ConciliationDataService;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class WorkflowFileUploadWizard extends Component
 {
@@ -111,12 +113,16 @@ class WorkflowFileUploadWizard extends Component
             $this->addError('selectedClientId', 'Debe seleccionar un cliente');
             return false;
         }
-        
-        if (!$this->selectedBranchId) {
+
+        // Branch is only required if the client has branches
+        $client = Client::find($this->selectedClientId);
+        $hasBranches = $client && $client->children()->exists();
+
+        if ($hasBranches && !$this->selectedBranchId) {
             $this->addError('selectedBranchId', 'Debe seleccionar una sede');
             return false;
         }
-        
+
         return true;
     }
     
@@ -342,13 +348,13 @@ class WorkflowFileUploadWizard extends Component
             );
 
             if ($result['success']) {
-                // Get mock data to save to json_response (simulating what Python API will return)
-                $mockData = \App\Services\WorkflowMockService::getMockConciliacionData();
+                // Get mock data from arqueo_resultado_test.json (simulating what Python API will return)
+                $mockData = $this->getMockConciliacionResponse();
 
                 // Update execution with success AND json_response
                 $execution->update([
                     'status' => 'success',
-                    'json_response' => $mockData['data'], // SAVE THE DATA HERE!
+                    'json_response' => $mockData['data'] ?? [], // SAVE THE DATA HERE!
                     'excel_response_path' => $result['excel_path'],
                     'completed_at' => now(),
                     'execution_time_ms' => now()->diffInMilliseconds($execution->started_at),
@@ -364,11 +370,26 @@ class WorkflowFileUploadWizard extends Component
                         $workflowRequest->update(['status' => 'completed']);
                     }
                 }
-                
-                \Illuminate\Support\Facades\Log::info('Workflow ejecutado con éxito');
-                
+
+                // Process conciliation data if this is a conciliation workflow
+                $isConciliation = $this->isConciliationWorkflow($workflowType);
+                if ($isConciliation) {
+                    $this->processConciliationData($execution, $mockData);
+                }
+
+                Log::info('Workflow ejecutado con éxito', [
+                    'execution_id' => $execution->id,
+                    'is_conciliation' => $isConciliation,
+                ]);
+
                 session()->flash('success', 'Workflow ejecutado con éxito.');
-                $this->redirect(route('programmer.workflows.execution.pdf.preview', $execution), navigate: true);
+
+                // Redirect to conciliation view for conciliation workflows, PDF preview for others
+                if ($isConciliation) {
+                    $this->redirect(route('programmer.conciliacion.show', $execution), navigate: true);
+                } else {
+                    $this->redirect(route('programmer.workflows.execution.pdf.preview', $execution), navigate: true);
+                }
             } else {
                 // Update execution with error
                 $execution->update([
@@ -404,6 +425,95 @@ class WorkflowFileUploadWizard extends Component
             'message' => $message, 
             'percentage' => $percentage
         ]);
+    }
+
+    /**
+     * Get mock conciliation response from test file
+     */
+    protected function getMockConciliacionResponse(): array
+    {
+        $testFile = base_path('arqueo_resultado_test.json');
+
+        if (file_exists($testFile)) {
+            $content = file_get_contents($testFile);
+            $data = json_decode($content, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $data;
+            }
+        }
+
+        // Fallback to basic structure
+        return [
+            'status' => 'success',
+            'data' => [
+                'arqueo_por_turno' => [],
+                'getnet_conciliado' => [],
+                'mp_conciliado' => [],
+                'sistema_conciliado' => [],
+                'ventas_sistema' => [],
+                'turnos_procesados' => [],
+                'caja_adicion' => [],
+                'devoluciones' => [],
+                'mp_negativos' => [],
+            ],
+        ];
+    }
+
+    /**
+     * Check if the workflow is a conciliation workflow
+     */
+    protected function isConciliationWorkflow(?WorkflowType $workflowType): bool
+    {
+        if (!$workflowType) {
+            return false;
+        }
+
+        // Check by workflow type name or code
+        $identifier = strtolower($workflowType->name . $workflowType->code);
+        if (str_contains($identifier, 'concilia')) {
+            return true;
+        }
+
+        // Check by configured type ID
+        $conciliationTypeId = config('workflows.conciliation_type_id');
+        if ($conciliationTypeId && $workflowType->id === $conciliationTypeId) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Process and save conciliation data
+     */
+    protected function processConciliationData(WorkflowExecution $execution, array $mockData): void
+    {
+        try {
+            $conciliationService = app(ConciliationDataService::class);
+
+            // Build full response format expected by ConciliationDataService
+            $response = [
+                'status' => 'success',
+                'data' => $mockData['data'],
+            ];
+
+            // Validate and save
+            if ($conciliationService->validateResponse($response)) {
+                $stats = $conciliationService->processAndSave($execution, $response);
+
+                Log::info('Conciliation data processed from wizard', [
+                    'execution_id' => $execution->id,
+                    'total_processed' => $stats['total_processed'] ?? 0,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to process conciliation data from wizard', [
+                'execution_id' => $execution->id,
+                'error' => $e->getMessage(),
+            ]);
+            // Don't throw - JSON data is already saved as backup in json_response
+        }
     }
 
     /**
@@ -468,20 +578,24 @@ class WorkflowFileUploadWizard extends Component
     {
         // Get parent clients (not branches)
         $clients = Client::whereNull('parent_id')->orderBy('company')->get();
-        
+
         // Get branches (children) of selected client
-        $branches = $this->selectedClientId 
+        $branches = $this->selectedClientId
             ? Client::where('parent_id', $this->selectedClientId)->orderBy('branch_name')->get()
             : collect();
-            
+
+        // Check if the selected client has branches
+        $clientHasBranches = $branches->isNotEmpty();
+
         $workflowTypes = WorkflowType::active()->get();
-        $selectedWorkflow = $this->selectedWorkflowTypeId 
+        $selectedWorkflow = $this->selectedWorkflowTypeId
             ? WorkflowType::with('fileDefinitions')->find($this->selectedWorkflowTypeId)
             : null;
-        
+
         return view('livewire.workflow-file-upload-wizard', [
             'clients' => $clients,
             'branches' => $branches,
+            'clientHasBranches' => $clientHasBranches,
             'workflowTypes' => $workflowTypes,
             'selectedWorkflow' => $selectedWorkflow,
         ])->layout('layouts.app');

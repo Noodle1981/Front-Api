@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use App\Models\Conciliation\ConciliationSummary;
 
 class Client extends Model
 {
@@ -93,7 +94,13 @@ class Client extends Model
         return !is_null($this->parent_id);
     }
 
-
+    /**
+     * Get conciliation summaries for this client
+     */
+    public function conciliationSummaries(): HasMany
+    {
+        return $this->hasMany(ConciliationSummary::class);
+    }
 
     /**
      * Boot the model.
