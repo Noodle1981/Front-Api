@@ -1,23 +1,7 @@
 {{-- Progress Modal (AlpineJS Version) --}}
-<div x-data="{ 
-    show: @entangle('showProgressModal'), 
-    message: ''
-}" 
-x-on:workflow-progress.window="
-    // Handle Livewire 3 event structure (sometimes array, sometimes object)
-    let data = Array.isArray($event.detail) ? $event.detail[0] : $event.detail;
-    
-    // Ensure data exists before accessing
-    if (data) {
-        show = true; 
-        message = data.message || '';
-        console.log('Progress Update:', data);
-    }
-"
-x-init="$watch('show', value => {
-    if (value) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'auto';
-})"
+<div x-data="{ show: @entangle('showProgressModal'), message: '' }"
+x-on:workflow-progress.window="let data = Array.isArray($event.detail) ? $event.detail[0] : $event.detail; if (data) { show = true; message = data.message || ''; }"
+x-init="$watch('show', value => { if (value) document.body.style.overflow = 'hidden'; else document.body.style.overflow = 'auto'; })"
 x-show="show" 
 style="display: none;"
 class="fixed inset-0 z-50 overflow-y-auto" 

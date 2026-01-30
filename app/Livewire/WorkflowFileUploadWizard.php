@@ -11,7 +11,8 @@ use App\Models\WorkflowFileDefinition;
 use App\Services\FileValidationService;
 use App\Services\WorkflowJsonGeneratorService;
 use App\Services\WorkflowPythonApiService;
-use App\Services\ConciliationDataService;
+use App\Services\ConciliacionDataService;
+use App\Services\ArqueoDataService;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
@@ -328,7 +329,7 @@ class WorkflowFileUploadWizard extends Component
             // 6. Prepare files for Python API (from uploaded files, not from storage)
             $pythonService = app(WorkflowPythonApiService::class);
             $workflowType = WorkflowType::find($this->selectedWorkflowTypeId);
-            
+
             // Map uploaded files to their identifiers
             $filesForApi = [];
             foreach ($this->uploadedFiles as $index => $file) {
@@ -340,68 +341,20 @@ class WorkflowFileUploadWizard extends Component
                     }
                 }
             }
-            
-            $result = $pythonService->processFiles(
-                $filesForApi,
-                $workflowType->code ?? 'conciliacion',
-                $execution->id
-            );
 
-            if ($result['success']) {
-                // Get mock data from arqueo_resultado_test.json (simulating what Python API will return)
-                $mockData = $this->getMockConciliacionResponse();
+            // Determine workflow type and call appropriate endpoint
+            $isConciliacionSimple = $this->isConciliacionSimpleWorkflow($workflowType);
+            $isConciliacionArqueo = $this->isConciliacionArqueoWorkflow($workflowType);
 
-                // Update execution with success AND json_response
-                $execution->update([
-                    'status' => 'success',
-                    'json_response' => $mockData['data'] ?? [], // SAVE THE DATA HERE!
-                    'excel_response_path' => $result['excel_path'],
-                    'completed_at' => now(),
-                    'execution_time_ms' => now()->diffInMilliseconds($execution->started_at),
-                ]);
-
-                // Update batch status to completed
-                $batch->update(['status' => 'completed']);
-
-                // Update workflow request status if this execution came from a request
-                if ($this->workflowRequestId) {
-                    $workflowRequest = \App\Models\WorkflowRequest::find($this->workflowRequestId);
-                    if ($workflowRequest) {
-                        $workflowRequest->update(['status' => 'completed']);
-                    }
-                }
-
-                // Process conciliation data if this is a conciliation workflow
-                $isConciliation = $this->isConciliationWorkflow($workflowType);
-                if ($isConciliation) {
-                    $this->processConciliationData($execution, $mockData);
-                }
-
-                Log::info('Workflow ejecutado con éxito', [
-                    'execution_id' => $execution->id,
-                    'is_conciliation' => $isConciliation,
-                ]);
-
-                session()->flash('success', 'Workflow ejecutado con éxito.');
-
-                // Redirect to conciliation view for conciliation workflows, PDF preview for others
-                if ($isConciliation) {
-                    $this->redirect(route('programmer.conciliacion.show', $execution), navigate: true);
-                } else {
-                    $this->redirect(route('programmer.workflows.execution.pdf.preview', $execution), navigate: true);
-                }
+            if ($isConciliacionSimple) {
+                // New workflow: call /conciliar endpoint (JSON response)
+                $this->processConciliacionSimple($pythonService, $filesForApi, $execution, $batch, $workflowType);
+            } elseif ($isConciliacionArqueo) {
+                // Original workflow: call /procesar endpoint (Excel response)
+                $this->processConciliacionArqueo($pythonService, $filesForApi, $execution, $batch, $workflowType);
             } else {
-                // Update execution with error
-                $execution->update([
-                    'status' => 'failed',
-                    'completed_at' => now(),
-                    'logs_json' => ['error' => $result['error']],
-                ]);
-
-                $this->failedStep = 'Error en el servidor';
-                $this->isProcessing = false;
-                // Keep modal open to show the error
-                $this->addError('submit', 'Error al procesar: ' . $result['error']);
+                // Generic workflow processing
+                $this->processGenericWorkflow($pythonService, $filesForApi, $execution, $batch, $workflowType);
             }
             
         } catch (\Exception $e) {
@@ -461,58 +414,256 @@ class WorkflowFileUploadWizard extends Component
     }
 
     /**
-     * Check if the workflow is a conciliation workflow
+     * Check if the workflow is "Conciliación" (new - JSON response)
      */
-    protected function isConciliationWorkflow(?WorkflowType $workflowType): bool
+    protected function isConciliacionSimpleWorkflow(?WorkflowType $workflowType): bool
     {
         if (!$workflowType) {
             return false;
         }
 
-        // Check by workflow type name or code
-        $identifier = strtolower($workflowType->name . $workflowType->code);
-        if (str_contains($identifier, 'concilia')) {
-            return true;
-        }
-
-        // Check by configured type ID
-        $conciliationTypeId = config('workflows.conciliation_type_id');
-        if ($conciliationTypeId && $workflowType->id === $conciliationTypeId) {
-            return true;
-        }
-
-        return false;
+        // Check by exact code
+        return $workflowType->code === 'conciliacion';
     }
 
     /**
-     * Process and save conciliation data
+     * Check if the workflow is "Conciliación y Arqueo" (original - Excel response)
      */
-    protected function processConciliationData(WorkflowExecution $execution, array $mockData): void
+    protected function isConciliacionArqueoWorkflow(?WorkflowType $workflowType): bool
+    {
+        if (!$workflowType) {
+            return false;
+        }
+
+        // Check by exact code
+        return $workflowType->code === 'conciliacion_arqueo';
+    }
+
+    /**
+     * Check if the workflow is any conciliation workflow (for legacy compatibility)
+     */
+    protected function isConciliationWorkflow(?WorkflowType $workflowType): bool
+    {
+        return $this->isConciliacionSimpleWorkflow($workflowType)
+            || $this->isConciliacionArqueoWorkflow($workflowType);
+    }
+
+    /**
+     * Process workflow "Conciliación" - calls /conciliar endpoint
+     */
+    protected function processConciliacionSimple(
+        WorkflowPythonApiService $pythonService,
+        array $filesForApi,
+        WorkflowExecution $execution,
+        WorkflowFileBatch $batch,
+        WorkflowType $workflowType
+    ): void {
+        $result = $pythonService->processConciliar($filesForApi, $execution->id);
+
+        if ($result['success']) {
+            $jsonData = $result['data'];
+
+            // Update execution with success and JSON response
+            $execution->update([
+                'status' => 'success',
+                'json_response' => $jsonData['data'] ?? [],
+                'completed_at' => now(),
+                'execution_time_ms' => now()->diffInMilliseconds($execution->started_at),
+            ]);
+
+            $batch->update(['status' => 'completed']);
+
+            if ($this->workflowRequestId) {
+                $workflowRequest = \App\Models\WorkflowRequest::find($this->workflowRequestId);
+                if ($workflowRequest) {
+                    $workflowRequest->update(['status' => 'completed']);
+                }
+            }
+
+            // Process conciliation data with the new service
+            $this->processConciliacionData($execution, $jsonData);
+
+            Log::info('Conciliación simple ejecutada con éxito', [
+                'execution_id' => $execution->id,
+            ]);
+
+            session()->flash('success', 'Conciliación ejecutada con éxito.');
+            $this->redirect(route('programmer.conciliacion.show', $execution), navigate: true);
+        } else {
+            $execution->update([
+                'status' => 'failed',
+                'completed_at' => now(),
+                'logs_json' => ['error' => $result['error']],
+            ]);
+
+            $this->failedStep = 'Error en el servidor';
+            $this->isProcessing = false;
+            $this->addError('submit', 'Error al procesar: ' . $result['error']);
+        }
+    }
+
+    /**
+     * Process workflow "Conciliación y Arqueo" - calls /procesar-json endpoint
+     * Returns JSON with arqueo format (arqueo_resultado_test.json)
+     */
+    protected function processConciliacionArqueo(
+        WorkflowPythonApiService $pythonService,
+        array $filesForApi,
+        WorkflowExecution $execution,
+        WorkflowFileBatch $batch,
+        WorkflowType $workflowType
+    ): void {
+        // Call /procesar-json for JSON response (arqueo format)
+        $result = $pythonService->procesarJson($filesForApi, $execution->id);
+
+        if ($result['success']) {
+            $jsonData = $result['data'];
+
+            $execution->update([
+                'status' => 'success',
+                'json_response' => $jsonData['data'] ?? [],
+                'completed_at' => now(),
+                'execution_time_ms' => now()->diffInMilliseconds($execution->started_at),
+            ]);
+
+            $batch->update(['status' => 'completed']);
+
+            if ($this->workflowRequestId) {
+                $workflowRequest = \App\Models\WorkflowRequest::find($this->workflowRequestId);
+                if ($workflowRequest) {
+                    $workflowRequest->update(['status' => 'completed']);
+                }
+            }
+
+            // Process arqueo data with ArqueoDataService
+            $this->processArqueoData($execution, $jsonData);
+
+            Log::info('Conciliación y Arqueo ejecutada con éxito', [
+                'execution_id' => $execution->id,
+            ]);
+
+            session()->flash('success', 'Workflow ejecutado con éxito.');
+            $this->redirect(route('programmer.conciliacion.show', $execution), navigate: true);
+        } else {
+            $execution->update([
+                'status' => 'failed',
+                'completed_at' => now(),
+                'logs_json' => ['error' => $result['error']],
+            ]);
+
+            $this->failedStep = 'Error en el servidor';
+            $this->isProcessing = false;
+            $this->addError('submit', 'Error al procesar: ' . $result['error']);
+        }
+    }
+
+    /**
+     * Process generic workflow (non-conciliation)
+     */
+    protected function processGenericWorkflow(
+        WorkflowPythonApiService $pythonService,
+        array $filesForApi,
+        WorkflowExecution $execution,
+        WorkflowFileBatch $batch,
+        WorkflowType $workflowType
+    ): void {
+        $result = $pythonService->processFiles(
+            $filesForApi,
+            $workflowType->code,
+            $execution->id
+        );
+
+        if ($result['success']) {
+            $execution->update([
+                'status' => 'success',
+                'excel_response_path' => $result['excel_path'],
+                'completed_at' => now(),
+                'execution_time_ms' => now()->diffInMilliseconds($execution->started_at),
+            ]);
+
+            $batch->update(['status' => 'completed']);
+
+            if ($this->workflowRequestId) {
+                $workflowRequest = \App\Models\WorkflowRequest::find($this->workflowRequestId);
+                if ($workflowRequest) {
+                    $workflowRequest->update(['status' => 'completed']);
+                }
+            }
+
+            Log::info('Workflow genérico ejecutado con éxito', [
+                'execution_id' => $execution->id,
+            ]);
+
+            session()->flash('success', 'Workflow ejecutado con éxito.');
+            $this->redirect(route('programmer.workflows.execution.pdf.preview', $execution), navigate: true);
+        } else {
+            $execution->update([
+                'status' => 'failed',
+                'completed_at' => now(),
+                'logs_json' => ['error' => $result['error']],
+            ]);
+
+            $this->failedStep = 'Error en el servidor';
+            $this->isProcessing = false;
+            $this->addError('submit', 'Error al procesar: ' . $result['error']);
+        }
+    }
+
+    /**
+     * Process and save conciliation data (new format from /conciliar)
+     */
+    protected function processConciliacionData(WorkflowExecution $execution, array $jsonData): void
     {
         try {
-            $conciliationService = app(ConciliationDataService::class);
+            $conciliacionService = app(ConciliacionDataService::class);
 
-            // Build full response format expected by ConciliationDataService
             $response = [
                 'status' => 'success',
-                'data' => $mockData['data'],
+                'data' => $jsonData['data'] ?? $jsonData,
             ];
 
-            // Validate and save
-            if ($conciliationService->validateResponse($response)) {
-                $stats = $conciliationService->processAndSave($execution, $response);
+            if ($conciliacionService->validateResponse($response)) {
+                $stats = $conciliacionService->processAndSave($execution, $response);
 
-                Log::info('Conciliation data processed from wizard', [
+                Log::info('Conciliacion data processed from wizard', [
                     'execution_id' => $execution->id,
                     'total_processed' => $stats['total_processed'] ?? 0,
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error('Failed to process conciliation data from wizard', [
+            Log::error('Failed to process conciliacion data from wizard', [
                 'execution_id' => $execution->id,
                 'error' => $e->getMessage(),
             ]);
-            // Don't throw - JSON data is already saved as backup in json_response
+        }
+    }
+
+    /**
+     * Process and save arqueo data (format from /procesar-json)
+     */
+    protected function processArqueoData(WorkflowExecution $execution, array $jsonData): void
+    {
+        try {
+            $arqueoService = app(ArqueoDataService::class);
+
+            $response = [
+                'status' => 'success',
+                'data' => $jsonData['data'] ?? $jsonData,
+            ];
+
+            if ($arqueoService->validateResponse($response)) {
+                $stats = $arqueoService->processAndSave($execution, $response);
+
+                Log::info('Arqueo data processed from wizard', [
+                    'execution_id' => $execution->id,
+                    'total_processed' => $stats['total_processed'] ?? 0,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to process arqueo data from wizard', [
+                'execution_id' => $execution->id,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 

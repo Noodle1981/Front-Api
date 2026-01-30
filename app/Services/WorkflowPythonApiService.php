@@ -11,6 +11,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class WorkflowPythonApiService
 {
     protected string $apiUrl;
+    protected string $conciliarUrl;
+    protected string $procesarJsonUrl;
     protected int $timeout;
     protected bool $mockMode;
 
@@ -29,6 +31,10 @@ class WorkflowPythonApiService
     public function __construct()
     {
         $this->apiUrl = config('services.workflow_python_api.url');
+        $this->conciliarUrl = config('services.workflow_python_api.conciliar_url',
+            str_replace('/procesar', '/conciliar', $this->apiUrl));
+        $this->procesarJsonUrl = config('services.workflow_python_api.procesar_json_url',
+            str_replace('/procesar', '/procesar-json', $this->apiUrl));
         $this->timeout = config('services.workflow_python_api.timeout', 120);
         $this->mockMode = config('services.workflow_python_api.mock_mode', true);
     }
@@ -49,7 +55,7 @@ class WorkflowPythonApiService
 
         try {
             // Determine if this is a conciliation workflow
-            $isConciliation = str_contains(strtolower($workflowType), 'concilia');
+            $isConciliation = str_contains(strtolower($workflowType), 'concilia') && !str_contains(strtolower($workflowType), 'arqueo');
 
             // Prepare multipart form data
             $multipart = [];
@@ -263,5 +269,302 @@ class WorkflowPythonApiService
         }
 
         return $errors;
+    }
+
+    /**
+     * Send files to Python API /conciliar endpoint for JSON response
+     *
+     * @param array $files Array of UploadedFile instances keyed by file_identifier
+     * @param int $executionId Execution ID for logging
+     * @return array ['success' => bool, 'data' => array|null, 'error' => string|null]
+     */
+    public function processConciliar(array $files, int $executionId): array
+    {
+        if ($this->mockMode) {
+            return $this->mockProcessConciliar($files, $executionId);
+        }
+
+        try {
+            // Prepare multipart form data with mapped field names
+            $multipart = [];
+            foreach ($files as $fileIdentifier => $file) {
+                $fieldName = $this->conciliationFileMapping[$fileIdentifier] ?? $fileIdentifier;
+
+                $multipart[] = [
+                    'name' => $fieldName,
+                    'contents' => fopen($file->getRealPath(), 'r'),
+                    'filename' => $file->getClientOriginalName(),
+                ];
+
+                Log::info("Conciliar - Archivo mapeado: {$fileIdentifier} -> {$fieldName}");
+            }
+
+            Log::info("Enviando archivos a Python API (conciliar): {$this->conciliarUrl}", [
+                'files_count' => count($multipart),
+                'field_names' => array_column($multipart, 'name'),
+            ]);
+
+            // Send to Python API as multipart/form-data
+            $response = Http::asMultipart()
+                ->timeout($this->timeout)
+                ->post($this->conciliarUrl, $multipart);
+
+            if ($response->failed()) {
+                Log::error("Python API /conciliar falló: " . $response->body());
+                return [
+                    'success' => false,
+                    'data' => null,
+                    'error' => 'Error al procesar archivos en el servidor Python: ' . $response->status(),
+                ];
+            }
+
+            $jsonResponse = $response->json();
+
+            if (($jsonResponse['status'] ?? '') !== 'success') {
+                Log::error("Python API /conciliar retornó error", ['response' => $jsonResponse]);
+                return [
+                    'success' => false,
+                    'data' => null,
+                    'error' => $jsonResponse['message'] ?? 'Error desconocido en la API',
+                ];
+            }
+
+            Log::info("Conciliar - Respuesta exitosa recibida", [
+                'execution_id' => $executionId,
+                'sections' => array_keys($jsonResponse['data'] ?? []),
+            ]);
+
+            return [
+                'success' => true,
+                'data' => $jsonResponse,
+                'error' => null,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error("Error en processConciliar: " . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => null,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Mock mode for /conciliar endpoint: Load from conciliacion.json
+     */
+    protected function mockProcessConciliar(array $files, int $executionId): array
+    {
+        try {
+            // Log the files that would be sent
+            $mappedFiles = [];
+            foreach ($files as $fileIdentifier => $file) {
+                $fieldName = $this->conciliationFileMapping[$fileIdentifier] ?? $fileIdentifier;
+                $mappedFiles[$fieldName] = $file->getClientOriginalName();
+            }
+
+            Log::info("MODO MOCK (conciliar): Archivos que se enviarían a la API", [
+                'mapped_files' => $mappedFiles,
+            ]);
+
+            // Load mock data from conciliacion.json
+            $mockFile = base_path('conciliacion.json');
+
+            if (file_exists($mockFile)) {
+                $content = file_get_contents($mockFile);
+                $data = json_decode($content, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    Log::info("MODO MOCK (conciliar): Datos cargados desde conciliacion.json", [
+                        'execution_id' => $executionId,
+                        'sections' => array_keys($data['data'] ?? []),
+                    ]);
+
+                    return [
+                        'success' => true,
+                        'data' => $data,
+                        'error' => null,
+                    ];
+                }
+            }
+
+            // Fallback if file doesn't exist
+            Log::warning("MODO MOCK (conciliar): conciliacion.json no encontrado, usando datos vacíos");
+            return [
+                'success' => true,
+                'data' => [
+                    'status' => 'success',
+                    'message' => 'Mock response',
+                    'data' => [
+                        'turnos' => [],
+                        'getnet' => [],
+                        'mp' => [],
+                        'sistema' => [],
+                        'ventas_sistema' => [],
+                        'caja_adicion' => [],
+                        'mp_negativos' => [],
+                        'comandas' => [],
+                    ],
+                ],
+                'error' => null,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error("Error en mockProcessConciliar: " . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => null,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Send files to Python API /procesar-json endpoint for JSON response (Arqueo format)
+     *
+     * @param array $files Array of UploadedFile instances keyed by file_identifier
+     * @param int $executionId Execution ID for logging
+     * @return array ['success' => bool, 'data' => array|null, 'error' => string|null]
+     */
+    public function procesarJson(array $files, int $executionId): array
+    {
+        if ($this->mockMode) {
+            return $this->mockProcesarJson($files, $executionId);
+        }
+
+        try {
+            // Prepare multipart form data with mapped field names
+            $multipart = [];
+            foreach ($files as $fileIdentifier => $file) {
+                $fieldName = $this->conciliationFileMapping[$fileIdentifier] ?? $fileIdentifier;
+
+                $multipart[] = [
+                    'name' => $fieldName,
+                    'contents' => fopen($file->getRealPath(), 'r'),
+                    'filename' => $file->getClientOriginalName(),
+                ];
+
+                Log::info("ProcesarJson - Archivo mapeado: {$fileIdentifier} -> {$fieldName}");
+            }
+
+            Log::info("Enviando archivos a Python API (procesar-json): {$this->procesarJsonUrl}", [
+                'files_count' => count($multipart),
+                'field_names' => array_column($multipart, 'name'),
+            ]);
+
+            // Send to Python API as multipart/form-data
+            $response = Http::asMultipart()
+                ->timeout($this->timeout)
+                ->post($this->procesarJsonUrl, $multipart);
+
+            if ($response->failed()) {
+                Log::error("Python API /procesar-json falló: " . $response->body());
+                return [
+                    'success' => false,
+                    'data' => null,
+                    'error' => 'Error al procesar archivos en el servidor Python: ' . $response->status(),
+                ];
+            }
+
+            $jsonResponse = $response->json();
+
+            if (($jsonResponse['status'] ?? '') !== 'success') {
+                Log::error("Python API /procesar-json retornó error", ['response' => $jsonResponse]);
+                return [
+                    'success' => false,
+                    'data' => null,
+                    'error' => $jsonResponse['message'] ?? 'Error desconocido en la API',
+                ];
+            }
+
+            Log::info("ProcesarJson - Respuesta exitosa recibida", [
+                'execution_id' => $executionId,
+                'sections' => array_keys($jsonResponse['data'] ?? []),
+            ]);
+
+            return [
+                'success' => true,
+                'data' => $jsonResponse,
+                'error' => null,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error("Error en procesarJson: " . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => null,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Mock mode for /procesar-json endpoint: Load from arqueo_resultado_test.json
+     */
+    protected function mockProcesarJson(array $files, int $executionId): array
+    {
+        try {
+            // Log the files that would be sent
+            $mappedFiles = [];
+            foreach ($files as $fileIdentifier => $file) {
+                $fieldName = $this->conciliationFileMapping[$fileIdentifier] ?? $fileIdentifier;
+                $mappedFiles[$fieldName] = $file->getClientOriginalName();
+            }
+
+            Log::info("MODO MOCK (procesar-json): Archivos que se enviarían a la API", [
+                'mapped_files' => $mappedFiles,
+            ]);
+
+            // Load mock data from arqueo_resultado_test.json
+            $mockFile = base_path('arqueo_resultado_test.json');
+
+            if (file_exists($mockFile)) {
+                $content = file_get_contents($mockFile);
+                $data = json_decode($content, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    Log::info("MODO MOCK (procesar-json): Datos cargados desde arqueo_resultado_test.json", [
+                        'execution_id' => $executionId,
+                        'sections' => array_keys($data['data'] ?? []),
+                    ]);
+
+                    return [
+                        'success' => true,
+                        'data' => $data,
+                        'error' => null,
+                    ];
+                }
+            }
+
+            // Fallback if file doesn't exist
+            Log::warning("MODO MOCK (procesar-json): arqueo_resultado_test.json no encontrado, usando datos vacíos");
+            return [
+                'success' => true,
+                'data' => [
+                    'status' => 'success',
+                    'message' => 'Mock response',
+                    'data' => [
+                        'arqueo_por_turno' => [],
+                        'getnet_conciliado' => [],
+                        'mp_conciliado' => [],
+                        'sistema_conciliado' => [],
+                        'ventas_sistema' => [],
+                        'turnos_procesados' => [],
+                        'devoluciones' => [],
+                        'caja_adicion' => [],
+                        'mp_negativos' => [],
+                    ],
+                ],
+                'error' => null,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error("Error en mockProcesarJson: " . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => null,
+                'error' => $e->getMessage(),
+            ];
+        }
     }
 }

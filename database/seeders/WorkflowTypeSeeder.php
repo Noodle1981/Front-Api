@@ -14,11 +14,20 @@ class WorkflowTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        // Crear workflow "Conciliación"
+        // Crear workflow "Conciliación y Arqueo" (workflow original con Excel de respuesta)
+        $conciliacionArqueo = WorkflowType::create([
+            'name' => 'Conciliación y Arqueo',
+            'code' => 'conciliacion_arqueo',
+            'description' => 'Workflow para procesar archivos de conciliación con respuesta Excel de arqueo',
+            'is_active' => true,
+            'expected_files_count' => 6,
+        ]);
+
+        // Crear workflow "Conciliación" (nuevo workflow con respuesta JSON)
         $conciliacion = WorkflowType::create([
             'name' => 'Conciliación',
             'code' => 'conciliacion',
-            'description' => 'Workflow para procesar archivos de conciliación de datos de ventas',
+            'description' => 'Workflow para procesar archivos de conciliación con datos detallados',
             'is_active' => true,
             'expected_files_count' => 6,
         ]);
@@ -107,25 +116,33 @@ class WorkflowTypeSeeder extends Seeder
             ],
         ];
 
-        // Crear las definiciones de archivos y sus columnas
-        foreach ($archivos as $archivoData) {
-            $columnas = $archivoData['columnas'];
-            unset($archivoData['columnas']);
+        // Crear las definiciones de archivos para ambos workflows (mismos archivos)
+        $workflows = [$conciliacionArqueo, $conciliacion];
 
-            $fileDefinition = WorkflowFileDefinition::create([
-                'workflow_type_id' => $conciliacion->id,
-                ...$archivoData,
-            ]);
+        foreach ($workflows as $workflow) {
+            foreach ($archivos as $archivoData) {
+                $columnas = $archivoData['columnas'];
+                unset($archivoData['columnas']);
 
-            // Crear las columnas requeridas para este archivo
-            foreach ($columnas as $columna) {
-                WorkflowRequiredColumn::create([
-                    'workflow_file_definition_id' => $fileDefinition->id,
-                    ...$columna,
+                $fileDefinition = WorkflowFileDefinition::create([
+                    'workflow_type_id' => $workflow->id,
+                    ...$archivoData,
                 ]);
+
+                // Crear las columnas requeridas para este archivo
+                foreach ($columnas as $columna) {
+                    WorkflowRequiredColumn::create([
+                        'workflow_file_definition_id' => $fileDefinition->id,
+                        ...$columna,
+                    ]);
+                }
+
+                // Restaurar columnas para el siguiente workflow
+                $archivoData['columnas'] = $columnas;
             }
         }
 
-        $this->command->info('✅ Workflow "Conciliación" creado con 6 archivos y sus columnas requeridas');
+        $this->command->info('✅ Workflow "Conciliación y Arqueo" creado con 6 archivos');
+        $this->command->info('✅ Workflow "Conciliación" creado con 6 archivos');
     }
 }

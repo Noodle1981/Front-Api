@@ -4,7 +4,12 @@
       "Bash(php artisan migrate:*)",
       "Bash(php artisan:*)",
       "Bash(C:Userscarlo.configherdbinphp.bat artisan tinker --execute=\"echo ''test'';\")",
-      "Bash(C:UserscarloAppDataLocalProgramsHerdresourcesbinphpphp8.4php.exe artisan vendor:publish --provider=\"Maatwebsite\\\\Excel\\\\ExcelServiceProvider\" --tag=config)"
+      "Bash(C:UserscarloAppDataLocalProgramsHerdresourcesbinphpphp8.4php.exe artisan vendor:publish --provider=\"Maatwebsite\\\\Excel\\\\ExcelServiceProvider\" --tag=config)",
+      "Bash(more:*)",
+      "Bash(findstr:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(php:*)",
+      "Bash(python:*)"
     ]
   }
 }
