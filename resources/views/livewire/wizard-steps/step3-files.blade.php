@@ -1,7 +1,106 @@
 <div>
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Cargue los Archivos Requeridos</h2>
-    
-    @if($selectedWorkflow)
+    @if($isArqueoWorkflow ?? false)
+        {{-- Arqueo Workflow: Date Range Selection --}}
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Seleccione el Periodo de Datos</h2>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                    <h3 class="text-sm font-medium text-blue-800">Arqueo desde datos existentes</h3>
+                    <p class="text-sm text-blue-700 mt-1">
+                        El workflow de Arqueo utiliza los datos de conciliaciones ya procesadas.
+                        Seleccione el periodo de fechas para generar el arqueo.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        @if($hasConciliationData ?? false)
+            {{-- Date Range Selector --}}
+            <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Periodo de Conciliación</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+                        <input type="date" wire:model.live="arqueoFechaInicio"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                            @if($arqueoDateRange['min'] ?? null) min="{{ $arqueoDateRange['min'] }}" @endif
+                            @if($arqueoDateRange['max'] ?? null) max="{{ $arqueoDateRange['max'] }}" @endif>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+                        <input type="date" wire:model.live="arqueoFechaFin"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                            @if($arqueoDateRange['min'] ?? null) min="{{ $arqueoDateRange['min'] }}" @endif
+                            @if($arqueoDateRange['max'] ?? null) max="{{ $arqueoDateRange['max'] }}" @endif>
+                    </div>
+                </div>
+
+                @if($arqueoDateRange['min'] ?? null)
+                    <p class="text-xs text-gray-500">
+                        Datos disponibles desde {{ \Carbon\Carbon::parse($arqueoDateRange['min'])->format('d/m/Y') }}
+                        hasta {{ \Carbon\Carbon::parse($arqueoDateRange['max'])->format('d/m/Y') }}
+                    </p>
+                @endif
+            </div>
+
+            {{-- Data Summary --}}
+            @if($arqueoFechaInicio && $arqueoFechaFin)
+                <div class="rounded-lg p-4 border {{ $arqueoHasData ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200' }}">
+                    <div class="flex items-center">
+                        @if($arqueoHasData)
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <span class="text-sm font-medium text-green-900">
+                                    {{ $arqueoTurnosCount }} turno(s) encontrado(s) para el periodo seleccionado
+                                </span>
+                                <p class="text-xs text-green-700 mt-1">
+                                    Los datos de conciliación serán procesados para generar el arqueo.
+                                </p>
+                            </div>
+                        @else
+                            <svg class="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm font-medium text-yellow-900">
+                                No hay datos de conciliación para el periodo seleccionado
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        @else
+            {{-- No Conciliation Data Warning --}}
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                <div class="flex items-start">
+                    <svg class="w-6 h-6 text-yellow-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-medium text-yellow-800">No hay datos de conciliación disponibles</h3>
+                        <p class="text-sm text-yellow-700 mt-2">
+                            Para ejecutar el workflow de Arqueo, primero debe procesar conciliaciones para este cliente.
+                        </p>
+                        <a href="{{ route('programmer.workflows.upload') }}" class="inline-flex items-center mt-3 text-sm font-medium text-purple-600 hover:text-purple-800">
+                            Ejecutar una conciliación primero
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @elseif($selectedWorkflow)
+        {{-- Regular Workflow: File Upload --}}
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Cargue los Archivos Requeridos</h2>
+
         <!-- File Upload Areas -->
         <div class="space-y-4 mb-6">
             @foreach($selectedWorkflow->fileDefinitions->sortBy('order') as $index => $definition)
@@ -91,9 +190,6 @@
                 </div>
             </div>
         </div>
-
-        </div>
-
 
         <!-- Validation Feedback -->
         @if(!empty($uploadedFiles))

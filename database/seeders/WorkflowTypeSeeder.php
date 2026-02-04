@@ -15,7 +15,7 @@ class WorkflowTypeSeeder extends Seeder
     public function run(): void
     {
         // Crear workflow "Conciliación y Arqueo" (workflow original con Excel de respuesta)
-        $conciliacionArqueo = WorkflowType::create([
+        $conciliacionArqueo = WorkflowType::firstOrCreate([
             'name' => 'Conciliación y Arqueo',
             'code' => 'conciliacion_arqueo',
             'description' => 'Workflow para procesar archivos de conciliación con respuesta Excel de arqueo',
@@ -24,12 +24,21 @@ class WorkflowTypeSeeder extends Seeder
         ]);
 
         // Crear workflow "Conciliación" (nuevo workflow con respuesta JSON)
-        $conciliacion = WorkflowType::create([
+        $conciliacion = WorkflowType::firstOrCreate([
             'name' => 'Conciliación',
             'code' => 'conciliacion',
             'description' => 'Workflow para procesar archivos de conciliación con datos detallados',
             'is_active' => true,
             'expected_files_count' => 6,
+        ]);
+
+        // Crear workflow "Arqueo" (usa datos de BD, no archivos Excel)
+        WorkflowType::firstOrCreate([
+            'name' => 'Arqueo',
+            'code' => 'arqueo',
+            'description' => 'Workflow para generar arqueo mensual a partir de datos de conciliación almacenados',
+            'is_active' => true,
+            'expected_files_count' => 0, // No requiere archivos, usa datos de BD
         ]);
 
         // Definir los 6 archivos requeridos con sus columnas reales
@@ -118,7 +127,9 @@ class WorkflowTypeSeeder extends Seeder
 
         // Crear las definiciones de archivos para ambos workflows (mismos archivos)
         $workflows = [$conciliacionArqueo, $conciliacion];
-
+        
+        WorkflowFileDefinition::truncate();
+        WorkflowRequiredColumn::truncate();
         foreach ($workflows as $workflow) {
             foreach ($archivos as $archivoData) {
                 $columnas = $archivoData['columnas'];
@@ -144,5 +155,6 @@ class WorkflowTypeSeeder extends Seeder
 
         $this->command->info('✅ Workflow "Conciliación y Arqueo" creado con 6 archivos');
         $this->command->info('✅ Workflow "Conciliación" creado con 6 archivos');
+        $this->command->info('✅ Workflow "Arqueo" creado (sin archivos, usa datos de BD)');
     }
 }

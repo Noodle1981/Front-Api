@@ -98,12 +98,10 @@
                                 </div>
 
                                 <!-- Action -->
-                                @if($item['latest_execution'])
-                                    <a href="{{ route('programmer.conciliacion.show', $item['latest_execution']) }}"
-                                       class="block w-full text-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">
-                                        Ver Conciliacion
-                                    </a>
-                                @endif
+                                <a href="{{ route('programmer.conciliacion.client', $client) }}"
+                                   class="block w-full text-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">
+                                    Ver Conciliacion
+                                </a>
                             </div>
                         </div>
                     @empty

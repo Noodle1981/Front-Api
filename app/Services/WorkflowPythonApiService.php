@@ -13,6 +13,7 @@ class WorkflowPythonApiService
     protected string $apiUrl;
     protected string $conciliarUrl;
     protected string $procesarJsonUrl;
+    protected string $arqueoUrl;
     protected int $timeout;
     protected bool $mockMode;
 
@@ -35,6 +36,8 @@ class WorkflowPythonApiService
             str_replace('/procesar', '/conciliar', $this->apiUrl));
         $this->procesarJsonUrl = config('services.workflow_python_api.procesar_json_url',
             str_replace('/procesar', '/procesar-json', $this->apiUrl));
+        $this->arqueoUrl = config('services.workflow_python_api.arqueo_url',
+            str_replace('/procesar', '/arqueo', $this->apiUrl));
         $this->timeout = config('services.workflow_python_api.timeout', 120);
         $this->mockMode = config('services.workflow_python_api.mock_mode', true);
     }
@@ -560,6 +563,130 @@ class WorkflowPythonApiService
 
         } catch (\Exception $e) {
             Log::error("Error en mockProcesarJson: " . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => null,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Send JSON data to Python API /arqueo endpoint for monthly arqueo generation
+     *
+     * @param array $data Array with conciliation data (turnos, getnet, mp, sistema, etc.)
+     * @param int $executionId Execution ID for logging
+     * @return array ['success' => bool, 'data' => array|null, 'error' => string|null]
+     */
+    public function processArqueo(array $data, int $executionId): array
+    {
+        if ($this->mockMode) {
+            return $this->mockProcessArqueo($data, $executionId);
+        }
+
+        try {
+            Log::info("Enviando datos a Python API (arqueo): {$this->arqueoUrl}", [
+                'execution_id' => $executionId,
+                'sections' => array_keys($data),
+                'turnos_count' => count($data['turnos'] ?? []),
+                'getnet_count' => count($data['getnet'] ?? []),
+                'mp_count' => count($data['mp'] ?? []),
+            ]);
+
+            // Send JSON data to Python API
+            $response = Http::timeout($this->timeout)
+                ->post($this->arqueoUrl, $data);
+
+            if ($response->failed()) {
+                Log::error("Python API /arqueo falló: " . $response->body());
+                return [
+                    'success' => false,
+                    'data' => null,
+                    'error' => 'Error al procesar datos en el servidor Python: ' . $response->status(),
+                ];
+            }
+
+            $jsonResponse = $response->json();
+
+            if (($jsonResponse['status'] ?? '') !== 'success') {
+                Log::error("Python API /arqueo retornó error", ['response' => $jsonResponse]);
+                return [
+                    'success' => false,
+                    'data' => null,
+                    'error' => $jsonResponse['message'] ?? 'Error desconocido en la API',
+                ];
+            }
+
+            Log::info("Arqueo - Respuesta exitosa recibida", [
+                'execution_id' => $executionId,
+                'sections' => array_keys($jsonResponse['data'] ?? []),
+                'arqueo_count' => count($jsonResponse['data']['arqueo_por_turno'] ?? []),
+            ]);
+
+            return [
+                'success' => true,
+                'data' => $jsonResponse,
+                'error' => null,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error("Error en processArqueo: " . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => null,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Mock mode for /arqueo endpoint: Load from arqueo.json
+     */
+    protected function mockProcessArqueo(array $data, int $executionId): array
+    {
+        try {
+            Log::info("MODO MOCK (arqueo): Datos que se enviarían a la API", [
+                'sections' => array_keys($data),
+                'turnos_count' => count($data['turnos'] ?? []),
+            ]);
+
+            // Load mock data from arqueo.json
+            $mockFile = base_path('arqueo.json');
+
+            if (file_exists($mockFile)) {
+                $content = file_get_contents($mockFile);
+                $mockData = json_decode($content, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    Log::info("MODO MOCK (arqueo): Datos cargados desde arqueo.json", [
+                        'execution_id' => $executionId,
+                        'sections' => array_keys($mockData['data'] ?? []),
+                    ]);
+
+                    return [
+                        'success' => true,
+                        'data' => $mockData,
+                        'error' => null,
+                    ];
+                }
+            }
+
+            // Fallback if file doesn't exist
+            Log::warning("MODO MOCK (arqueo): arqueo.json no encontrado, usando datos vacíos");
+            return [
+                'success' => true,
+                'data' => [
+                    'status' => 'success',
+                    'message' => 'Mock response',
+                    'data' => [
+                        'arqueo_por_turno' => [],
+                    ],
+                ],
+                'error' => null,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error("Error en mockProcessArqueo: " . $e->getMessage());
             return [
                 'success' => false,
                 'data' => null,

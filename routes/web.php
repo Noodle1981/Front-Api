@@ -75,8 +75,25 @@ Route::middleware(['auth', 'role:Programador'])->prefix('programadores')->name('
         // Dashboard: listado de empresas con conciliaciones
         Route::get('/', App\Livewire\Conciliation\ConciliationDashboard::class)->name('index');
         Route::get('/dashboard', App\Livewire\Conciliation\ConciliationDashboard::class)->name('dashboard');
+
+        // Client-based view (new approach)
+        Route::get('/cliente/{client}', App\Livewire\Conciliation\ConciliationDetail::class)->name('client');
+
+        // Legacy: execution-based view (still supported)
+        Route::get('/ejecucion/{execution}', App\Livewire\Conciliation\ConciliationDetail::class)->name('show');
+
+        // Export
+        Route::get('/cliente/{client}/export/{type}', [App\Http\Controllers\ConciliationExportController::class, 'exportByClient'])->name('client.export');
+        Route::get('/ejecucion/{execution}/export/{type}', [App\Http\Controllers\ConciliationExportController::class, 'export'])->name('export');
+    });
+
+    // Arqueo - Generación de arqueo mensual a partir de datos de conciliación
+    Route::prefix('arqueo')->name('arqueo.')->group(function () {
+        // Wizard para generar arqueo
+        Route::get('/', App\Livewire\ArqueoWizard::class)->name('index');
+        Route::get('/create', App\Livewire\ArqueoWizard::class)->name('create');
+        // Detalle de arqueo generado
         Route::get('/{execution}', App\Livewire\Conciliation\ConciliationDetail::class)->name('show');
-        Route::get('/{execution}/export/{type}', [App\Http\Controllers\ConciliationExportController::class, 'export'])->name('export');
     });
 });
 

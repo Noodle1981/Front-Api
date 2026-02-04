@@ -39,6 +39,7 @@ return [
         'url' => env('WORKFLOW_PYTHON_API_URL', 'http://localhost:8000/procesar'),
         'conciliar_url' => env('WORKFLOW_PYTHON_API_CONCILIAR_URL', 'http://localhost:8000/conciliar'),
         'procesar_json_url' => env('WORKFLOW_PYTHON_API_PROCESAR_JSON_URL', 'http://localhost:8000/procesar-json'),
+        'arqueo_url' => env('WORKFLOW_PYTHON_API_ARQUEO_URL', 'http://localhost:8000/arqueo'),
         'timeout' => env('WORKFLOW_PYTHON_API_TIMEOUT', 120),
         'mock_mode' => env('WORKFLOW_PYTHON_API_MOCK', true),
     ],

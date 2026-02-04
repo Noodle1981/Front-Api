@@ -5,11 +5,16 @@
                 <!-- Header -->
                 <div class="flex justify-between items-center mb-6">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-900">Detalle de Conciliacion</h2>
+                        <h2 class="text-2xl font-bold text-gray-900">
+                            {{ $client->company ?? 'Detalle de Conciliacion' }}
+                        </h2>
                         <p class="text-sm text-gray-500">
-                            Ejecucion #{{ $execution->id }} -
-                            {{ $execution->created_at->format('d/m/Y H:i') }} -
-                            {{ $execution->fileBatch->client->company ?? 'N/A' }}
+                            @if($fechaInicio && $fechaFin)
+                                Periodo: {{ \Carbon\Carbon::parse($fechaInicio)->format('d/m/Y') }} -
+                                {{ \Carbon\Carbon::parse($fechaFin)->format('d/m/Y') }}
+                            @else
+                                Todos los datos disponibles
+                            @endif
                         </p>
                     </div>
                     <div class="flex gap-2">
@@ -19,21 +24,80 @@
                     </div>
                 </div>
 
+                <!-- Date Range Selector -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <!-- Date inputs -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm font-medium text-gray-700">Desde:</label>
+                            <input type="date" wire:model.live="fechaInicio" wire:change="updateDateRange"
+                                class="rounded-md border-gray-300 shadow-sm text-sm focus:border-purple-500 focus:ring-purple-500">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm font-medium text-gray-700">Hasta:</label>
+                            <input type="date" wire:model.live="fechaFin" wire:change="updateDateRange"
+                                class="rounded-md border-gray-300 shadow-sm text-sm focus:border-purple-500 focus:ring-purple-500">
+                        </div>
+
+                        <!-- Quick select buttons -->
+                        <div class="flex items-center gap-2 ml-4">
+                            <button wire:click="selectCurrentMonth" type="button"
+                                class="px-3 py-1.5 text-xs font-medium rounded-md bg-purple-100 text-purple-700 hover:bg-purple-200">
+                                Mes actual
+                            </button>
+                            <button wire:click="selectLastMonth" type="button"
+                                class="px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                Mes anterior
+                            </button>
+                            <button wire:click="selectAllData" type="button"
+                                class="px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                Todo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Available months quick select -->
+                    @if(!empty($availableMonths))
+                        <div class="mt-3 pt-3 border-t border-gray-200">
+                            <span class="text-xs text-gray-500 mr-2">Meses con datos:</span>
+                            <div class="inline-flex flex-wrap gap-1 mt-1">
+                                @foreach(array_slice($availableMonths, 0, 6) as $month)
+                                    <button wire:click="selectMonth('{{ $month['fecha_inicio'] }}', '{{ $month['fecha_fin'] }}')"
+                                        type="button"
+                                        class="px-2 py-1 text-xs rounded-full transition-colors
+                                            {{ $fechaInicio == $month['fecha_inicio'] && $fechaFin == $month['fecha_fin']
+                                                ? 'bg-purple-600 text-white'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                                        {{ $month['label'] }} ({{ $month['count'] }})
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
                 <!-- Tabs -->
                 <div class="border-b border-gray-200 mb-6">
                     <nav class="-mb-px flex space-x-4 overflow-x-auto">
                         @php
+                            // Base tabs (always visible)
                             $tabs = [
-                                'arqueo' => 'Arqueo por Turno',
-                                'resumen' => 'Resumen arqueo',
                                 'turnos' => 'Turnos',
                                 'getnet' => 'Getnet',
                                 'mp' => 'MercadoPago',
-                                'sistema' => 'Resultado Conciliación',
-                                'caja' => 'Caja Adición',
+                                'sistema' => 'Resultados',
+                                'caja' => 'Caja Adicion',
                                 'devoluciones' => 'Devoluciones',
                                 'mp_negativos' => 'Pagos MP',
                             ];
+
+                            // Add arqueo tabs only if arqueo data exists
+                            if ($hasArqueoData ?? false) {
+                                $tabs = array_merge([
+                                    'arqueo' => 'Arqueo por Turno',
+                                    'resumen' => 'Resumen arqueo',
+                                ], $tabs);
+                            }
                         @endphp
                         @foreach($tabs as $key => $label)
                             <button

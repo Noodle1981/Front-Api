@@ -9,7 +9,10 @@
       "Bash(findstr:*)",
       "Bash(powershell -Command:*)",
       "Bash(php:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Users\\\\carlo\\\\.config\\\\herd\\\\bin\\\\php.bat\" -l app/Livewire/WorkflowFileUploadWizard.php)",
+      "Bash(\"C:\\\\Users\\\\carlo\\\\.config\\\\herd\\\\bin\\\\php.bat\" artisan view:cache)"
     ]
   }
 }
